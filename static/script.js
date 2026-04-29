@@ -5,9 +5,26 @@ let selectedCategory = 'All';
 let searchQuery = '';
 let vendorShop = null;
 let currentLanguage = 'en';
+let selectedCity = null;
+let selectedArea = null;
 
 // For GitHub Pages static deployment - data stored in localStorage
 const DATA_KEY = 'streetbite_stalls';
+const LOCATION_KEY = 'streetbite_location';
+
+// Location data - cities and areas
+const locationData = {
+    'Chennai': ['T Nagar', 'Anna Nagar', 'Adyar', 'Velachery', 'Tambaram', 'Porur', 'Vadapalani', 'Ashok Nagar', 'Mylapore', 'Triplicane'],
+    'Coimbatore': ['RS Puram', 'Peelamedu', 'Gandhipuram', 'Singanallur', 'Kalapatti'],
+    'Madurai': ['Anna Nagar', 'KK Nagar', 'Jail Road', 'Tallakulam'],
+    'Tiruchirappalli': ['Srirangam', 'Thillai Nagar', 'Golden Rock', 'Woraiyur'],
+    'Salem': ['New Fairlands', 'Gugai', 'Swarnapuri', 'Suramangalam'],
+    'Erode': ['Perundurai Road', 'Sowripalayam', 'Surampatti'],
+    'Vellore': ['Anna Nagar', 'Gandhi Nagar', 'Ranipet'],
+    'Thanjavur': ['New Bus Stand', 'Salai Road', 'West Street'],
+    'Dindigul': ['Bye Pass Road', 'Anna Nagar', 'Gandhi Nagar'],
+    'Kanyakumari': ['Nagercoil', 'Marthandam', 'Thuckalay']
+};
 
 // Initialize with default data if empty
 function initializeData() {
@@ -15,16 +32,15 @@ function initializeData() {
     if (stored) {
         stalls = JSON.parse(stored);
     } else {
-        // Load default data from stalls.json
         loadDefaultData();
     }
+    loadLocationPreference();
 }
 
 async function loadDefaultData() {
     try {
         const response = await fetch('data/stalls.json');
         const data = await response.json();
-        // Extract the stalls array from the loaded data
         stalls = data.stalls || [];
         saveData();
     } catch (error) {
@@ -111,7 +127,11 @@ const translations = {
         categoryChinese: '🍜 Chinese',
         categorySnacks: '🍿 Snacks',
         toggleOpen: '✓ Open',
-        toggleClosed: '✕ Closed'
+        toggleClosed: '✕ Closed',
+        selectLocation: 'Select Location',
+        selectCity: 'Select City',
+        selectArea: 'Select Area',
+        allLocations: 'All Locations'
     },
     ta: {
         appName: '🍽️ ஸ்ட்ரீட்பைட்',
@@ -185,7 +205,11 @@ const translations = {
         categoryChinese: '🍜 சைனீஸ்',
         categorySnacks: '🍿 சிற்றுண்டி',
         toggleOpen: '✓ திறந்திருக்கிறது',
-        toggleClosed: '✕ மூடியிருக்கிறது'
+        toggleClosed: '✕ மூடியிருக்கிறது',
+        selectLocation: 'இடத்தைத் தேர்வு செய்',
+        selectCity: 'நகரைத் தேர்வு செய்',
+        selectArea: 'பகுதியைத் தேர்வு செய்',
+        allLocations: 'அனைத்து இடங்களும்'
     },
     hi: {
         appName: '🍽️ स्ट्रीटबाइट',
@@ -259,7 +283,11 @@ const translations = {
         categoryChinese: '🍜 चाइनीज',
         categorySnacks: '🍿 नाश्ता',
         toggleOpen: '✓ खुला है',
-        toggleClosed: '✕ बंद है'
+        toggleClosed: '✕ बंद है',
+        selectLocation: 'स्थान चुनें',
+        selectCity: 'शहर चुनें',
+        selectArea: 'क्षेत्र चुनें',
+        allLocations: 'सभी स्थान'
     }
 };
 
@@ -281,7 +309,7 @@ function formatTime12Hour(time24) {
     let h = parseInt(hours);
     const ampm = h >= 12 ? 'PM' : 'AM';
     h = h % 12;
-    h = h ? h : 12; // 0 becomes 12
+    h = h ? h : 12;
     return `${h}:${minutes} ${ampm}`;
 }
 
@@ -295,7 +323,223 @@ document.addEventListener('DOMContentLoaded', () => {
     loadLanguagePreference();
     setupNavigation();
     initializeData();
+    setupLocationModal();
 });
+
+// Setup location modal
+function setupLocationModal() {
+    const closeBtn = document.getElementById('modal-close-btn');
+    const skipBtn = document.getElementById('skip-area-btn');
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeLocationModal);
+    }
+
+    if (skipBtn) {
+        skipBtn.addEventListener('click', () => {
+            selectedArea = null;
+            saveLocationPreference();
+            closeLocationModal();
+            updateLocationDisplay();
+            renderShopGrid();
+        });
+    }
+
+    updateLocationDisplay();
+}
+
+// Open location selector
+function openLocationSelector() {
+    const modal = document.getElementById('location-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        renderCityList();
+    }
+}
+
+// Close location modal
+function closeLocationModal() {
+    const modal = document.getElementById('location-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Render city list
+function renderCityList() {
+    const cityList = document.getElementById('city-list');
+    const areaSection = document.getElementById('area-section');
+    const searchInput = document.getElementById('city-search');
+
+    if (!cityList) return;
+
+    areaSection.style.display = 'none';
+
+    const cities = Object.keys(locationData);
+
+    cityList.innerHTML = `
+        <div class="city-item" data-city="all">
+            <span class="city-icon">🌍</span>
+            <span class="city-name">${t('allLocations')}</span>
+        </div>
+        ${cities.map(city => `
+            <div class="city-item" data-city="${city}">
+                <span class="city-icon">🏙️</span>
+                <span class="city-name">${city}</span>
+            </div>
+        `).join('')}
+    `;
+
+    cityList.querySelectorAll('.city-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const city = item.dataset.city;
+            if (city === 'all') {
+                selectedCity = null;
+                selectedArea = null;
+                saveLocationPreference();
+                closeLocationModal();
+                updateLocationDisplay();
+                renderShopGrid();
+            } else {
+                selectedCity = city;
+                selectedArea = null;
+                renderAreaList();
+            }
+        });
+    });
+
+    // Search functionality
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = cities.filter(c => c.toLowerCase().includes(query));
+
+            cityList.innerHTML = `
+                <div class="city-item" data-city="all">
+                    <span class="city-icon">🌍</span>
+                    <span class="city-name">${t('allLocations')}</span>
+                </div>
+                ${filtered.map(city => `
+                    <div class="city-item" data-city="${city}">
+                        <span class="city-icon">🏙️</span>
+                        <span class="city-name">${city}</span>
+                    </div>
+                `).join('')}
+            `;
+
+            cityList.querySelectorAll('.city-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const city = item.dataset.city;
+                    if (city === 'all') {
+                        selectedCity = null;
+                        selectedArea = null;
+                        saveLocationPreference();
+                        closeLocationModal();
+                        updateLocationDisplay();
+                        renderShopGrid();
+                    } else {
+                        selectedCity = city;
+                        selectedArea = null;
+                        renderAreaList();
+                    }
+                });
+            });
+        });
+    }
+}
+
+// Render area list
+function renderAreaList() {
+    const cityList = document.getElementById('city-list');
+    const areaSection = document.getElementById('area-section');
+    const areaList = document.getElementById('area-list');
+    const selectedCityName = document.getElementById('selected-city-name');
+
+    if (!areaList || !selectedCityName) return;
+
+    cityList.style.display = 'none';
+    areaSection.style.display = 'block';
+    selectedCityName.textContent = selectedCity;
+
+    const areas = locationData[selectedCity] || [];
+
+    areaList.innerHTML = `
+        <div class="area-item" data-area="all">
+            <span class="area-icon">🌍</span>
+            <span class="area-name">${t('allLocations')}</span>
+        </div>
+        ${areas.map(area => `
+            <div class="area-item" data-area="${area}">
+                <span class="area-icon">📍</span>
+                <span class="area-name">${area}</span>
+            </div>
+        `).join('')}
+    `;
+
+    areaList.querySelectorAll('.area-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const area = item.dataset.area;
+            if (area === 'all') {
+                selectedArea = null;
+            } else {
+                selectedArea = area;
+            }
+            saveLocationPreference();
+            closeLocationModal();
+            updateLocationDisplay();
+            renderShopGrid();
+        });
+    });
+}
+
+// Update location display in header
+function updateLocationDisplay() {
+    const locationText = document.getElementById('header-location-text');
+    if (locationText) {
+        if (selectedCity && selectedArea) {
+            locationText.textContent = `${selectedArea}, ${selectedCity}`;
+        } else if (selectedCity) {
+            locationText.textContent = selectedCity;
+        } else {
+            locationText.textContent = t('selectLocation');
+        }
+    }
+}
+
+// Save location preference
+function saveLocationPreference() {
+    localStorage.setItem(LOCATION_KEY, JSON.stringify({
+        city: selectedCity,
+        area: selectedArea
+    }));
+}
+
+// Load location preference
+function loadLocationPreference() {
+    const stored = localStorage.getItem(LOCATION_KEY);
+    if (stored) {
+        const loc = JSON.parse(stored);
+        selectedCity = loc.city;
+        selectedArea = loc.area;
+    }
+}
+
+// Filter stalls by location
+function filterByLocation(stallList) {
+    if (!selectedCity && !selectedArea) {
+        return stallList;
+    }
+
+    return stallList.filter(stall => {
+        if (selectedArea) {
+            return stall.area && stall.area.toLowerCase().includes(selectedArea.toLowerCase());
+        }
+        if (selectedCity) {
+            return stall.area && stall.area.toLowerCase().includes(selectedCity.toLowerCase());
+        }
+        return true;
+    });
+}
 
 // Setup bottom navigation
 function setupNavigation() {
@@ -356,7 +600,7 @@ function navigateTo(page) {
     }
 }
 
-// Load stalls from localStorage (for GitHub Pages static deployment)
+// Load stalls from localStorage
 function loadStalls() {
     showLoading(true);
     const stored = localStorage.getItem(DATA_KEY);
@@ -370,7 +614,10 @@ function loadStalls() {
 
 // Show/Hide loading spinner
 function showLoading(show) {
-    document.getElementById('loading').classList.toggle('active', show);
+    const loading = document.getElementById('loading');
+    if (loading) {
+        loading.classList.toggle('active', show);
+    }
 }
 
 // Render Home Page
@@ -395,7 +642,6 @@ function renderHomePage() {
         </div>
     `;
 
-    // Setup category tabs
     app.querySelectorAll('.category-tab').forEach(tab => {
         tab.addEventListener('click', () => {
             selectedCategory = tab.dataset.category;
@@ -411,7 +657,12 @@ function renderHomePage() {
 // Render shop grid
 function renderShopGrid() {
     const grid = document.getElementById('shop-grid');
+    if (!grid) return;
+
     let filtered = stalls;
+
+    // Filter by location first
+    filtered = filterByLocation(filtered);
 
     // Filter by category
     if (selectedCategory !== 'All') {
@@ -454,7 +705,6 @@ function renderShopGrid() {
         </div>
     `).join('');
 
-    // Add click handlers
     grid.querySelectorAll('.shop-card').forEach(card => {
         card.addEventListener('click', () => {
             const id = parseInt(card.dataset.id);
@@ -488,14 +738,12 @@ function renderSearchPage() {
         </div>
     `;
 
-    // Setup search
     const searchInput = app.querySelector('.search-input');
     searchInput.addEventListener('input', (e) => {
         searchQuery = e.target.value;
         renderShopGrid();
     });
 
-    // Setup category tabs
     app.querySelectorAll('.category-tab').forEach(tab => {
         tab.addEventListener('click', () => {
             selectedCategory = tab.dataset.category;
@@ -508,7 +756,7 @@ function renderSearchPage() {
     renderShopGrid();
 }
 
-// Show Shop Detail (static version for GitHub Pages)
+// Show Shop Detail
 function showShopDetail(id) {
     showLoading(true);
     const stall = stalls.find(s => s.id === id);
@@ -603,7 +851,6 @@ function renderShopDetailPage(stall) {
         </div>
     `;
 
-    // Setup star rating
     let selectedRating = 0;
     const starButtons = app.querySelectorAll('.star-btn');
     starButtons.forEach(btn => {
@@ -616,7 +863,6 @@ function renderShopDetailPage(stall) {
         });
     });
 
-    // Setup submit review (localStorage version)
     app.querySelector('#submit-review').addEventListener('click', () => {
         const comment = app.querySelector('#review-text').value.trim();
         if (!comment || selectedRating === 0) {
@@ -624,7 +870,6 @@ function renderShopDetailPage(stall) {
             return;
         }
 
-        // Find and update the stall in localStorage
         const stallIndex = stalls.findIndex(s => s.id === stall.id);
         if (stallIndex !== -1) {
             const newReview = {
@@ -634,7 +879,6 @@ function renderShopDetailPage(stall) {
             };
             stalls[stallIndex].reviews.push(newReview);
 
-            // Update rating
             const reviews = stalls[stallIndex].reviews;
             const avgRating = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
             stalls[stallIndex].rating = Math.round(avgRating * 10) / 10;
@@ -723,7 +967,6 @@ function renderAddShopPage() {
         </div>
     `;
 
-    // Add menu item
     app.querySelector('#add-menu-item').addEventListener('click', () => {
         const name = app.querySelector('#menu-item-name').value.trim();
         const price = parseInt(app.querySelector('#menu-item-price').value);
@@ -762,7 +1005,6 @@ function renderAddShopPage() {
 
     renderMenuList();
 
-    // Submit shop (static version for GitHub Pages)
     app.querySelector('#submit-shop').addEventListener('click', () => {
         const name = app.querySelector('#shop-name').value.trim();
         const category = app.querySelector('#shop-category').value;
@@ -783,7 +1025,6 @@ function renderAddShopPage() {
             return;
         }
 
-        // Generate new ID
         const maxId = stalls.length > 0 ? Math.max(...stalls.map(s => s.id)) : 0;
 
         const newStall = {
@@ -818,12 +1059,10 @@ function renderProfilePage() {
     const app = document.getElementById('app');
 
     if (vendorShop) {
-        // Vendor dashboard
         const openTime12 = formatTime12Hour(vendorShop.openTime);
         const closeTime12 = formatTime12Hour(vendorShop.closeTime);
         const isOpen = vendorShop.status === 'open';
 
-        // Render complete HTML including add menu item section
         app.innerHTML = `
             <div class="page vendor-dashboard-page">
                 <div class="dashboard-header">
@@ -864,7 +1103,6 @@ function renderProfilePage() {
                         `).join('')}
                     </div>
 
-                    <!-- Add New Menu Item Section -->
                     <div class="form-section" style="margin-top: 20px;">
                         <h3 class="section-title">➕ ${t('addNewMenuItem')}</h3>
                         <div class="form-row">
@@ -883,7 +1121,6 @@ function renderProfilePage() {
             </div>
         `;
 
-        // Setup status toggle (static version)
         app.querySelector('#status-toggle').addEventListener('click', () => {
             const newStatus = vendorShop.status === 'open' ? 'closed' : 'open';
             const stallIndex = stalls.findIndex(s => s.id === vendorShop.id);
@@ -896,7 +1133,6 @@ function renderProfilePage() {
             }
         });
 
-        // Update discount - support both click and Enter key (static version)
         const discountInput = app.querySelector('#vendor-discount');
         const updateDiscountBtn = app.querySelector('#update-discount');
 
@@ -918,18 +1154,14 @@ function renderProfilePage() {
             }
         });
 
-        // Menu availability toggles (localStorage version)
         app.querySelectorAll('.availability-toggle').forEach(toggle => {
             toggle.addEventListener('click', () => {
                 const index = parseInt(toggle.dataset.index);
                 const stallIndex = stalls.findIndex(s => s.id === vendorShop.id);
 
                 if (stallIndex !== -1) {
-                    // Toggle availability
                     stalls[stallIndex].menu[index].available = !stalls[stallIndex].menu[index].available;
                     vendorShop.menu[index].available = stalls[stallIndex].menu[index].available;
-
-                    // Save to localStorage
                     saveData();
                     renderProfilePage();
                     showToast('Menu updated!', 'success');
@@ -937,7 +1169,6 @@ function renderProfilePage() {
             });
         });
 
-        // Logout
         app.querySelector('#logout-btn').addEventListener('click', () => {
             vendorShop = null;
             localStorage.removeItem('vendorShopId');
@@ -945,7 +1176,6 @@ function renderProfilePage() {
             showToast('Logged out', 'success');
         });
 
-        // Add new item handler (localStorage version)
         app.querySelector('#add-new-item-btn').addEventListener('click', () => {
             const itemName = app.querySelector('#new-item-name').value.trim();
             const price = parseInt(app.querySelector('#new-item-price').value);
@@ -957,11 +1187,8 @@ function renderProfilePage() {
 
             const stallIndex = stalls.findIndex(s => s.id === vendorShop.id);
             if (stallIndex !== -1) {
-                // Add new item to localStorage
                 stalls[stallIndex].menu.push({ itemName, price, available: true });
                 vendorShop.menu.push({ itemName, price, available: true });
-
-                // Save to localStorage
                 saveData();
                 app.querySelector('#new-item-name').value = '';
                 app.querySelector('#new-item-price').value = '';
@@ -971,10 +1198,8 @@ function renderProfilePage() {
         });
 
     } else {
-        // Login form - check for persistent login
         let savedShopId = localStorage.getItem('vendorShopId');
 
-        // Auto-login if saved shop ID exists
         if (savedShopId) {
             const shop = stalls.find(s => s.id === parseInt(savedShopId));
             if (shop) {
@@ -1026,7 +1251,6 @@ function renderProfilePage() {
         const searchInput = app.querySelector('#shop-search-input');
         const resultsDropdown = app.querySelector('#shop-search-results');
 
-        // Search functionality - show results as user types
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value.trim().toLowerCase();
 
@@ -1059,7 +1283,6 @@ function renderProfilePage() {
 
             resultsDropdown.style.display = 'block';
 
-            // Add click handlers to suggestions
             resultsDropdown.querySelectorAll('.shop-suggestion-item').forEach(item => {
                 item.addEventListener('click', () => {
                     selectedShopId = parseInt(item.dataset.id);
@@ -1070,14 +1293,12 @@ function renderProfilePage() {
             });
         });
 
-        // Close dropdown when clicking outside
         document.addEventListener('click', (e) => {
             if (!searchInput.contains(e.target) && !resultsDropdown.contains(e.target)) {
                 resultsDropdown.style.display = 'none';
             }
         });
 
-        // Login (localStorage version)
         app.querySelector('#vendor-login-btn').addEventListener('click', () => {
             if (!selectedShopId) {
                 showToast(currentLanguage === 'ta' ? 'தயவுசெய்து உங்கள் கடையைத் தேர்வுசெய்க' : currentLanguage === 'hi' ? 'कृपया अपनी दुकान चुनें' : 'Please select your shop from the list', 'error');
@@ -1092,7 +1313,6 @@ function renderProfilePage() {
                 return;
             }
 
-            // Find shop and verify contact number (localStorage version)
             const shop = stalls.find(s => s.id === selectedShopId);
 
             if (shop) {
@@ -1134,13 +1354,13 @@ function changeLanguage(lang) {
     localStorage.setItem('preferredLanguage', lang);
     updateHeaderLanguageSelector();
     updateNavigationLabels();
-    // Re-render current page
     navigateTo(currentPage);
 }
 
-// Make navigateTo and changeLanguage available globally
+// Make functions globally available
 window.navigateTo = navigateTo;
 window.changeLanguage = changeLanguage;
+window.openLocationSelector = openLocationSelector;
 
 // Load saved language preference
 function loadLanguagePreference() {
