@@ -1,6 +1,6 @@
 # StreetBite - Street Food Tracker
 
-A modern web application for tracking and discovering street food vendors in Chennai, India. Built with Flask and vanilla JavaScript, designed for deployment on GitHub Pages.
+A modern web application for tracking and discovering street food vendors in Chennai, India. Built with Flask and vanilla JavaScript.
 
 ## Features
 
@@ -10,22 +10,20 @@ A modern web application for tracking and discovering street food vendors in Che
 - **Vendor Dashboard**: Vendors can manage their shop status, menu availability, and daily offers
 - **Reviews & Ratings**: Users can rate and review their favorite food stalls
 - **Multi-language Support**: Available in English, Tamil, and Hindi
-- **Offline-First**: Uses localStorage for data persistence - works on GitHub Pages without a backend
+- **Persistent Data**: All changes saved to server - shared across all users
 
 ## Tech Stack
 
-- **Backend**: Python Flask (for local development)
+- **Backend**: Python Flask with Gunicorn
 - **Frontend**: Vanilla JavaScript, HTML5, CSS3
-- **Data Storage**: localStorage (production) / JSON file (development)
-- **Deployment**: GitHub Pages compatible
+- **Data Storage**: JSON file
+- **Deployment**: Render (free tier)
 
 ## Local Development
 
-### Using Flask (Full Backend)
-
 ```bash
-# Install Flask
-pip install flask
+# Install dependencies
+pip install -r requirements.txt
 
 # Run the development server
 python app.py
@@ -33,27 +31,20 @@ python app.py
 
 Visit `http://localhost:5000` in your browser.
 
-### Using GitHub Pages (Static Deployment)
-
-1. Push the `street-food-tracker` folder contents to a GitHub repository
-2. Enable GitHub Pages in repository settings
-3. The app will work entirely using localStorage for data persistence
-
-**Note**: For GitHub Pages deployment, the initial data loads from `data/stalls.json` and all subsequent changes are saved to browser localStorage.
-
 ## Project Structure
 
 ```
 street-food-tracker/
-├── app.py              # Flask backend server
+├── app.py                  # Flask backend server
 ├── data/
-│   └── stalls.json     # Initial vendor data
+│   └── stalls.json         # Initial vendor data
 ├── static/
-│   ├── index.html      # Main HTML file
-│   ├── script.js       # Frontend JavaScript
-│   └── style.css       # Styles
-├── package-lock.json   # npm metadata
-└── README.md           # This file
+│   ├── index.html          # Main HTML file
+│   ├── script.js           # Frontend JavaScript
+│   └── style.css           # Styles
+├── requirements.txt        # Python dependencies
+├── .github/workflows/      # GitHub Actions CI/CD
+└── README.md               # This file
 ```
 
 ## Usage
@@ -115,20 +106,40 @@ Each stall has the following structure:
 - Chinese (🍜)
 - Snacks (🍿)
 
-## Deployment Checklist
+## Deployment to Render
 
-- [ ] Push code to GitHub repository
-- [ ] Enable GitHub Pages in Settings > Pages
-- [ ] Select main branch as source
-- [ ] Verify app loads at `https://<username>.github.io/<repo>`
-- [ ] Test all features (browse, search, vendor login, reviews)
-- [ ] Share with users!
+### Step 1: Create Render Account
+1. Go to [render.com](https://render.com)
+2. Sign up with GitHub
 
-## Limitations (GitHub Pages Version)
+### Step 2: Create a New Web Service
+1. Click **New +** → **Web Service**
+2. Connect your GitHub repository
+3. Configure:
+   - **Name**: StreetBite (or your choice)
+   - **Region**: Choose closest to your users
+   - **Branch**: `main`
+   - **Root Directory**: `street-food-tracker`
+   - **Runtime**: Python 3
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn app:app`
 
-- Data is stored in browser localStorage, so it's device-specific
-- Each user's changes only affect their own browser
-- For a multi-user production app with shared data, use the Flask backend with a database
+### Step 3: Set Environment Variables (if needed)
+- No environment variables required for basic deployment
+
+### Step 4: Deploy
+1. Click **Create Web Service**
+2. Render will build and deploy automatically
+3. Your app will be live at `https://streetbite-xxxx.onrender.com`
+
+### GitHub Actions (Optional CI/CD)
+
+The included workflow can auto-deploy to Render when you push to main. You'll need:
+1. Get your Render API Key from Dashboard → Settings → API Keys
+2. Get your Service ID from the service page URL
+3. Add these as GitHub Secrets:
+   - `RENDER_API_KEY`
+   - `RENDER_SERVICE_ID`
 
 ## Future Enhancements
 
