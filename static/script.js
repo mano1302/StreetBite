@@ -5,45 +5,18 @@ let selectedCategory = 'All';
 let searchQuery = '';
 let vendorShop = null;
 let currentLanguage = 'en';
-let userLocation = null; // User's selected city/area
 
 // For GitHub Pages static deployment - data stored in localStorage
 const DATA_KEY = 'streetbite_stalls';
 
-// Tamil Nadu cities and major areas
-const tamilNaduLocations = {
-    'Chennai': ['T Nagar', 'Anna Nagar', 'Adyar', 'Mylapore', 'Vadapalani', 'Porur', 'Velachery', 'Tambaram', 'Chromepet', 'Guindy', 'Egmore', 'Nungambakkam', 'Ashok Nagar', 'Kodambakkam', 'Royapettah', 'Triplicane', 'Perambur', 'Kilpauk', 'Saidapet', 'Madipakkam'],
-    'Coimbatore': ['RS Puram', 'Saibaba Colony', 'Gandhipuram', 'Peelamedu', 'Singanallur', 'Kalapatti', 'Vadavalli', 'Kuniyamuthur', 'Ukkadam', 'Race Course', 'Ram Nagar', 'Sungam'],
-    'Madurai': ['Anna Nagar', 'KK Nagar', 'Goripalayam', 'Tallakulam', 'Villapuram', 'Bibipuram', 'Arappalayam', 'Mattuthavani', 'Thiruparankundram'],
-    'Tiruchirappalli': ['Cantonment', 'Golden Rock', 'Woraiyur', 'Srirangam', 'Thillai Nagar', 'K K Nagar', 'Ariyamangalam'],
-    'Salem': ['New Fairlands', 'Gugai', 'Suramangalam', 'Omalur', 'Hasthampatti', 'Shevapet', 'Meyyanur'],
-    'Tiruppur': ['Gandhinagar', 'Kumarapalayam', 'Palladam Road', 'New Colony', 'Sidhapudur'],
-    'Erode': ['Perundurai Road', 'Surampatti', 'Kasipalayam', 'Vellakinar', 'Gobichettipalayam'],
-    'Vellore': ['Katpadi', 'Anna Nagar', 'Ranipet', 'Gandhi Nagar', 'Chittoor Road'],
-    'Thoothukudi': ['Korampallam', 'Vilathikulam', 'Tiruchendur Road', 'Sippikulam'],
-    'Thanjavur': ['New Bus Stand', 'Salai Road', 'Woraiyur Road', 'Pattukottai Road'],
-    'Dindigul': ['Anna Nagar', 'Gandhi Nagar', 'Reddiyar Colony', 'Athoor'],
-    'Kanchipuram': ['Gandhi Nagar', 'Kamakoti Nagar', 'Mambakkam', 'Saidapet'],
-    'Hosur': ['Krishnagiri Road', 'Electronic City', 'Shoolagiri', 'Denkanikottai Road'],
-    'Karur': ['Kamaraj Road', 'Pugal Road', 'Aravakurichi'],
-    'Ramanathapuram': ['R S Mangalam', 'Paramakudi', 'Mudukulathur'],
-    'Tirunelveli': ['Palayamkottai', 'Gandhi Nagar', 'Anna Nagar', 'Chidambaranar Nagar'],
-    'Cuddalore': ['Chidambaram', 'Panruti', 'Virudhachalam'],
-    'Nagercoil': ['Vadasery', 'Kottar', 'Aralvaimozhi'],
-    'Kumbakonam': ['Suriyanar Kovil', 'Patteswaram', 'Thirunageswaram'],
-    'Ooty': ['Charing Cross', 'Bazaar', 'Coonoor Road', 'Pykara'],
-    'Kodaikanal': ['Lake Road', 'Vattakanal', 'Berijam Road'],
-    'Pondicherry': ['White Town', 'Lawpet', 'Kuruchikuppam', 'Ariyankuppam']
-};
-
 // Initialize with default data if empty
-async function initializeData() {
+function initializeData() {
     const stored = localStorage.getItem(DATA_KEY);
     if (stored) {
         stalls = JSON.parse(stored);
     } else {
         // Load default data from stalls.json
-        await loadDefaultData();
+        loadDefaultData();
     }
 }
 
@@ -138,17 +111,7 @@ const translations = {
         categoryChinese: '🍜 Chinese',
         categorySnacks: '🍿 Snacks',
         toggleOpen: '✓ Open',
-        toggleClosed: '✕ Closed',
-        // Location selector modal
-        selectYourLocation: '📍 Select Your Location',
-        chooseCitySubtitle: 'Choose your city to find local street food shops nearby',
-        searchCityPlaceholder: '🔍 Search city name...',
-        selectAreaIn: 'Select Area in',
-        skipAreaShowAll: 'Skip - Show All Shops',
-        changeLocation: 'Change',
-        shopsNearby: 'Shops near you will appear here',
-        selectLocationToFind: 'Select your location to find nearby shops',
-        noShopsInLocation: 'No shops found in',
+        toggleClosed: '✕ Closed'
     },
     ta: {
         appName: '🍽️ ஸ்ட்ரீட்பைட்',
@@ -222,17 +185,7 @@ const translations = {
         categoryChinese: '🍜 சைனீஸ்',
         categorySnacks: '🍿 சிற்றுண்டி',
         toggleOpen: '✓ திறந்திருக்கிறது',
-        toggleClosed: '✕ மூடியிருக்கிறது',
-        // Location selector modal
-        selectYourLocation: '📍 உங்கள் இடத்தைத் தேர்ந்தெடுக்கவும்',
-        chooseCitySubtitle: 'உங்கள் பகுதியில் உள்ள சாலை ஓர உணவுக் கடைகளைக் கண்டறிய உங்கள் நகரத்தைத் தேர்ந்தெடுக்கவும்',
-        searchCityPlaceholder: '🔍 நகரப் பெயரைத் தேடுக...',
-        selectAreaIn: 'பகுதியைத் தேர்ந்தெடுக்கவும்',
-        skipAreaShowAll: 'தவிர் - அனைத்துக் கடைகளையும் காட்டு',
-        changeLocation: 'மாற்று',
-        shopsNearby: 'உங்கள் அருகிலுள்ள கடைகள் இங்கே தோன்றும்',
-        selectLocationToFind: 'அருகிலுள்ள கடைகளைக் கண்டறிய உங்கள் இடத்தைத் தேர்ந்தெடுக்கவும்',
-        noShopsInLocation: 'இல்லை எந்தக் கடைகளும் கிடைக்கவில்லை',
+        toggleClosed: '✕ மூடியிருக்கிறது'
     },
     hi: {
         appName: '🍽️ स्ट्रीटबाइट',
@@ -306,17 +259,7 @@ const translations = {
         categoryChinese: '🍜 चाइनीज',
         categorySnacks: '🍿 नाश्ता',
         toggleOpen: '✓ खुला है',
-        toggleClosed: '✕ बंद है',
-        // Location selector modal
-        selectYourLocation: '📍 अपना स्थान चुनें',
-        chooseCitySubtitle: 'अपने क्षेत्र में स्थानीय स्ट्रीट फूड दुकानें खोजने के लिए अपने शहर का चयन करें',
-        searchCityPlaceholder: '🔍 शहर का नाम खोजें...',
-        selectAreaIn: 'क्षेत्र चुनें',
-        skipAreaShowAll: 'छोड़ें - सभी दुकानें दिखाएं',
-        changeLocation: 'बदलें',
-        shopsNearby: 'आपके पास की दुकानें यहां दिखाई देंगी',
-        selectLocationToFind: 'पास की दुकानें खोजने के लिए अपना स्थान चुनें',
-        noShopsInLocation: 'कोई दुकान नहीं मिली',
+        toggleClosed: '✕ बंद है'
     }
 };
 
@@ -348,18 +291,10 @@ function t(key) {
 }
 
 // Initialize app
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
     loadLanguagePreference();
-    loadLocationPreference();
     setupNavigation();
-    await initializeData();
-    // Set default location if none exists - use Chennai with T Nagar as default
-    if (!userLocation || !userLocation.city) {
-        userLocation = { city: 'Chennai', area: 'T Nagar' };
-        saveLocationPreference();
-    }
-    updateHeaderLocationBadge();
-    renderHomePage();
+    initializeData();
 });
 
 // Setup bottom navigation
@@ -399,18 +334,6 @@ function updateHeaderLanguageSelector() {
     }
 }
 
-// Update header location badge
-function updateHeaderLocationBadge() {
-    const locationText = document.getElementById('header-location-text');
-    if (locationText) {
-        if (userLocation && userLocation.city) {
-            locationText.textContent = userLocation.area ? `${userLocation.area}, ${userLocation.city}` : userLocation.city;
-        } else {
-            locationText.textContent = 'Select Location';
-        }
-    }
-}
-
 // Navigation
 function navigateTo(page) {
     currentPage = page;
@@ -441,8 +364,8 @@ function loadStalls() {
         const data = JSON.parse(stored);
         stalls = data.stalls || data;
     }
-    showLoading(false);
     renderHomePage();
+    showLoading(false);
 }
 
 // Show/Hide loading spinner
@@ -454,22 +377,10 @@ function showLoading(show) {
 function renderHomePage() {
     const app = document.getElementById('app');
     updateHeaderLanguageSelector();
-    updateHeaderLocationBadge();
     updateNavigationLabels();
-
-    const locationBar = userLocation && userLocation.city ? `
-        <div class="home-location-bar">
-            <div class="home-location-text">
-                <span class="location-icon">📍</span>
-                <span>${userLocation.area ? userLocation.area + ', ' + userLocation.city : userLocation.city}</span>
-            </div>
-            <button class="change-location-btn" id="change-location-btn">Change</button>
-        </div>
-    ` : '';
 
     app.innerHTML = `
         <div class="page home-page">
-            ${locationBar}
             <div class="category-tabs">
                 <button class="category-tab ${selectedCategory === 'All' ? 'active' : ''}" data-category="All">${t('all')}</button>
                 <button class="category-tab ${selectedCategory === 'Dosa' ? 'active' : ''}" data-category="Dosa">${t('categoryDosa')}</button>
@@ -483,12 +394,6 @@ function renderHomePage() {
             <div class="shop-grid" id="shop-grid"></div>
         </div>
     `;
-
-    // Setup change location button
-    const changeLocationBtn = document.getElementById('change-location-btn');
-    if (changeLocationBtn) {
-        changeLocationBtn.addEventListener('click', openLocationSelector);
-    }
 
     // Setup category tabs
     app.querySelectorAll('.category-tab').forEach(tab => {
@@ -508,21 +413,6 @@ function renderShopGrid() {
     const grid = document.getElementById('shop-grid');
     let filtered = stalls;
 
-    // Filter by user location (city/area)
-    if (userLocation && userLocation.city) {
-        if (userLocation.area) {
-            // Filter by specific area
-            filtered = filtered.filter(s => s.area.toLowerCase() === userLocation.area.toLowerCase());
-        } else {
-            // Filter by city (check if shop's area is in the selected city's areas)
-            const cityAreas = tamilNaduLocations[userLocation.city] || [];
-            filtered = filtered.filter(s =>
-                cityAreas.some(a => s.area.toLowerCase().includes(a.toLowerCase())) ||
-                s.area.toLowerCase() === userLocation.city.toLowerCase()
-            );
-        }
-    }
-
     // Filter by category
     if (selectedCategory !== 'All') {
         filtered = filtered.filter(s => s.category === selectedCategory);
@@ -538,73 +428,11 @@ function renderShopGrid() {
         );
     }
 
-    // Home page: show empty state with one sample shop for understanding
-    if (currentPage === 'home' && !searchQuery && selectedCategory === 'All') {
-        // Check if user has dismissed the sample shop
-        const sampleShopDismissed = localStorage.getItem('sampleShopDismissed') === 'true';
-        const sampleShop = filtered[0] || stalls[0]; // Use filtered shop first, then fallback
-
-        if (sampleShop && !sampleShopDismissed) {
-            grid.innerHTML = `
-                <div class="empty-state">
-                    <div class="icon">🍽️</div>
-                    <p style="font-size: 1.1rem; color: #666; margin-bottom: 20px;">Welcome to StreetBite!</p>
-                    <p style="font-size: 0.9rem; color: #999; margin-bottom: 25px;">Discover the best street food near you</p>
-                    <div class="sample-shop-card" style="max-width: 320px; margin: 0 auto; text-align: left; position: relative;">
-                        <button class="dismiss-sample-shop" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.1); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-size: 1rem; color: #666; display: flex; align-items: center; justify-content: center; transition: all 0.2s;" title="Dismiss">✕</button>
-                        <div class="shop-card" data-id="${sampleShop.id}" style="cursor: pointer;">
-                            <div class="shop-card-header">
-                                <span class="shop-name">${sampleShop.name}</span>
-                                <span class="shop-emoji">${sampleShop.emoji || categoryEmojis[sampleShop.category] || '🍽️'}</span>
-                            </div>
-                            <span class="shop-category">${sampleShop.category}</span>
-                            <div class="shop-area">📍 ${sampleShop.area}</div>
-                            <div>
-                                <span class="shop-status ${sampleShop.status}">${sampleShop.status === 'open' ? '✓ ' + t('open') : '✕ ' + t('closed')}</span>
-                                <span class="shop-rating">⭐ ${sampleShop.rating.toFixed(1)} (${sampleShop.totalReviews})</span>
-                            </div>
-                            ${sampleShop.todayDiscount ? `<div class="shop-discount">🎉 ${sampleShop.todayDiscount}</div>` : ''}
-                        </div>
-                    </div>
-                    <p style="font-size: 0.85rem; color: #bbb; margin-top: 20px;">${userLocation && userLocation.city ? 'Shops near you will appear here' : 'Tap to explore more shops'}</p>
-                </div>
-            `;
-
-            // Add click handler for sample shop
-            grid.querySelector('.shop-card').addEventListener('click', () => {
-                showShopDetail(sampleShop.id);
-            });
-
-            // Add dismiss button handler
-            grid.querySelector('.dismiss-sample-shop').addEventListener('click', (e) => {
-                e.stopPropagation();
-                localStorage.setItem('sampleShopDismissed', 'true');
-                renderHomePage();
-            });
-        } else {
-            const noLocationMessage = userLocation && userLocation.city
-                ? `No shops found in ${userLocation.city}${userLocation.area ? ' - ' + userLocation.area : ''}. Try selecting a different location or category.`
-                : 'Select your location to find nearby shops';
-
-            grid.innerHTML = `
-                <div class="empty-state">
-                    <div class="icon">🍽️</div>
-                    <p style="font-size: 1.1rem; color: #666; margin-bottom: 20px;">Welcome to StreetBite!</p>
-                    <p style="font-size: 0.9rem; color: #999;">${noLocationMessage}</p>
-                </div>
-            `;
-        }
-        return;
-    }
-
     if (filtered.length === 0) {
-        const locationFilterMsg = userLocation && userLocation.city
-            ? `No shops found in ${userLocation.city}${userLocation.area ? ' - ' + userLocation.area : ''}`
-            : t('noShopsFound');
         grid.innerHTML = `
             <div class="empty-state">
                 <div class="icon">🔍</div>
-                <p>${locationFilterMsg}</p>
+                <p>${t('noShopsFound')}</p>
             </div>
         `;
         return;
@@ -1313,192 +1141,11 @@ function changeLanguage(lang) {
 // Make navigateTo and changeLanguage available globally
 window.navigateTo = navigateTo;
 window.changeLanguage = changeLanguage;
-window.openLocationSelector = openLocationSelector;
 
 // Load saved language preference
 function loadLanguagePreference() {
     const savedLang = localStorage.getItem('preferredLanguage');
     if (savedLang && translations[savedLang]) {
         currentLanguage = savedLang;
-    }
-}
-
-// Load saved location preference
-function loadLocationPreference() {
-    const savedLocation = localStorage.getItem('userLocation');
-    if (savedLocation) {
-        userLocation = JSON.parse(savedLocation);
-    }
-}
-
-// Save location preference
-function saveLocationPreference() {
-    if (userLocation) {
-        localStorage.setItem('userLocation', JSON.stringify(userLocation));
-    }
-    updateHeaderLocationBadge();
-}
-
-
-// Show location selector modal
-function showLocationModal() {
-    const modal = document.getElementById('location-modal');
-    if (modal) {
-        // Apply translations to modal elements
-        const modalTitle = document.getElementById('location-modal-title');
-        const modalSubtitle = document.getElementById('location-modal-subtitle');
-        const areaTitlePrefix = document.getElementById('area-title-prefix');
-        const citySearch = document.getElementById('city-search');
-        const skipBtn = document.getElementById('skip-area-btn');
-
-        if (modalTitle) modalTitle.textContent = t('selectYourLocation');
-        if (modalSubtitle) modalSubtitle.textContent = t('chooseCitySubtitle');
-        if (areaTitlePrefix) areaTitlePrefix.textContent = t('selectAreaIn');
-        if (citySearch) citySearch.placeholder = t('searchCityPlaceholder');
-        if (skipBtn) skipBtn.textContent = t('skipAreaShowAll');
-
-        modal.classList.add('active');
-        renderCityList();
-        setupModalHandlers();
-    }
-}
-
-// Close location modal
-function closeLocationModal() {
-    const modal = document.getElementById('location-modal');
-    if (modal) {
-        modal.classList.remove('active');
-    }
-}
-
-// Render city list
-function renderCityList(filter = '') {
-    const cityList = document.getElementById('city-list');
-    if (!cityList) return;
-
-    const cities = Object.keys(tamilNaduLocations);
-    const filteredCities = filter
-        ? cities.filter(c => c.toLowerCase().includes(filter.toLowerCase()))
-        : cities;
-
-    cityList.innerHTML = filteredCities.map(city => `
-        <div class="city-item ${userLocation && userLocation.city === city ? 'active' : ''}" data-city="${city}">
-            <span class="city-icon">🏙️</span>
-            <span>${city}</span>
-        </div>
-    `).join('');
-
-    // Add click handlers
-    cityList.querySelectorAll('.city-item').forEach(item => {
-        item.addEventListener('click', () => {
-            const selectedCity = item.dataset.city;
-            selectCity(selectedCity);
-        });
-    });
-}
-
-// Select city and show areas
-function selectCity(city) {
-    userLocation = { city: city, area: null };
-    document.getElementById('selected-city-name').textContent = city;
-    document.getElementById('area-title-prefix').textContent = t('selectAreaIn');
-    document.getElementById('area-section').style.display = 'block';
-
-    // Render area list
-    const areas = tamilNaduLocations[city] || [];
-    const areaList = document.getElementById('area-list');
-    areaList.innerHTML = areas.map(area => `
-        <div class="area-item" data-area="${area}">${area}</div>
-    `).join('');
-
-    // Add click handlers for areas
-    areaList.querySelectorAll('.area-item').forEach(item => {
-        item.addEventListener('click', () => {
-            const selectedArea = item.dataset.area;
-            userLocation.area = selectedArea;
-            saveLocationPreference();
-            closeLocationModal();
-            renderHomePage();
-            showToast(`Location set to ${city} - ${selectedArea}`, 'success');
-        });
-    });
-
-    // Highlight selected city
-    document.querySelectorAll('.city-item').forEach(i => i.classList.remove('active'));
-    document.querySelector(`.city-item[data-city="${city}"]`).classList.add('active');
-}
-
-// Setup modal event handlers
-function setupModalHandlers() {
-    // Close button
-    const closeBtn = document.getElementById('modal-close-btn');
-    if (closeBtn) {
-        closeBtn.onclick = () => {
-            if (userLocation && userLocation.city) {
-                closeLocationModal();
-            } else {
-                // If no city selected, show all shops
-                userLocation = { city: null, area: null };
-                saveLocationPreference();
-                closeLocationModal();
-                renderHomePage();
-            }
-        };
-    }
-
-    // Skip area button
-    const skipBtn = document.getElementById('skip-area-btn');
-    if (skipBtn) {
-        skipBtn.onclick = () => {
-            saveLocationPreference();
-            closeLocationModal();
-            renderHomePage();
-            showToast(`Showing all shops in ${userLocation.city}`, 'success');
-        };
-    }
-
-    // City search
-    const searchInput = document.getElementById('city-search');
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            renderCityList(e.target.value);
-        });
-    }
-
-    // Close on overlay click
-    const modal = document.getElementById('location-modal');
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            if (userLocation && userLocation.city) {
-                closeLocationModal();
-            }
-        }
-    });
-}
-
-// Open location modal for changing location
-function openLocationSelector() {
-    showLocationModal();
-    // Reset area section display
-    if (userLocation && userLocation.city) {
-        document.getElementById('selected-city-name').textContent = userLocation.city;
-        document.getElementById('area-section').style.display = 'block';
-        const areas = tamilNaduLocations[userLocation.city] || [];
-        const areaList = document.getElementById('area-list');
-        areaList.innerHTML = areas.map(area => `
-            <div class="area-item ${userLocation.area === area ? 'active' : ''}" data-area="${area}">${area}</div>
-        `).join('');
-
-        // Add click handlers for areas
-        areaList.querySelectorAll('.area-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const selectedArea = item.dataset.area;
-                userLocation.area = selectedArea;
-                saveLocationPreference();
-                closeLocationModal();
-                renderHomePage();
-                showToast(`Location updated to ${userLocation.city} - ${selectedArea}`, 'success');
-            });
-        });
     }
 }

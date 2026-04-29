@@ -1,2 +1,8 @@
 Flask==3.0.0
+Flask-CORS==4.0.0
 gunicorn==21.2.0
+
+# Database - SQLite (built-in) with PostgreSQL compatibility
+# For local development with SQLite (no extra dependency needed)
+# For production on Render, uncomment psycopg2-binary and set DATABASE_URL env var
+# psycopg2-binary==2.9.9
