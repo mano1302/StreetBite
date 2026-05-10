@@ -6,10 +6,13 @@ let searchQuery = '';
 let vendorShop = null;
 let currentLanguage = 'en';
 
-// Location state
+// Location state — district is remembered for display only; area is NOT persisted
+// so all shops always show by default when the user opens the app
 let selectedDistrict = localStorage.getItem('streetbite_district') || null;
-let selectedArea = localStorage.getItem('streetbite_area') || null;
+let selectedArea = null; // Never auto-filter by area on startup
+localStorage.removeItem('streetbite_area'); // clear any stale saved area filter
 let locationStep = 'district'; // 'district' or 'area'
+
 
 // Tamil Nadu Districts and Areas
 const tamilNaduDistricts = {
@@ -152,10 +155,21 @@ function getAreaName(area) {
 
 const DATA_KEY = 'streetbite_stalls';
 
+// Auto-refresh interval handle
+let _autoRefreshTimer = null;
+
 // Initialize — load stalls from the backend API (shared across ALL devices)
 async function initializeData() {
     await loadStalls();
     renderHomePage();
+    // Auto-refresh every 30 s so every device sees new shops immediately
+    if (_autoRefreshTimer) clearInterval(_autoRefreshTimer);
+    _autoRefreshTimer = setInterval(async () => {
+        await loadStalls();
+        // Only re-render grid if user is on home or search — don't interrupt other pages
+        if (currentPage === 'home') renderHomePage();
+        else if (currentPage === 'search') renderShopGrid();
+    }, 30000);
 }
 
 async function loadStalls() {
@@ -479,7 +493,13 @@ function setupNavigation() {
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             item.classList.add('active');
             const page = item.dataset.page;
+            // If the add-shop modal is currently open and visible, just render
+            // the page BEHIND it — the modal stays on top (data preserved).
+            const modal = document.getElementById('add-shop-modal');
+            const modalOpen = modal && modal.classList.contains('active');
             navigateTo(page);
+            // Re-show modal on top if it was open
+            if (modalOpen) modal.classList.add('active');
         });
     });
 }
@@ -521,6 +541,8 @@ function navigateTo(page) {
             renderSearchPage();
             break;
         case 'add':
+            // 'add' is now always a modal overlay — render profile page behind it
+            renderProfilePage();
             renderAddShopPage();
             break;
         case 'profile':
@@ -546,8 +568,6 @@ function renderHomePage() {
     updateHeaderLanguageSelector();
     updateNavigationLabels();
     updateLocationButtonText();
-
-    const openCount = stalls.filter(s => s.status === 'open').length;
 
     // Build location chip HTML
     let locationChipHTML = '';
@@ -576,18 +596,9 @@ function renderHomePage() {
                     <h2 class="welcome-title">${t('welcomeTitle')}</h2>
                     <p class="welcome-subtitle">${t('welcomeSubtitle')}</p>
                 </div>
-                <div class="welcome-stats">
-                    <div class="stat-item">
-                        <span class="stat-number">${stalls.length}</span>
-                        <span class="stat-label">${t('shopsAvailable')}</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">${openCount}</span>
-                        <span class="stat-label">${t('openNow')}</span>
-                    </div>
-                </div>
             </div>
             ${locationChipHTML}
+            ${(selectedDistrict || selectedArea) ? `
             <div class="category-tabs">
                 <button class="category-tab ${selectedCategory === 'All' ? 'active' : ''}" data-category="All">${t('all')}</button>
                 <button class="category-tab ${selectedCategory === 'Fast Food' ? 'active' : ''}" data-category="Fast Food">${t('categoryFastFood')}</button>
@@ -600,38 +611,61 @@ function renderHomePage() {
                 <button class="category-tab ${selectedCategory === 'Others' ? 'active' : ''}" data-category="Others">${t('categoryOthers')}</button>
             </div>
             <div class="shop-grid" id="shop-grid"></div>
+            ` : `
+            <div class="select-location-prompt">
+                <div class="prompt-icon">📍</div>
+                <h3 class="prompt-title">Select Your Location</h3>
+                <p class="prompt-desc">Tap the location button above to pick your district and area — we'll show you all street food shops near you!</p>
+                <button class="prompt-btn" onclick="openLocationPicker()">📍 Select Location</button>
+            </div>
+            `}
         </div>
     `;
 
-    // Setup category tabs
-    app.querySelectorAll('.category-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            selectedCategory = tab.dataset.category;
-            app.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            renderShopGrid();
+    if (selectedDistrict || selectedArea) {
+        // Setup category tabs
+        app.querySelectorAll('.category-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                selectedCategory = tab.dataset.category;
+                app.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                renderShopGrid();
+            });
         });
-    });
-
-    renderShopGrid();
+        renderShopGrid();
+    }
 }
 
-// Render shop grid
+// Render shop grid — strictly filtered by selected location
 function renderShopGrid() {
     const grid = document.getElementById('shop-grid');
+    if (!grid) return;
     let filtered = stalls;
 
-    // Filter by selected location
+    // Strict location filtering — user must select an area/district to see shops
     if (selectedArea && selectedArea !== 'All Areas') {
-        filtered = filtered.filter(s =>
-            s.area.toLowerCase().includes(selectedArea.toLowerCase())
-        );
+        // Specific area selected — show only shops in that area
+        // Match against both 'area' and 'address' fields for maximum coverage
+        const areaLower = selectedArea.toLowerCase();
+        filtered = filtered.filter(s => {
+            const shopArea = (s.area || '').toLowerCase();
+            const shopAddr = (s.address || '').toLowerCase();
+            return shopArea.includes(areaLower) || shopAddr.includes(areaLower) ||
+                   areaLower.includes(shopArea);
+        });
     } else if (selectedDistrict) {
+        // Only district selected — show all shops from any area in that district
         const districtAreas = tamilNaduDistricts[selectedDistrict] || [];
         if (districtAreas.length > 0) {
-            filtered = filtered.filter(s =>
-                districtAreas.some(area => s.area.toLowerCase().includes(area.toLowerCase()))
-            );
+            filtered = filtered.filter(s => {
+                const shopArea = (s.area || '').toLowerCase();
+                const shopAddr = (s.address || '').toLowerCase();
+                return districtAreas.some(area => {
+                    const areaLower = area.toLowerCase();
+                    return shopArea.includes(areaLower) || shopAddr.includes(areaLower) ||
+                           areaLower.includes(shopArea);
+                });
+            });
         }
     }
 
@@ -670,7 +704,7 @@ function renderShopGrid() {
             <div class="shop-area">📍 ${stall.area}</div>
             <div>
                 <span class="shop-status ${stall.status}">${stall.status === 'open' ? '✓ ' + t('open') : '✕ ' + t('closed')}</span>
-                <span class="shop-rating">⭐ ${stall.rating.toFixed(1)} (${stall.totalReviews})</span>
+                <span class="shop-rating">⭐ ${(stall.rating || 0).toFixed(1)} (${stall.totalReviews || 0})</span>
             </div>
             ${stall.todayDiscount ? `<div class="shop-discount">🎉 ${stall.todayDiscount}</div>` : ''}
         </div>
@@ -908,9 +942,20 @@ function renderAddShopPage() {
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label>${t('areaLocation')} *</label>
-                    <input type="text" id="shop-area" placeholder="${t('areaPlaceholder')}">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>📍 District *</label>
+                        <select id="shop-district">
+                            <option value="">Select District</option>
+                            ${Object.keys(tamilNaduDistricts).map(d => `<option value="${d}">${getDistrictName(d)}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>${t('areaLocation')} *</label>
+                        <select id="shop-area">
+                            <option value="">Select area</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -989,14 +1034,27 @@ function renderAddShopPage() {
 
     renderMenuList();
 
-    // ✕ Close — go back to Profile
+    // District → Area dropdown wiring
+    const shopDistrictSelect = modal.querySelector('#shop-district');
+    const shopAreaSelect = modal.querySelector('#shop-area');
+    shopDistrictSelect.addEventListener('change', () => {
+        const district = shopDistrictSelect.value;
+        const areas = tamilNaduDistricts[district] || [];
+        shopAreaSelect.innerHTML = '<option value="">Select area</option>' +
+            areas.map(a => `<option value="${a}">${getAreaName(a)}</option>`).join('');
+    });
+
+    // ✕ Close — hide modal (keep DOM intact so form data is preserved)
+    // If user opens "Add Your Shop" again, data will still be there.
     modal.querySelector('#add-shop-close-btn').addEventListener('click', () => {
         modal.classList.remove('active');
-        // Navigate back to profile
+        // Make sure profile nav is highlighted
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         const profileNav = document.querySelector('.nav-item[data-page="profile"]');
         if (profileNav) profileNav.classList.add('active');
-        navigateTo('profile');
+        // Render profile page (login screen) behind
+        currentPage = 'profile';
+        renderProfilePage();
     });
 
     // Add menu item
@@ -1017,7 +1075,8 @@ function renderAddShopPage() {
     modal.querySelector('#submit-shop').addEventListener('click', async () => {
         const name = modal.querySelector('#shop-name').value.trim();
         const category = modal.querySelector('#shop-category').value;
-        const area = modal.querySelector('#shop-area').value.trim();
+        const shopDistrict = modal.querySelector('#shop-district').value;
+        const area = modal.querySelector('#shop-area').value;
         const address = modal.querySelector('#shop-address').value.trim();
         const contact = modal.querySelector('#shop-contact').value.trim();
         const discount = modal.querySelector('#shop-discount').value.trim();
@@ -1053,7 +1112,7 @@ function renderAddShopPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name, category, area,
-                    address: address || `${area}, Tamil Nadu`,
+                    address: address || `${area}, ${shopDistrict}, Tamil Nadu`,
                     contact, password,
                     open_time: openTime,
                     close_time: closeTime,
@@ -1071,7 +1130,12 @@ function renderAddShopPage() {
             modal.remove();
             showToast('🎉 Shop registered! Visible to all users now.', 'success');
             await reloadStalls();
-            navigateTo('home');
+            // Go to home and mark Home nav active
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const homeNav = document.querySelector('.nav-item[data-page="home"]');
+            if (homeNav) homeNav.classList.add('active');
+            currentPage = 'home';
+            renderHomePage();
         } catch (e) {
             showToast('Network error. Please try again.', 'error');
             submitBtn.disabled = false;
@@ -1156,6 +1220,13 @@ function renderProfilePage() {
                         </div>
                         <button class="submit-btn" id="add-new-item-btn" style="background: #28a745; margin-top: 10px;">${t('addItemToMenu')}</button>
                     </div>
+
+                    <!-- Delete Account Section -->
+                    <div class="form-section" style="margin-top: 30px; border-top: 2px solid #fee2e2; padding-top: 20px;">
+                        <h3 class="section-title" style="color:#dc2626;">⚠️ Danger Zone</h3>
+                        <p style="color:#666; font-size:0.85rem; margin-bottom:12px;">This will permanently delete your shop and all its data. This action cannot be undone.</p>
+                        <button class="submit-btn" id="delete-shop-btn" style="background:#dc2626; margin-top:0;">🗑️ Delete My Shop</button>
+                    </div>
                 </div>
             </div>
         `;
@@ -1228,7 +1299,7 @@ function renderProfilePage() {
             const itemName = app.querySelector('#new-item-name').value.trim();
             const price = parseInt(app.querySelector('#new-item-price').value);
 
-            if (!itemName || !price) {
+            if (!itemName || isNaN(price) || price <= 0) {
                 showToast('Please enter item name and price', 'error');
                 return;
             }
@@ -1248,22 +1319,81 @@ function renderProfilePage() {
             } catch (e) { showToast('Failed to add item', 'error'); }
         });
 
+        // Delete My Shop
+        app.querySelector('#delete-shop-btn').addEventListener('click', async () => {
+            // Step 1: Confirm intent
+            const confirmed = confirm(`⚠️ Are you sure you want to permanently delete "${vendorShop.name}"?\n\nThis will remove your shop, menu, and all reviews. This CANNOT be undone.`);
+            if (!confirmed) return;
+
+            // Step 2: Ask for password to verify
+            const pwd = prompt('Enter your shop password to confirm deletion:');
+            if (!pwd) return;
+
+            const btn = app.querySelector('#delete-shop-btn');
+            btn.disabled = true;
+            btn.textContent = 'Deleting...';
+
+            try {
+                const res = await fetch(`/api/stalls/${vendorShop.id}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contact: vendorShop.contact, password: pwd })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    vendorShop = null;
+                    localStorage.removeItem('vendorShopId');
+                    localStorage.removeItem('vendorContact');
+                    await reloadStalls();
+                    renderProfilePage();
+                    showToast('Your shop has been permanently deleted.', 'success');
+                } else {
+                    showToast(data.error || 'Deletion failed. Check your password.', 'error');
+                    btn.disabled = false;
+                    btn.textContent = '🗑️ Delete My Shop';
+                }
+            } catch (e) {
+                showToast('Network error. Please try again.', 'error');
+                btn.disabled = false;
+                btn.textContent = '🗑️ Delete My Shop';
+            }
+        });
+
     } else {
         // Login form — check for persistent login via API
         const savedShopId = localStorage.getItem('vendorShopId');
         const savedContact = localStorage.getItem('vendorContact');
 
         if (savedShopId) {
+            // Show a loading placeholder immediately so the page visibly changes
+            app.innerHTML = `
+                <div class="page vendor-login-page" style="display:flex;align-items:center;justify-content:center;min-height:60vh;">
+                    <div style="text-align:center;">
+                        <div class="spinner" style="margin:0 auto 16px;"></div>
+                        <p style="color:#888;">Logging in…</p>
+                    </div>
+                </div>
+            `;
             // Re-fetch from API to get fresh data
             fetch(`/api/stalls/${savedShopId}`)
                 .then(r => r.json())
                 .then(shop => {
                     if (shop && shop.id) {
                         vendorShop = shop;
+                        // Re-attach contact from localStorage so delete/actions work
+                        if (savedContact) vendorShop.contact = savedContact;
+                        renderProfilePage();
+                    } else {
+                        // Saved ID no longer valid — show login form
+                        localStorage.removeItem('vendorShopId');
                         renderProfilePage();
                     }
                 })
-                .catch(() => {});
+                .catch(() => {
+                    // Network error — still show login form
+                    localStorage.removeItem('vendorShopId');
+                    renderProfilePage();
+                });
             return;
         }
 
@@ -1283,15 +1413,9 @@ function renderProfilePage() {
                     </div>
 
                     <div class="vendor-login-form">
-                        <div class="form-group" style="position: relative;">
-                            <label>${t('selectYourShop')}</label>
-                            <input type="text" id="shop-search-input" class="search-input" placeholder="${currentLanguage === 'ta' ? 'கடையைத் தேடுக...' : currentLanguage === 'hi' ? 'दुकान खोजें...' : 'Type shop name or area...'}" autocomplete="off">
-                            <div id="shop-search-results" style="position: absolute; top: 100%; left: 0; right: 0; max-height: 250px; overflow-y: auto; background: white; border: 1px solid #eee; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); z-index: 1000; display: none;"></div>
-                        </div>
-
                         <div class="form-group">
                             <label>${t('contactNumberLabel')}</label>
-                            <input type="tel" id="vendor-contact" placeholder="${t('contactPlaceholder')}">
+                            <input type="tel" id="vendor-contact" placeholder="${t('contactPlaceholder')}" inputmode="numeric" maxlength="10">
                         </div>
 
                         <div class="form-group">
@@ -1312,89 +1436,27 @@ function renderProfilePage() {
             </div>
         `;
 
-        let selectedShopId = null;
-        const searchInput = app.querySelector('#shop-search-input');
-        const resultsDropdown = app.querySelector('#shop-search-results');
-
-
-        // "Add Your Shop" button — navigate to the full add shop page
+        // "Add Your Shop" button
         app.querySelector('#add-shop-from-profile').addEventListener('click', () => {
-            // Keep Profile nav active visually (user came from profile)
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             const profileNav = document.querySelector('.nav-item[data-page="profile"]');
             if (profileNav) profileNav.classList.add('active');
-            // Render the full add shop page
-            navigateTo('add');
+            renderAddShopPage();
         });
 
-        // Search functionality - show results as user types
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.trim().toLowerCase();
-
-            if (query.length === 0) {
-                resultsDropdown.style.display = 'none';
-                selectedShopId = null;
-                return;
-            }
-
-            const filtered = stalls.filter(s =>
-                s.name.toLowerCase().includes(query) ||
-                s.area.toLowerCase().includes(query)
-            );
-
-            if (filtered.length === 0) {
-                resultsDropdown.innerHTML = `<div style="padding: 15px; text-align: center; color: #999;">${currentLanguage === 'ta' ? 'கடைகள் ஏதும் கிடைக்கவில்லை' : currentLanguage === 'hi' ? 'कोई दुकान नहीं मिली' : 'No shops found'}</div>`;
-            } else {
-                resultsDropdown.innerHTML = filtered.map(s => `
-                    <div class="shop-suggestion-item" data-id="${s.id}" style="padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #f0f0f0; transition: background 0.2s;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <div style="font-weight: 600; color: #333;">${s.emoji || '🍽️'} ${s.name}</div>
-                                <div style="font-size: 0.8rem; color: #666; margin-top: 2px;">📍 ${s.area}</div>
-                            </div>
-                            <span style="color: #FF6B35; font-size: 1.2rem;">→</span>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            resultsDropdown.style.display = 'block';
-
-            // Add click handlers to suggestions
-            resultsDropdown.querySelectorAll('.shop-suggestion-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    selectedShopId = parseInt(item.dataset.id);
-                    const shop = stalls.find(s => s.id === selectedShopId);
-                    searchInput.value = shop.name;
-                    resultsDropdown.style.display = 'none';
-                });
-            });
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!searchInput.contains(e.target) && !resultsDropdown.contains(e.target)) {
-                resultsDropdown.style.display = 'none';
-            }
-        });
-
-        // Login — verify via API (contact + password)
+        // Login — mobile number + password only, no shop selection
         app.querySelector('#vendor-login-btn').addEventListener('click', async () => {
-            if (!selectedShopId) {
-                showToast(currentLanguage === 'ta' ? 'தயவுசெய்து உங்கள் கடையைத் தேர்வுசெய்க' : currentLanguage === 'hi' ? 'कृपया अपनी दुकान चुनें' : 'Please select your shop from the list', 'error');
-                searchInput.focus();
-                return;
-            }
-
             const contact = app.querySelector('#vendor-contact').value.trim();
             const password = app.querySelector('#vendor-password').value;
 
             if (!contact) {
-                showToast(currentLanguage === 'ta' ? 'தொடர்பு எண்ணை உள்ளிடுக' : currentLanguage === 'hi' ? 'संपर्क नंबर डालें' : 'Please enter contact number', 'error');
+                showToast(currentLanguage === 'ta' ? 'மொபைல் எண்ணை உள்ளிடுக' : currentLanguage === 'hi' ? 'मोबाइल नंबर डालें' : 'Please enter your mobile number', 'error');
+                app.querySelector('#vendor-contact').focus();
                 return;
             }
             if (!password) {
-                showToast('Please enter your password', 'error');
+                showToast(currentLanguage === 'ta' ? 'கடவுச்சொல்லை உள்ளிடுக' : currentLanguage === 'hi' ? 'पासवर्ड डालें' : 'Please enter your password', 'error');
+                app.querySelector('#vendor-password').focus();
                 return;
             }
 
@@ -1403,7 +1465,7 @@ function renderProfilePage() {
             loginBtn.textContent = 'Logging in...';
 
             try {
-                const res = await fetch(`/api/stalls/${selectedShopId}/vendor-login`, {
+                const res = await fetch('/api/vendor-login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contact, password })
@@ -1411,12 +1473,13 @@ function renderProfilePage() {
                 const data = await res.json();
                 if (res.ok && data.success) {
                     vendorShop = data.stall;
-                    localStorage.setItem('vendorShopId', selectedShopId);
+                    vendorShop.contact = contact; // keep contact in memory for delete/actions
+                    localStorage.setItem('vendorShopId', vendorShop.id);
                     localStorage.setItem('vendorContact', contact);
                     renderProfilePage();
                     showToast(currentLanguage === 'ta' ? `வரவேற்கிறோம், ${vendorShop.name}!` : currentLanguage === 'hi' ? `स्वागत है, ${vendorShop.name}!` : `Welcome, ${vendorShop.name}! 👋`, 'success');
                 } else {
-                    showToast(data.error || 'Invalid credentials', 'error');
+                    showToast(data.error || 'Invalid mobile number or password', 'error');
                     loginBtn.disabled = false;
                     loginBtn.textContent = t('login');
                 }
@@ -1425,6 +1488,11 @@ function renderProfilePage() {
                 loginBtn.disabled = false;
                 loginBtn.textContent = t('login');
             }
+        });
+
+        // Allow pressing Enter on password field to submit
+        app.querySelector('#vendor-password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') app.querySelector('#vendor-login-btn').click();
         });
     }
 }
