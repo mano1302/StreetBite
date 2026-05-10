@@ -262,14 +262,14 @@ const translations = {
         addNewMenuItem: 'Add New Menu Item',
         itemNamePlaceholder: 'e.g., Masala Dosa',
         addItemToMenu: 'Add Item to Menu',
-        categoryFastFood: '🍟 Fast Food',
-        categoryBiryani: '🍚 Biryani',
-        categoryParottaMeals: '🫓 Parotta & Meals',
-        categoryGrilledNonVeg: '🍗 Grilled & Non-Veg',
-        categoryJuice: '🧃 Juice',
-        categorySweetBeverages: '🍧 Sweet & Beverages',
-        categorySnacks: '🍿 Snacks',
-        categoryOthers: '🍽️ Others',
+        categoryFastFood: 'Fast Food',
+        categoryBiryani: 'Biryani',
+        categoryParottaMeals: 'Parotta & Meals',
+        categoryGrilledNonVeg: 'Grilled & Non-Veg',
+        categoryJuice: 'Juice',
+        categorySweetBeverages: 'Sweet & Beverages',
+        categorySnacks: 'Snacks',
+        categoryOthers: 'Others',
         welcomeTitle: 'Welcome to StreetBite! 😋',
         welcomeSubtitle: 'Discover the best street food near you',
         shopsAvailable: 'shops available',
@@ -348,14 +348,14 @@ const translations = {
         addNewMenuItem: 'புதிய உணவைச் சேர்',
         itemNamePlaceholder: 'உதா: மசால் தோசை',
         addItemToMenu: 'உணவுப் பட்டியலில் சேர்',
-        categoryFastFood: '🍟 ஃபாஸ்ட் ஃபுட்',
-        categoryBiryani: '🍚 பிரியாணி',
-        categoryParottaMeals: '🫓 பரோட்டா & மீல்ஸ்',
-        categoryGrilledNonVeg: '🍗 க்ரில்ட் & நான்-வெஜ்',
-        categoryJuice: '🧃 பழச்சாறு',
-        categorySweetBeverages: '🍧 இனிப்பு & பானங்கள்',
-        categorySnacks: '🍿 சிற்றுண்டி',
-        categoryOthers: '🍽️ மற்றவை',
+        categoryFastFood: 'ஃபாஸ்ட் ஃபுட்',
+        categoryBiryani: 'பிரியாணி',
+        categoryParottaMeals: 'பரோட்டா & மீல்ஸ்',
+        categoryGrilledNonVeg: 'க்ரில்ட் & நான்-வெஜ்',
+        categoryJuice: 'பழச்சாறு',
+        categorySweetBeverages: 'இனிப்பு & பானங்கள்',
+        categorySnacks: 'சிற்றுண்டி',
+        categoryOthers: 'மற்றவை',
         welcomeTitle: 'ஸ்ட்ரீட்பைட்-க்கு வரவேற்பு! 😋',
         welcomeSubtitle: 'உங்கள் அருகில் சிறந்த தெரு உணவுகளைக் கண்டறியுங்கள்',
         shopsAvailable: 'கடைகள் கிடைக்கின்றன',
@@ -434,14 +434,14 @@ const translations = {
         addNewMenuItem: 'नया मेनू आइटम जोड़ें',
         itemNamePlaceholder: 'जैसे: मसाला दोसा',
         addItemToMenu: 'मेनू में जोड़ें',
-        categoryFastFood: '🍟 फास्ट फूड',
-        categoryBiryani: '🍚 बिरयानी',
-        categoryParottaMeals: '🫓 पराठा & मील्स',
-        categoryGrilledNonVeg: '🍗 ग्रिल्ड & नॉन-वेज',
-        categoryJuice: '🧃 जूस',
-        categorySweetBeverages: '🍧 मिठाई & पेय',
-        categorySnacks: '🍿 नाश्ता',
-        categoryOthers: '🍽️ अन्य',
+        categoryFastFood: 'फास्ट फूड',
+        categoryBiryani: 'बिरयानी',
+        categoryParottaMeals: 'पराठा & मील्स',
+        categoryGrilledNonVeg: 'ग्रिल्ड & नॉन-वेज',
+        categoryJuice: 'जूस',
+        categorySweetBeverages: 'मिठाई & पेय',
+        categorySnacks: 'नाश्ता',
+        categoryOthers: 'अन्य',
         welcomeTitle: 'स्ट्रीटबाइट में आपका स्वागत है! 😋',
         welcomeSubtitle: 'आपके आस-पास का बेहतरीन स्ट्रीट फूड खोजें',
         shopsAvailable: 'दुकानें उपलब्ध',
@@ -458,17 +458,20 @@ const translations = {
     }
 };
 
-// Category emojis
-const categoryEmojis = {
-    'Fast Food': '🍟',
-    'Biryani': '🍚',
-    'Parotta & Meals': '🫓',
-    'Grilled & Non-Veg': '🍗',
-    'Juice': '🧃',
-    'Sweet & Beverages': '🍧',
-    'Snacks': '🍿',
-    'Others': '🍽️'
+// Category SVG Icons (inline, 20x20, stroke-based)
+const categorySVGs = {
+    'Fast Food': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 11h.01"/><path d="M11 15h.01"/><path d="M16 16h.01"/><path d="m2 16 20 6-6-20A20 20 0 0 0 2 16"/><path d="M5.71 17.11a17.04 17.04 0 0 1 11.4-11.4"/></svg>',
+    'Biryani': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>',
+    'Parotta & Meals': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>',
+    'Grilled & Non-Veg': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Z"/><path d="M12 12c2 2.67 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.33-6 4Z"/></svg>',
+    'Juice': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>',
+    'Sweet & Beverages': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 11 4.08 10.35a1 1 0 0 0 1.84 0L17 11"/><path d="M17 7A5 5 0 0 0 7 7"/><path d="M17 7H7"/></svg>',
+    'Snacks': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a2 2 0 0 0 0-4 2 2 0 0 0-4 0 2 2 0 0 0-4 0 2 2 0 0 0-4 0 2 2 0 0 0 0 4"/><path d="M10 22 9 8"/><path d="m14 22 1-14"/></svg>',
+    'Others': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>'
 };
+
+// Legacy compat — categoryEmojis now returns SVG markup
+const categoryEmojis = categorySVGs;
 
 // Convert 24-hour time to 12-hour format
 function formatTime12Hour(time24) {
@@ -484,6 +487,30 @@ function formatTime12Hour(time24) {
 // Get translation
 function t(key) {
     return translations[currentLanguage][key] || translations['en'][key] || key;
+}
+
+// Helper: render a category tab button with SVG icon
+function getCategoryTabHTML(categoryKey, categoryValue, selectedCategory) {
+    const isAll = categoryKey === 'All';
+    const svgIcon = isAll ? '' : `<span class="cat-icon">${categorySVGs[categoryKey] || ''}</span> `;
+    const label = isAll ? t('all') : t(categoryValue);
+    return `<button class="category-tab ${selectedCategory === categoryKey ? 'active' : ''}" data-category="${categoryKey}">${svgIcon}${label}</button>`;
+}
+
+// Build all category tabs HTML
+function buildCategoryTabsHTML(selectedCategory) {
+    const categories = [
+        ['All', 'all'],
+        ['Fast Food', 'categoryFastFood'],
+        ['Biryani', 'categoryBiryani'],
+        ['Parotta & Meals', 'categoryParottaMeals'],
+        ['Grilled & Non-Veg', 'categoryGrilledNonVeg'],
+        ['Juice', 'categoryJuice'],
+        ['Sweet & Beverages', 'categorySweetBeverages'],
+        ['Snacks', 'categorySnacks'],
+        ['Others', 'categoryOthers']
+    ];
+    return categories.map(([key, val]) => getCategoryTabHTML(key, val, selectedCategory)).join('\n                ');
 }
 
 // Initialize app
@@ -609,15 +636,7 @@ function renderHomePage() {
             ${locationChipHTML}
             ${(selectedDistrict || selectedArea) ? `
             <div class="category-tabs">
-                <button class="category-tab ${selectedCategory === 'All' ? 'active' : ''}" data-category="All">${t('all')}</button>
-                <button class="category-tab ${selectedCategory === 'Fast Food' ? 'active' : ''}" data-category="Fast Food">${t('categoryFastFood')}</button>
-                <button class="category-tab ${selectedCategory === 'Biryani' ? 'active' : ''}" data-category="Biryani">${t('categoryBiryani')}</button>
-                <button class="category-tab ${selectedCategory === 'Parotta & Meals' ? 'active' : ''}" data-category="Parotta & Meals">${t('categoryParottaMeals')}</button>
-                <button class="category-tab ${selectedCategory === 'Grilled & Non-Veg' ? 'active' : ''}" data-category="Grilled & Non-Veg">${t('categoryGrilledNonVeg')}</button>
-                <button class="category-tab ${selectedCategory === 'Juice' ? 'active' : ''}" data-category="Juice">${t('categoryJuice')}</button>
-                <button class="category-tab ${selectedCategory === 'Sweet & Beverages' ? 'active' : ''}" data-category="Sweet & Beverages">${t('categorySweetBeverages')}</button>
-                <button class="category-tab ${selectedCategory === 'Snacks' ? 'active' : ''}" data-category="Snacks">${t('categorySnacks')}</button>
-                <button class="category-tab ${selectedCategory === 'Others' ? 'active' : ''}" data-category="Others">${t('categoryOthers')}</button>
+                ${buildCategoryTabsHTML(selectedCategory)}
             </div>
             <div class="shop-grid" id="shop-grid"></div>
             ` : `
@@ -740,15 +759,7 @@ function renderSearchPage() {
                 <input type="text" class="search-input" placeholder="${t('searchPlaceholder')}" value="${searchQuery}" autofocus>
             </div>
             <div class="category-tabs">
-                <button class="category-tab ${selectedCategory === 'All' ? 'active' : ''}" data-category="All">${t('all')}</button>
-                <button class="category-tab ${selectedCategory === 'Fast Food' ? 'active' : ''}" data-category="Fast Food">${t('categoryFastFood')}</button>
-                <button class="category-tab ${selectedCategory === 'Biryani' ? 'active' : ''}" data-category="Biryani">${t('categoryBiryani')}</button>
-                <button class="category-tab ${selectedCategory === 'Parotta & Meals' ? 'active' : ''}" data-category="Parotta & Meals">${t('categoryParottaMeals')}</button>
-                <button class="category-tab ${selectedCategory === 'Grilled & Non-Veg' ? 'active' : ''}" data-category="Grilled & Non-Veg">${t('categoryGrilledNonVeg')}</button>
-                <button class="category-tab ${selectedCategory === 'Juice' ? 'active' : ''}" data-category="Juice">${t('categoryJuice')}</button>
-                <button class="category-tab ${selectedCategory === 'Sweet & Beverages' ? 'active' : ''}" data-category="Sweet & Beverages">${t('categorySweetBeverages')}</button>
-                <button class="category-tab ${selectedCategory === 'Snacks' ? 'active' : ''}" data-category="Snacks">${t('categorySnacks')}</button>
-                <button class="category-tab ${selectedCategory === 'Others' ? 'active' : ''}" data-category="Others">${t('categoryOthers')}</button>
+                ${buildCategoryTabsHTML(selectedCategory)}
             </div>
             <div class="shop-grid" id="shop-grid"></div>
         </div>
