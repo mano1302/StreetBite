@@ -5,53 +5,173 @@ let selectedCategory = 'All';
 let searchQuery = '';
 let vendorShop = null;
 let currentLanguage = 'en';
-let selectedCity = null;
-let selectedArea = null;
 
-// For GitHub Pages static deployment - data stored in localStorage
-const DATA_KEY = 'streetbite_stalls';
-const LOCATION_KEY = 'streetbite_location';
+// Location state
+let selectedDistrict = localStorage.getItem('streetbite_district') || null;
+let selectedArea = localStorage.getItem('streetbite_area') || null;
+let locationStep = 'district'; // 'district' or 'area'
 
-// Location data - cities and areas
-const locationData = {
-    'Chennai': ['T Nagar', 'Anna Nagar', 'Adyar', 'Velachery', 'Tambaram', 'Porur', 'Vadapalani', 'Ashok Nagar', 'Mylapore', 'Triplicane'],
-    'Coimbatore': ['RS Puram', 'Peelamedu', 'Gandhipuram', 'Singanallur', 'Kalapatti'],
-    'Madurai': ['Anna Nagar', 'KK Nagar', 'Jail Road', 'Tallakulam'],
-    'Tiruchirappalli': ['Srirangam', 'Thillai Nagar', 'Golden Rock', 'Woraiyur'],
-    'Salem': ['New Fairlands', 'Gugai', 'Swarnapuri', 'Suramangalam'],
-    'Erode': ['Perundurai Road', 'Sowripalayam', 'Surampatti'],
-    'Vellore': ['Anna Nagar', 'Gandhi Nagar', 'Ranipet'],
-    'Thanjavur': ['New Bus Stand', 'Salai Road', 'West Street'],
-    'Dindigul': ['Bye Pass Road', 'Anna Nagar', 'Gandhi Nagar'],
-    'Kanyakumari': ['Nagercoil', 'Marthandam', 'Thuckalay']
+// Tamil Nadu Districts and Areas
+const tamilNaduDistricts = {
+    'Ariyalur': ['Ariyalur','Jayankondam','Sendurai','Udayarpalayam','Andimadam','T.Palur'],
+    'Chengalpattu': ['Chengalpattu','Tambaram','Mahabalipuram','Vandalur','Guduvancheri','Kelambakkam','Padappai','Thiruporur','Pallavaram','Chrompet'],
+    'Chennai': ['T Nagar','Anna Nagar','Adyar','Mylapore','Velachery','Porur','Guindy','Nungambakkam','Egmore','Tambaram','Chromepet','Kodambakkam','Vadapalani','Ashok Nagar','Thiruvanmiyur','Besant Nagar','Royapettah','Triplicane','Perambur','Tondiarpet','Sowcarpet','Kilpauk','Chetpet','Saidapet','Medavakkam'],
+    'Coimbatore': ['Gandhipuram','RS Puram','Saibaba Colony','Peelamedu','Singanallur','Ukkadam','Town Hall','Sulur','Pollachi','Mettupalayam','Valparai','Kinathukadavu','Annur'],
+    'Cuddalore': ['Cuddalore','Chidambaram','Virudhachalam','Panruti','Kattumannarkoil','Kurinjipadi','Bhuvanagiri'],
+    'Dharmapuri': ['Dharmapuri','Palacode','Pennagaram','Harur','Nallampalli','Karimangalam'],
+    'Dindigul': ['Dindigul','Palani','Oddanchatram','Natham','Kodaikanal','Vedasandur','Nilakottai','Batlagundu'],
+    'Erode': ['Erode','Bhavani','Gobichettipalayam','Sathyamangalam','Perundurai','Kangayam','Anthiyur','Nambiyur'],
+    'Kallakurichi': ['Kallakurichi','Ulundurpet','Sankarapuram','Chinnasalem','Tirukoilur','Rishivandiyam'],
+    'Kancheepuram': ['Kancheepuram','Sriperumbudur','Uthiramerur','Walajabad','Kundrathur'],
+    'Kanniyakumari': ['Nagercoil','Kanyakumari','Marthandam','Colachel','Padmanabhapuram','Thuckalay','Kuzhithurai'],
+    'Karur': ['Karur','Kulithalai','Aravakurichi','Krishnarayapuram','Pugalur','Thanthoni'],
+    'Krishnagiri': ['Krishnagiri','Hosur','Denkanikottai','Pochampalli','Uthangarai','Bargur','Shoolagiri'],
+    'Madurai': ['Madurai North','Madurai South','Thiruparankundram','Melur','Vadipatti','Usilampatti','Peraiyur','Thirumangalam','Sholavandan','Kallikudi'],
+    'Mayiladuthurai': ['Mayiladuthurai','Sirkazhi','Kuthalam','Tharangambadi','Poompuhar','Sembanarkoil'],
+    'Nagapattinam': ['Nagapattinam','Thirukkuvalai','Kilvelur','Vedaranyam','Kollidam'],
+    'Namakkal': ['Namakkal','Rasipuram','Tiruchengode','Paramathi Velur','Komarapalayam','Mohanur','Sendamangalam'],
+    'Nilgiris': ['Ooty','Coonoor','Kotagiri','Gudalur','Kundah','Pandalur'],
+    'Perambalur': ['Perambalur','Kunnam','Veppanthattai','Alathur'],
+    'Pudukkottai': ['Pudukkottai','Aranthangi','Illuppur','Alangudi','Karambakudi','Thirumayam','Avudaiyarkoil'],
+    'Ramanathapuram': ['Ramanathapuram','Rameswaram','Paramakudi','Mudukulathur','Kamuthi','Kadaladi','Thiruvadanai'],
+    'Ranipet': ['Ranipet','Arakkonam','Walajah','Arcot','Sholinghur','Nemili','Timiri'],
+    'Salem': ['Salem Town','Attur','Mettur','Omalur','Edappadi','Sankari','Yercaud','Gangavalli','Valapadi'],
+    'Sivaganga': ['Sivaganga','Karaikudi','Devakottai','Manamadurai','Ilayangudi','Tirupathur','Kallal'],
+    'Tenkasi': ['Tenkasi','Sankarankoil','Kadayanallur','Shenkottai','Courtallam','Alangulam','Vasudevanallur'],
+    'Thanjavur': ['Thanjavur','Kumbakonam','Pattukkottai','Peravurani','Orathanadu','Thiruvidaimarudur','Thiruvaiyaru','Papanasam','Swarnapuri'],
+    'Theni': ['Theni','Bodinayakanur','Periyakulam','Andipatti','Uthamapalayam','Cumbum'],
+    'Thoothukudi': ['Thoothukudi','Kovilpatti','Tiruchendur','Kayathar','Vilathikulam','Ottapidaram','Srivaikundam','Eral'],
+    'Tiruchirappalli': ['Trichy Town','Srirangam','Lalgudi','Musiri','Manachanallur','Thuraiyur','Manapparai','Thottiyam'],
+    'Tirunelveli': ['Tirunelveli Town','Palayamkottai','Ambasamudram','Cheranmahadevi','Radhapuram','Nanguneri','Kalakkad','Pettai'],
+    'Tirupattur': ['Tirupattur','Vaniyambadi','Ambur','Natrampalli','Jolarpet','Kandili'],
+    'Tiruvallur': ['Tiruvallur','Avadi','Poonamallee','Ambattur','Thiruvottiyur','Gummidipoondi','Ponneri','Red Hills','Madhavaram'],
+    'Tiruvannamalai': ['Tiruvannamalai','Polur','Arani','Cheyyar','Vandavasi','Chengam','Kilpennathur','Kalasapakkam'],
+    'Tiruvarur': ['Tiruvarur','Mannargudi','Nannilam','Thiruthuraipoondi','Needamangalam','Valangaiman','Kodavasal'],
+    'Vellore': ['Vellore Town','Katpadi','Gudiyatham','Pernambut','Anaicut','KV Kuppam','Kaniyambadi'],
+    'Viluppuram': ['Viluppuram','Tindivanam','Gingee','Kallakurichi','Ulundurpettai','Thiruvennainallur','Vanur','Marakkanam'],
+    'Virudhunagar': ['Virudhunagar','Sivakasi','Srivilliputhur','Rajapalayam','Aruppukkottai','Sattur','Tiruchuli','Watrap']
 };
 
-// Initialize with default data if empty
-function initializeData() {
-    const stored = localStorage.getItem(DATA_KEY);
-    if (stored) {
-        stalls = JSON.parse(stored);
-    } else {
-        loadDefaultData();
-    }
-    loadLocationPreference();
+// District names in Tamil
+const districtNamesTa = {
+    'Ariyalur':'அரியலூர்','Chengalpattu':'செங்கல்பட்டு','Chennai':'சென்னை',
+    'Coimbatore':'கோயம்புத்தூர்','Cuddalore':'கடலூர்','Dharmapuri':'தர்மபுரி',
+    'Dindigul':'திண்டுக்கல்','Erode':'ஈரோடு','Kallakurichi':'கள்ளக்குறிச்சி',
+    'Kancheepuram':'காஞ்சிபுரம்','Kanniyakumari':'கன்னியாகுமரி','Karur':'கரூர்',
+    'Krishnagiri':'கிருஷ்ணகிரி','Madurai':'மதுரை','Mayiladuthurai':'மயிலாடுதுறை',
+    'Nagapattinam':'நாகப்பட்டினம்','Namakkal':'நாமக்கல்','Nilgiris':'நீலகிரி',
+    'Perambalur':'பெரம்பலூர்','Pudukkottai':'புதுக்கோட்டை','Ramanathapuram':'ராமநாதபுரம்',
+    'Ranipet':'ராணிப்பேட்டை','Salem':'சேலம்','Sivaganga':'சிவகங்கை',
+    'Tenkasi':'தென்காசி','Thanjavur':'தஞ்சாவூர்','Theni':'தேனி',
+    'Thoothukudi':'தூத்துக்குடி','Tiruchirappalli':'திருச்சிராப்பள்ளி',
+    'Tirunelveli':'திருநெல்வேலி','Tirupattur':'திருப்பத்தூர்','Tiruvallur':'திருவள்ளூர்',
+    'Tiruvannamalai':'திருவண்ணாமலை','Tiruvarur':'திருவாரூர்','Vellore':'வேலூர்',
+    'Viluppuram':'விழுப்புரம்','Virudhunagar':'விருதுநகர்'
+};
+
+// District names in Hindi
+const districtNamesHi = {
+    'Ariyalur':'अरियलूर','Chengalpattu':'चेंगलपट्टू','Chennai':'चेन्नई',
+    'Coimbatore':'कोयंबटूर','Cuddalore':'कड्डलोर','Dharmapuri':'धर्मपुरी',
+    'Dindigul':'डिंडीगुल','Erode':'इरोड','Kallakurichi':'कल्लकुरिची',
+    'Kancheepuram':'कांचीपुरम','Kanniyakumari':'कन्याकुमारी','Karur':'करूर',
+    'Krishnagiri':'कृष्णागिरि','Madurai':'मदुरई','Mayiladuthurai':'मयिलादुतुरई',
+    'Nagapattinam':'नागपट्टिनम','Namakkal':'नामक्कल','Nilgiris':'नीलगिरि',
+    'Perambalur':'पेरम्बलूर','Pudukkottai':'पुदुक्कोट्टई','Ramanathapuram':'रामनाथपुरम',
+    'Ranipet':'रानीपेट','Salem':'सेलम','Sivaganga':'शिवगंगा',
+    'Tenkasi':'तेनकासी','Thanjavur':'तंजावुर','Theni':'थेनी',
+    'Thoothukudi':'थूथुकुडी','Tiruchirappalli':'तिरुचिरापल्ली',
+    'Tirunelveli':'तिरुनेलवेली','Tirupattur':'तिरुपत्तूर','Tiruvallur':'तिरुवल्लूर',
+    'Tiruvannamalai':'तिरुवन्नामलई','Tiruvarur':'तिरुवारूर','Vellore':'वेल्लोर',
+    'Viluppuram':'विल्लुपुरम','Virudhunagar':'विरुधुनगर'
+};
+
+// Helper: get district display name in current language
+function getDistrictName(district) {
+    if (currentLanguage === 'ta') return districtNamesTa[district] || district;
+    if (currentLanguage === 'hi') return districtNamesHi[district] || district;
+    return district;
 }
 
-async function loadDefaultData() {
+// Helper: get area display name in current language
+// Area names use Tamil script transliterations for 'ta', Devanagari for 'hi'
+const areaNamesLocalized = {
+    ta: {
+        'T Nagar':'டி நகர்','Anna Nagar':'அண்ணா நகர்','Adyar':'அடையாறு',
+        'Mylapore':'மயிலாப்பூர்','Velachery':'வேளச்சேரி','Porur':'பொரூர்',
+        'Guindy':'கீண்டி','Nungambakkam':'நுங்கம்பாக்கம்','Egmore':'எழும்பூர்',
+        'Tambaram':'தாம்பரம்','Chromepet':'குரோம்பேட்டை','Kodambakkam':'கோடம்பாக்கம்',
+        'Vadapalani':'வடபழனி','Ashok Nagar':'அசோக் நகர்','Thiruvanmiyur':'திருவான்மியூர்',
+        'Besant Nagar':'பெசன்ட் நகர்','Royapettah':'ராயப்பேட்டை','Triplicane':'திருவல்லிக்கேணி',
+        'Perambur':'பெரம்பூர்','Tondiarpet':'தொண்டியார்பேட்டை','Sowcarpet':'சாவுக்கார்பேட்டை',
+        'Kilpauk':'கிளம்பாக்கம்','Chetpet':'செட்பேட்','Saidapet':'சைதாப்பேட்டை',
+        'Medavakkam':'மேடவாக்கம்','Gandhipuram':'காந்திபுரம்','RS Puram':'ஆர்எஸ் புரம்',
+        'Saibaba Colony':'சாய்பாபா காலனி','Peelamedu':'பீலமேடு','Singanallur':'சிங்காநல்லூர்',
+        'Ukkadam':'உக்கடம்','Town Hall':'டவுன் ஹால்','Sulur':'சூலூர்',
+        'Pollachi':'பொள்ளாச்சி','Mettupalayam':'மேட்டுப்பாளையம்','Valparai':'வால்பாறை',
+        'Madurai North':'மதுரை வடக்கு','Madurai South':'மதுரை தெற்கு',
+        'Trichy Town':'திருச்சி நகர்','Srirangam':'ஸ்ரீரங்கம்',
+        'Salem Town':'சேலம் நகர்','Ooty':'உதகமண்டலம்','Coonoor':'கூனூர்',
+        'Tirunelveli Town':'திருநெல்வேலி நகர்','Palayamkottai':'பாளையங்கோட்டை',
+        'Nagercoil':'நாகர்கோவில்','Kanyakumari':'கன்னியாகுமரி',
+        'Vellore Town':'வேலூர் நகர்','Katpadi':'காட்பாடி',
+        'Hosur':'ஹோசூர்','Kumbakonam':'கும்பகோணம்','Thanjavur':'தஞ்சாவூர்',
+        'Karaikudi':'காரைக்குடி','Sivakasi':'சிவகாசி','Rajapalayam':'இராஜபாளையம்',
+        'Avadi':'அவடி','Poonamallee':'பூனமல்லி','Ambattur':'அம்பத்தூர்'
+    },
+    hi: {
+        'T Nagar':'टी नगर','Anna Nagar':'अन्ना नगर','Adyar':'अड्यार',
+        'Mylapore':'मायलापुर','Velachery':'वेलाचेरी','Porur':'पोरुर',
+        'Guindy':'गिंडी','Nungambakkam':'नुंगम्बाक्कम','Egmore':'एग्मोर',
+        'Tambaram':'तांबरम','Chromepet':'क्रोमपेट','Kodambakkam':'कोडंबाक्कम',
+        'Vadapalani':'वडपलानी','Ashok Nagar':'अशोक नगर','Thiruvanmiyur':'तिरुवनमियूर',
+        'Besant Nagar':'बेसेंट नगर','Royapettah':'रोयापेट्टा','Triplicane':'त्रिप्लीकेन',
+        'Perambur':'पेरंबूर','Tondiarpet':'तोंडियारपेट','Sowcarpet':'सावकारपेट',
+        'Kilpauk':'किलपौक','Chetpet':'चेतपेट','Saidapet':'सैदापेट',
+        'Medavakkam':'मेडावाक्कम','Gandhipuram':'गांधीपुरम','RS Puram':'आरएस पुरम',
+        'Sulur':'सुलूर','Pollachi':'पोल्लाची','Mettupalayam':'मेट्टुपालयम',
+        'Madurai North':'मदुरई उत्तर','Madurai South':'मदुरई दक्षिण',
+        'Trichy Town':'त्रिची टाउन','Srirangam':'श्रीरंगम',
+        'Salem Town':'सेलम टाउन','Ooty':'ऊटी','Coonoor':'कूनूर',
+        'Tirunelveli Town':'तिरुनेलवेली टाउन','Palayamkottai':'पालयमकोट्टई',
+        'Nagercoil':'नागरकोइल','Kanyakumari':'कन्याकुमारी',
+        'Vellore Town':'वेल्लोर टाउन','Katpadi':'कटपाडी',
+        'Hosur':'होसूर','Kumbakonam':'कुंभकोणम','Thanjavur':'तंजावुर',
+        'Karaikudi':'कारईकुडी','Sivakasi':'शिवकासी','Rajapalayam':'राजपालायम',
+        'Avadi':'अवाडी','Poonamallee':'पूनमल्ली','Ambattur':'अंबट्टूर'
+    }
+};
+
+// Helper: get area display name in current language
+function getAreaName(area) {
+    if (currentLanguage === 'ta' && areaNamesLocalized.ta[area]) return areaNamesLocalized.ta[area];
+    if (currentLanguage === 'hi' && areaNamesLocalized.hi[area]) return areaNamesLocalized.hi[area];
+    return area;
+}
+
+
+const DATA_KEY = 'streetbite_stalls';
+
+// Initialize — load stalls from the backend API (shared across ALL devices)
+async function initializeData() {
+    await loadStalls();
+    renderHomePage();
+}
+
+async function loadStalls() {
+    showLoading(true);
     try {
-        const response = await fetch('data/stalls.json');
-        const data = await response.json();
-        stalls = data.stalls || [];
-        saveData();
-    } catch (error) {
-        console.error('Error loading default data:', error);
+        const res = await fetch('/api/stalls');
+        stalls = await res.json();
+    } catch (e) {
+        console.error('Could not load stalls:', e);
         stalls = [];
     }
+    showLoading(false);
 }
 
-function saveData() {
-    localStorage.setItem(DATA_KEY, JSON.stringify(stalls));
-}
+// saveData is kept for backward compat but now a no-op (API is the source of truth)
+function saveData() {}
 
 // Translations
 const translations = {
@@ -119,19 +239,27 @@ const translations = {
         addNewMenuItem: 'Add New Menu Item',
         itemNamePlaceholder: 'e.g., Masala Dosa',
         addItemToMenu: 'Add Item to Menu',
-        categoryDosa: '🥞 Dosa',
+        categoryFastFood: '🍟 Fast Food',
         categoryBiryani: '🍚 Biryani',
-        categoryRolls: '🌯 Rolls',
-        categoryBajji: '🫓 Bajji',
+        categoryParottaMeals: '🫓 Parotta & Meals',
+        categoryGrilledNonVeg: '🍗 Grilled & Non-Veg',
         categoryJuice: '🧃 Juice',
-        categoryChinese: '🍜 Chinese',
+        categorySweetBeverages: '🍧 Sweet & Beverages',
         categorySnacks: '🍿 Snacks',
+        categoryOthers: '🍽️ Others',
+        welcomeTitle: 'Welcome to StreetBite! 😋',
+        welcomeSubtitle: 'Discover the best street food near you',
+        shopsAvailable: 'shops available',
         toggleOpen: '✓ Open',
         toggleClosed: '✕ Closed',
         selectLocation: 'Select Location',
-        selectCity: 'Select City',
-        selectArea: 'Select Area',
-        allLocations: 'All Locations'
+        selectDistrict: '📍 Select Your District',
+        selectArea: '📍 Select Area in',
+        changeLocation: 'Change',
+        nearbyShops: 'Nearby shops in',
+        searchDistrict: '🔍 Search district...',
+        searchArea: '🔍 Search area...',
+        allAreas: 'All Areas'
     },
     ta: {
         appName: '🍽️ ஸ்ட்ரீட்பைட்',
@@ -197,19 +325,27 @@ const translations = {
         addNewMenuItem: 'புதிய உணவைச் சேர்',
         itemNamePlaceholder: 'உதா: மசால் தோசை',
         addItemToMenu: 'உணவுப் பட்டியலில் சேர்',
-        categoryDosa: '🥞 தோசை',
+        categoryFastFood: '🍟 ஃபாஸ்ட் ஃபுட்',
         categoryBiryani: '🍚 பிரியாணி',
-        categoryRolls: '🌯 ரோல்ஸ்',
-        categoryBajji: '🫓 பஜ்ஜி',
+        categoryParottaMeals: '🫓 பரோட்டா & மீல்ஸ்',
+        categoryGrilledNonVeg: '🍗 க்ரில்ட் & நான்-வெஜ்',
         categoryJuice: '🧃 பழச்சாறு',
-        categoryChinese: '🍜 சைனீஸ்',
+        categorySweetBeverages: '🍧 இனிப்பு & பானங்கள்',
         categorySnacks: '🍿 சிற்றுண்டி',
+        categoryOthers: '🍽️ மற்றவை',
+        welcomeTitle: 'ஸ்ட்ரீட்பைட்-க்கு வரவேற்பு! 😋',
+        welcomeSubtitle: 'உங்கள் அருகில் சிறந்த தெரு உணவுகளைக் கண்டறியுங்கள்',
+        shopsAvailable: 'கடைகள் கிடைக்கின்றன',
         toggleOpen: '✓ திறந்திருக்கிறது',
         toggleClosed: '✕ மூடியிருக்கிறது',
-        selectLocation: 'இடத்தைத் தேர்வு செய்',
-        selectCity: 'நகரைத் தேர்வு செய்',
-        selectArea: 'பகுதியைத் தேர்வு செய்',
-        allLocations: 'அனைத்து இடங்களும்'
+        selectLocation: 'இடம் தேர்வு',
+        selectDistrict: '📍 மாவட்டம் தேர்வு',
+        selectArea: '📍 பகுதி தேர்வு -',
+        changeLocation: 'மாற்று',
+        nearbyShops: 'அருகிலுள்ள கடைகள் -',
+        searchDistrict: '🔍 மாவட்டம் தேடு...',
+        searchArea: '🔍 பகுதி தேடு...',
+        allAreas: 'அனைத்து பகுதிகள்'
     },
     hi: {
         appName: '🍽️ स्ट्रीटबाइट',
@@ -275,31 +411,40 @@ const translations = {
         addNewMenuItem: 'नया मेनू आइटम जोड़ें',
         itemNamePlaceholder: 'जैसे: मसाला दोसा',
         addItemToMenu: 'मेनू में जोड़ें',
-        categoryDosa: '🥞 दोसा',
+        categoryFastFood: '🍟 फास्ट फूड',
         categoryBiryani: '🍚 बिरयानी',
-        categoryRolls: '🌯 रोल',
-        categoryBajji: '🫓 पकौड़ी',
+        categoryParottaMeals: '🫓 पराठा & मील्स',
+        categoryGrilledNonVeg: '🍗 ग्रिल्ड & नॉन-वेज',
         categoryJuice: '🧃 जूस',
-        categoryChinese: '🍜 चाइनीज',
+        categorySweetBeverages: '🍧 मिठाई & पेय',
         categorySnacks: '🍿 नाश्ता',
+        categoryOthers: '🍽️ अन्य',
+        welcomeTitle: 'स्ट्रीटबाइट में आपका स्वागत है! 😋',
+        welcomeSubtitle: 'आपके आस-पास का बेहतरीन स्ट्रीट फूड खोजें',
+        shopsAvailable: 'दुकानें उपलब्ध',
         toggleOpen: '✓ खुला है',
         toggleClosed: '✕ बंद है',
         selectLocation: 'स्थान चुनें',
-        selectCity: 'शहर चुनें',
-        selectArea: 'क्षेत्र चुनें',
-        allLocations: 'सभी स्थान'
+        selectDistrict: '📍 अपना जिला चुनें',
+        selectArea: '📍 क्षेत्र चुनें -',
+        changeLocation: 'बदलें',
+        nearbyShops: 'आस-पास की दुकानें -',
+        searchDistrict: '🔍 जिला खोजें...',
+        searchArea: '🔍 क्षेत्र खोजें...',
+        allAreas: 'सभी क्षेत्र'
     }
 };
 
 // Category emojis
 const categoryEmojis = {
-    'Dosa': '🥞',
+    'Fast Food': '🍟',
     'Biryani': '🍚',
-    'Rolls': '🌯',
-    'Bajji': '🫓',
+    'Parotta & Meals': '🫓',
+    'Grilled & Non-Veg': '🍗',
     'Juice': '🧃',
-    'Chinese': '🍜',
-    'Snacks': '🍿'
+    'Sweet & Beverages': '🍧',
+    'Snacks': '🍿',
+    'Others': '🍽️'
 };
 
 // Convert 24-hour time to 12-hour format
@@ -309,7 +454,7 @@ function formatTime12Hour(time24) {
     let h = parseInt(hours);
     const ampm = h >= 12 ? 'PM' : 'AM';
     h = h % 12;
-    h = h ? h : 12;
+    h = h ? h : 12; // 0 becomes 12
     return `${h}:${minutes} ${ampm}`;
 }
 
@@ -322,224 +467,9 @@ function t(key) {
 document.addEventListener('DOMContentLoaded', () => {
     loadLanguagePreference();
     setupNavigation();
+    updateLocationButtonText();
     initializeData();
-    setupLocationModal();
 });
-
-// Setup location modal
-function setupLocationModal() {
-    const closeBtn = document.getElementById('modal-close-btn');
-    const skipBtn = document.getElementById('skip-area-btn');
-
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closeLocationModal);
-    }
-
-    if (skipBtn) {
-        skipBtn.addEventListener('click', () => {
-            selectedArea = null;
-            saveLocationPreference();
-            closeLocationModal();
-            updateLocationDisplay();
-            renderShopGrid();
-        });
-    }
-
-    updateLocationDisplay();
-}
-
-// Open location selector
-function openLocationSelector() {
-    const modal = document.getElementById('location-modal');
-    if (modal) {
-        modal.style.display = 'flex';
-        renderCityList();
-    }
-}
-
-// Close location modal
-function closeLocationModal() {
-    const modal = document.getElementById('location-modal');
-    if (modal) {
-        modal.style.display = 'none';
-    }
-}
-
-// Render city list
-function renderCityList() {
-    const cityList = document.getElementById('city-list');
-    const areaSection = document.getElementById('area-section');
-    const searchInput = document.getElementById('city-search');
-
-    if (!cityList) return;
-
-    areaSection.style.display = 'none';
-
-    const cities = Object.keys(locationData);
-
-    cityList.innerHTML = `
-        <div class="city-item" data-city="all">
-            <span class="city-icon">🌍</span>
-            <span class="city-name">${t('allLocations')}</span>
-        </div>
-        ${cities.map(city => `
-            <div class="city-item" data-city="${city}">
-                <span class="city-icon">🏙️</span>
-                <span class="city-name">${city}</span>
-            </div>
-        `).join('')}
-    `;
-
-    cityList.querySelectorAll('.city-item').forEach(item => {
-        item.addEventListener('click', () => {
-            const city = item.dataset.city;
-            if (city === 'all') {
-                selectedCity = null;
-                selectedArea = null;
-                saveLocationPreference();
-                closeLocationModal();
-                updateLocationDisplay();
-                renderShopGrid();
-            } else {
-                selectedCity = city;
-                selectedArea = null;
-                renderAreaList();
-            }
-        });
-    });
-
-    // Search functionality
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            const filtered = cities.filter(c => c.toLowerCase().includes(query));
-
-            cityList.innerHTML = `
-                <div class="city-item" data-city="all">
-                    <span class="city-icon">🌍</span>
-                    <span class="city-name">${t('allLocations')}</span>
-                </div>
-                ${filtered.map(city => `
-                    <div class="city-item" data-city="${city}">
-                        <span class="city-icon">🏙️</span>
-                        <span class="city-name">${city}</span>
-                    </div>
-                `).join('')}
-            `;
-
-            cityList.querySelectorAll('.city-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const city = item.dataset.city;
-                    if (city === 'all') {
-                        selectedCity = null;
-                        selectedArea = null;
-                        saveLocationPreference();
-                        closeLocationModal();
-                        updateLocationDisplay();
-                        renderShopGrid();
-                    } else {
-                        selectedCity = city;
-                        selectedArea = null;
-                        renderAreaList();
-                    }
-                });
-            });
-        });
-    }
-}
-
-// Render area list
-function renderAreaList() {
-    const cityList = document.getElementById('city-list');
-    const areaSection = document.getElementById('area-section');
-    const areaList = document.getElementById('area-list');
-    const selectedCityName = document.getElementById('selected-city-name');
-
-    if (!areaList || !selectedCityName) return;
-
-    cityList.style.display = 'none';
-    areaSection.style.display = 'block';
-    selectedCityName.textContent = selectedCity;
-
-    const areas = locationData[selectedCity] || [];
-
-    areaList.innerHTML = `
-        <div class="area-item" data-area="all">
-            <span class="area-icon">🌍</span>
-            <span class="area-name">${t('allLocations')}</span>
-        </div>
-        ${areas.map(area => `
-            <div class="area-item" data-area="${area}">
-                <span class="area-icon">📍</span>
-                <span class="area-name">${area}</span>
-            </div>
-        `).join('')}
-    `;
-
-    areaList.querySelectorAll('.area-item').forEach(item => {
-        item.addEventListener('click', () => {
-            const area = item.dataset.area;
-            if (area === 'all') {
-                selectedArea = null;
-            } else {
-                selectedArea = area;
-            }
-            saveLocationPreference();
-            closeLocationModal();
-            updateLocationDisplay();
-            renderShopGrid();
-        });
-    });
-}
-
-// Update location display in header
-function updateLocationDisplay() {
-    const locationText = document.getElementById('header-location-text');
-    if (locationText) {
-        if (selectedCity && selectedArea) {
-            locationText.textContent = `${selectedArea}, ${selectedCity}`;
-        } else if (selectedCity) {
-            locationText.textContent = selectedCity;
-        } else {
-            locationText.textContent = t('selectLocation');
-        }
-    }
-}
-
-// Save location preference
-function saveLocationPreference() {
-    localStorage.setItem(LOCATION_KEY, JSON.stringify({
-        city: selectedCity,
-        area: selectedArea
-    }));
-}
-
-// Load location preference
-function loadLocationPreference() {
-    const stored = localStorage.getItem(LOCATION_KEY);
-    if (stored) {
-        const loc = JSON.parse(stored);
-        selectedCity = loc.city;
-        selectedArea = loc.area;
-    }
-}
-
-// Filter stalls by location
-function filterByLocation(stallList) {
-    if (!selectedCity && !selectedArea) {
-        return stallList;
-    }
-
-    return stallList.filter(stall => {
-        if (selectedArea) {
-            return stall.area && stall.area.toLowerCase().includes(selectedArea.toLowerCase());
-        }
-        if (selectedCity) {
-            return stall.area && stall.area.toLowerCase().includes(selectedCity.toLowerCase());
-        }
-        return true;
-    });
-}
 
 // Setup bottom navigation
 function setupNavigation() {
@@ -559,7 +489,6 @@ function updateNavigationLabels() {
     const navLabels = {
         'home': t('home'),
         'search': t('search'),
-        'add': t('addShop'),
         'profile': t('profile')
     };
     document.querySelectorAll('.nav-item').forEach(item => {
@@ -600,24 +529,15 @@ function navigateTo(page) {
     }
 }
 
-// Load stalls from localStorage
-function loadStalls() {
-    showLoading(true);
-    const stored = localStorage.getItem(DATA_KEY);
-    if (stored) {
-        const data = JSON.parse(stored);
-        stalls = data.stalls || data;
-    }
+// Reload stalls from API and re-render home
+async function reloadStalls() {
+    await loadStalls();
     renderHomePage();
-    showLoading(false);
 }
 
 // Show/Hide loading spinner
 function showLoading(show) {
-    const loading = document.getElementById('loading');
-    if (loading) {
-        loading.classList.toggle('active', show);
-    }
+    document.getElementById('loading').classList.toggle('active', show);
 }
 
 // Render Home Page
@@ -625,23 +545,65 @@ function renderHomePage() {
     const app = document.getElementById('app');
     updateHeaderLanguageSelector();
     updateNavigationLabels();
+    updateLocationButtonText();
+
+    const openCount = stalls.filter(s => s.status === 'open').length;
+
+    // Build location chip HTML
+    let locationChipHTML = '';
+    if (selectedDistrict && selectedArea && selectedArea !== 'All Areas') {
+        locationChipHTML = `
+            <div class="selected-location-chip">
+                <span class="location-chip-icon">📍</span>
+                <span class="location-chip-text">${t('nearbyShops')} <strong>${getAreaName(selectedArea)}, ${getDistrictName(selectedDistrict)}</strong></span>
+                <button class="location-chip-change" onclick="openLocationPicker()">${t('changeLocation')}</button>
+            </div>
+        `;
+    } else if (selectedDistrict) {
+        locationChipHTML = `
+            <div class="selected-location-chip">
+                <span class="location-chip-icon">📍</span>
+                <span class="location-chip-text">${t('nearbyShops')} <strong>${getDistrictName(selectedDistrict)}</strong></span>
+                <button class="location-chip-change" onclick="openLocationPicker()">${t('changeLocation')}</button>
+            </div>
+        `;
+    }
 
     app.innerHTML = `
         <div class="page home-page">
+            <div class="welcome-banner">
+                <div class="welcome-text">
+                    <h2 class="welcome-title">${t('welcomeTitle')}</h2>
+                    <p class="welcome-subtitle">${t('welcomeSubtitle')}</p>
+                </div>
+                <div class="welcome-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">${stalls.length}</span>
+                        <span class="stat-label">${t('shopsAvailable')}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">${openCount}</span>
+                        <span class="stat-label">${t('openNow')}</span>
+                    </div>
+                </div>
+            </div>
+            ${locationChipHTML}
             <div class="category-tabs">
                 <button class="category-tab ${selectedCategory === 'All' ? 'active' : ''}" data-category="All">${t('all')}</button>
-                <button class="category-tab ${selectedCategory === 'Dosa' ? 'active' : ''}" data-category="Dosa">${t('categoryDosa')}</button>
+                <button class="category-tab ${selectedCategory === 'Fast Food' ? 'active' : ''}" data-category="Fast Food">${t('categoryFastFood')}</button>
                 <button class="category-tab ${selectedCategory === 'Biryani' ? 'active' : ''}" data-category="Biryani">${t('categoryBiryani')}</button>
-                <button class="category-tab ${selectedCategory === 'Rolls' ? 'active' : ''}" data-category="Rolls">${t('categoryRolls')}</button>
-                <button class="category-tab ${selectedCategory === 'Bajji' ? 'active' : ''}" data-category="Bajji">${t('categoryBajji')}</button>
+                <button class="category-tab ${selectedCategory === 'Parotta & Meals' ? 'active' : ''}" data-category="Parotta & Meals">${t('categoryParottaMeals')}</button>
+                <button class="category-tab ${selectedCategory === 'Grilled & Non-Veg' ? 'active' : ''}" data-category="Grilled & Non-Veg">${t('categoryGrilledNonVeg')}</button>
                 <button class="category-tab ${selectedCategory === 'Juice' ? 'active' : ''}" data-category="Juice">${t('categoryJuice')}</button>
-                <button class="category-tab ${selectedCategory === 'Chinese' ? 'active' : ''}" data-category="Chinese">${t('categoryChinese')}</button>
+                <button class="category-tab ${selectedCategory === 'Sweet & Beverages' ? 'active' : ''}" data-category="Sweet & Beverages">${t('categorySweetBeverages')}</button>
                 <button class="category-tab ${selectedCategory === 'Snacks' ? 'active' : ''}" data-category="Snacks">${t('categorySnacks')}</button>
+                <button class="category-tab ${selectedCategory === 'Others' ? 'active' : ''}" data-category="Others">${t('categoryOthers')}</button>
             </div>
             <div class="shop-grid" id="shop-grid"></div>
         </div>
     `;
 
+    // Setup category tabs
     app.querySelectorAll('.category-tab').forEach(tab => {
         tab.addEventListener('click', () => {
             selectedCategory = tab.dataset.category;
@@ -657,12 +619,21 @@ function renderHomePage() {
 // Render shop grid
 function renderShopGrid() {
     const grid = document.getElementById('shop-grid');
-    if (!grid) return;
-
     let filtered = stalls;
 
-    // Filter by location first
-    filtered = filterByLocation(filtered);
+    // Filter by selected location
+    if (selectedArea && selectedArea !== 'All Areas') {
+        filtered = filtered.filter(s =>
+            s.area.toLowerCase().includes(selectedArea.toLowerCase())
+        );
+    } else if (selectedDistrict) {
+        const districtAreas = tamilNaduDistricts[selectedDistrict] || [];
+        if (districtAreas.length > 0) {
+            filtered = filtered.filter(s =>
+                districtAreas.some(area => s.area.toLowerCase().includes(area.toLowerCase()))
+            );
+        }
+    }
 
     // Filter by category
     if (selectedCategory !== 'All') {
@@ -705,6 +676,7 @@ function renderShopGrid() {
         </div>
     `).join('');
 
+    // Add click handlers
     grid.querySelectorAll('.shop-card').forEach(card => {
         card.addEventListener('click', () => {
             const id = parseInt(card.dataset.id);
@@ -726,24 +698,27 @@ function renderSearchPage() {
             </div>
             <div class="category-tabs">
                 <button class="category-tab ${selectedCategory === 'All' ? 'active' : ''}" data-category="All">${t('all')}</button>
-                <button class="category-tab ${selectedCategory === 'Dosa' ? 'active' : ''}" data-category="Dosa">${t('categoryDosa')}</button>
+                <button class="category-tab ${selectedCategory === 'Fast Food' ? 'active' : ''}" data-category="Fast Food">${t('categoryFastFood')}</button>
                 <button class="category-tab ${selectedCategory === 'Biryani' ? 'active' : ''}" data-category="Biryani">${t('categoryBiryani')}</button>
-                <button class="category-tab ${selectedCategory === 'Rolls' ? 'active' : ''}" data-category="Rolls">${t('categoryRolls')}</button>
-                <button class="category-tab ${selectedCategory === 'Bajji' ? 'active' : ''}" data-category="Bajji">${t('categoryBajji')}</button>
+                <button class="category-tab ${selectedCategory === 'Parotta & Meals' ? 'active' : ''}" data-category="Parotta & Meals">${t('categoryParottaMeals')}</button>
+                <button class="category-tab ${selectedCategory === 'Grilled & Non-Veg' ? 'active' : ''}" data-category="Grilled & Non-Veg">${t('categoryGrilledNonVeg')}</button>
                 <button class="category-tab ${selectedCategory === 'Juice' ? 'active' : ''}" data-category="Juice">${t('categoryJuice')}</button>
-                <button class="category-tab ${selectedCategory === 'Chinese' ? 'active' : ''}" data-category="Chinese">${t('categoryChinese')}</button>
+                <button class="category-tab ${selectedCategory === 'Sweet & Beverages' ? 'active' : ''}" data-category="Sweet & Beverages">${t('categorySweetBeverages')}</button>
                 <button class="category-tab ${selectedCategory === 'Snacks' ? 'active' : ''}" data-category="Snacks">${t('categorySnacks')}</button>
+                <button class="category-tab ${selectedCategory === 'Others' ? 'active' : ''}" data-category="Others">${t('categoryOthers')}</button>
             </div>
             <div class="shop-grid" id="shop-grid"></div>
         </div>
     `;
 
+    // Setup search
     const searchInput = app.querySelector('.search-input');
     searchInput.addEventListener('input', (e) => {
         searchQuery = e.target.value;
         renderShopGrid();
     });
 
+    // Setup category tabs
     app.querySelectorAll('.category-tab').forEach(tab => {
         tab.addEventListener('click', () => {
             selectedCategory = tab.dataset.category;
@@ -756,7 +731,7 @@ function renderSearchPage() {
     renderShopGrid();
 }
 
-// Show Shop Detail
+// Show Shop Detail (static version for GitHub Pages)
 function showShopDetail(id) {
     showLoading(true);
     const stall = stalls.find(s => s.id === id);
@@ -795,15 +770,16 @@ function renderShopDetailPage(stall) {
                 <div class="detail-info">
                     <div class="info-row">
                         <span class="icon">📍</span>
-                        <span>${stall.address}</span>
+                        <span>${stall.address || stall.area}</span>
                     </div>
+                    ${stall.contact ? `
                     <div class="info-row">
                         <span class="icon">📞</span>
                         <a href="tel:${stall.contact}">${stall.contact}</a>
-                    </div>
+                    </div>` : ''}
                     <div class="info-row">
                         <span class="icon">⭐</span>
-                        <span>${stall.rating.toFixed(1)} ${t('rating')} (${stall.totalReviews})</span>
+                        <span>${(stall.rating || 0).toFixed(1)} ${t('rating')} (${stall.totalReviews || 0})</span>
                     </div>
                 </div>
             </div>
@@ -816,15 +792,17 @@ function renderShopDetailPage(stall) {
 
             <h3 class="section-title">${t('menu')}</h3>
             <div class="menu-list">
-                ${stall.menu.map(item => `
-                    <div class="menu-item ${!item.available ? 'menu-item-unavailable' : ''}">
+                ${stall.menu.map(item => {
+                    const itemAvailable = isOpen ? item.available : false;
+                    return `
+                    <div class="menu-item ${!itemAvailable ? 'menu-item-unavailable' : ''}">
                         <div class="menu-item-info">
                             <div class="menu-item-name">${item.itemName}</div>
                             <div class="menu-item-price">₹${item.price}</div>
                         </div>
-                        <span class="availability-toggle ${item.available ? 'available' : 'unavailable'}" style="cursor: default; transform: none;">${item.available ? 'ON' : 'OFF'}</span>
+                        <span class="availability-toggle ${itemAvailable ? 'available' : 'unavailable'}" style="cursor: default; transform: none;">${itemAvailable ? 'ON' : 'OFF'}</span>
                     </div>
-                `).join('')}
+                `}).join('')}
             </div>
 
             <h3 class="section-title">${t('reviews')} (${stall.reviews.length})</h3>
@@ -851,6 +829,7 @@ function renderShopDetailPage(stall) {
         </div>
     `;
 
+    // Setup star rating
     let selectedRating = 0;
     const starButtons = app.querySelectorAll('.star-btn');
     starButtons.forEach(btn => {
@@ -863,43 +842,51 @@ function renderShopDetailPage(stall) {
         });
     });
 
-    app.querySelector('#submit-review').addEventListener('click', () => {
+    // Setup submit review — POST to API
+    app.querySelector('#submit-review').addEventListener('click', async () => {
         const comment = app.querySelector('#review-text').value.trim();
         if (!comment || selectedRating === 0) {
             showToast('Please select a rating and write a review', 'error');
             return;
         }
-
-        const stallIndex = stalls.findIndex(s => s.id === stall.id);
-        if (stallIndex !== -1) {
-            const newReview = {
-                rating: selectedRating,
-                comment: comment,
-                date: new Date().toISOString().split('T')[0]
-            };
-            stalls[stallIndex].reviews.push(newReview);
-
-            const reviews = stalls[stallIndex].reviews;
-            const avgRating = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
-            stalls[stallIndex].rating = Math.round(avgRating * 10) / 10;
-            stalls[stallIndex].totalReviews = reviews.length;
-
-            saveData();
-            showToast('Review submitted!', 'success');
-            renderShopDetailPage(stalls[stallIndex]);
+        try {
+            const res = await fetch(`/api/stalls/${stall.id}/review`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ rating: selectedRating, comment })
+            });
+            const updated = await res.json();
+            // Update local stall data
+            const idx = stalls.findIndex(s => s.id === stall.id);
+            if (idx !== -1) stalls[idx] = updated;
+            showToast('Review submitted! ⭐', 'success');
+            renderShopDetailPage(updated);
+        } catch (e) {
+            showToast('Could not submit review', 'error');
         }
     });
 }
 
-// Render Add Shop Page
+// Render Add Shop as a persistent full-screen modal
 function renderAddShopPage() {
-    const app = document.getElementById('app');
+    // If modal already exists, just show it (preserves form data)
+    if (document.getElementById('add-shop-modal')) {
+        document.getElementById('add-shop-modal').classList.add('active');
+        return;
+    }
+
     let menuItems = [];
 
-    app.innerHTML = `
-        <div class="page add-shop-page">
-            <h2 class="section-title">${t('addNewShop')}</h2>
-
+    // Create modal element and append to body
+    const modal = document.createElement('div');
+    modal.id = 'add-shop-modal';
+    modal.className = 'add-shop-modal active';
+    modal.innerHTML = `
+        <div class="add-shop-modal-header">
+            <h2 class="add-shop-modal-title">${t('addNewShop')}</h2>
+            <button class="add-shop-close-btn" id="add-shop-close-btn" title="Close">✕</button>
+        </div>
+        <div class="add-shop-modal-body">
             <div class="form-section">
                 <div class="form-group">
                     <label>${t('shopName')} *</label>
@@ -910,13 +897,14 @@ function renderAddShopPage() {
                     <label>${t('foodCategory')} *</label>
                     <select id="shop-category">
                         <option value="">${t('selectCategory')}</option>
-                        <option value="Dosa">${t('categoryDosa')}</option>
+                        <option value="Fast Food">${t('categoryFastFood')}</option>
                         <option value="Biryani">${t('categoryBiryani')}</option>
-                        <option value="Rolls">${t('categoryRolls')}</option>
-                        <option value="Bajji">${t('categoryBajji')}</option>
+                        <option value="Parotta &amp; Meals">${t('categoryParottaMeals')}</option>
+                        <option value="Grilled &amp; Non-Veg">${t('categoryGrilledNonVeg')}</option>
                         <option value="Juice">${t('categoryJuice')}</option>
-                        <option value="Chinese">${t('categoryChinese')}</option>
+                        <option value="Sweet &amp; Beverages">${t('categorySweetBeverages')}</option>
                         <option value="Snacks">${t('categorySnacks')}</option>
+                        <option value="Others">${t('categoryOthers')}</option>
                     </select>
                 </div>
 
@@ -938,6 +926,23 @@ function renderAddShopPage() {
                     <div class="form-group">
                         <label>${t('todaysDiscount')}</label>
                         <input type="text" id="shop-discount" placeholder="${t('discountPlaceholder')}">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>\uD83D\uDD12 Password *</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="shop-password" placeholder="Min 4 characters" autocomplete="new-password">
+                            <button type="button" class="eye-toggle-btn" data-target="shop-password" title="Show/hide password">\uD83D\uDC41\uFE0F</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>\uD83D\uDD12 Confirm Password *</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="shop-password-confirm" placeholder="Repeat password" autocomplete="new-password">
+                            <button type="button" class="eye-toggle-btn" data-target="shop-password-confirm" title="Show/hide password">\uD83D\uDC41\uFE0F</button>
+                        </div>
                     </div>
                 </div>
 
@@ -966,26 +971,12 @@ function renderAddShopPage() {
             </div>
         </div>
     `;
-
-    app.querySelector('#add-menu-item').addEventListener('click', () => {
-        const name = app.querySelector('#menu-item-name').value.trim();
-        const price = parseInt(app.querySelector('#menu-item-price').value);
-
-        if (!name || !price) {
-            showToast('Please enter item name and price', 'error');
-            return;
-        }
-
-        menuItems.push({ itemName: name, price, available: true });
-        app.querySelector('#menu-item-name').value = '';
-        app.querySelector('#menu-item-price').value = '';
-        renderMenuList();
-    });
+    document.body.appendChild(modal);
 
     function renderMenuList() {
-        const list = app.querySelector('#added-menu-list');
+        const list = modal.querySelector('#added-menu-list');
         if (menuItems.length === 0) {
-            list.innerHTML = `<p style="color: #999; text-align: center;">${t('noItemsAdded')}</p>`;
+            list.innerHTML = `<p style="color:#999;text-align:center;">${t('noItemsAdded')}</p>`;
             return;
         }
         list.innerHTML = menuItems.map((item, index) => `
@@ -994,7 +985,6 @@ function renderAddShopPage() {
                 <button class="remove-menu-btn" data-index="${index}">×</button>
             </div>
         `).join('');
-
         list.querySelectorAll('.remove-menu-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 menuItems.splice(parseInt(btn.dataset.index), 1);
@@ -1005,64 +995,121 @@ function renderAddShopPage() {
 
     renderMenuList();
 
-    app.querySelector('#submit-shop').addEventListener('click', () => {
-        const name = app.querySelector('#shop-name').value.trim();
-        const category = app.querySelector('#shop-category').value;
-        const area = app.querySelector('#shop-area').value.trim();
-        const address = app.querySelector('#shop-address').value.trim();
-        const contact = app.querySelector('#shop-contact').value.trim();
-        const discount = app.querySelector('#shop-discount').value.trim();
-        const openTime = app.querySelector('#open-time').value;
-        const closeTime = app.querySelector('#close-time').value;
+    // Init eye toggles
+    initPasswordToggles(modal);
+
+    // ✕ Close — go back to Profile
+    modal.querySelector('#add-shop-close-btn').addEventListener('click', () => {
+        modal.classList.remove('active');
+        // Navigate back to profile
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        const profileNav = document.querySelector('.nav-item[data-page="profile"]');
+        if (profileNav) profileNav.classList.add('active');
+        navigateTo('profile');
+    });
+
+    // Add menu item
+    modal.querySelector('#add-menu-item').addEventListener('click', () => {
+        const name = modal.querySelector('#menu-item-name').value.trim();
+        const price = parseInt(modal.querySelector('#menu-item-price').value);
+        if (!name || !price) {
+            showToast('Please enter item name and price', 'error');
+            return;
+        }
+        menuItems.push({ itemName: name, price, available: true });
+        modal.querySelector('#menu-item-name').value = '';
+        modal.querySelector('#menu-item-price').value = '';
+        renderMenuList();
+    });
+
+    // Submit shop — POST to /api/stalls/signup
+    modal.querySelector('#submit-shop').addEventListener('click', async () => {
+        const name = modal.querySelector('#shop-name').value.trim();
+        const category = modal.querySelector('#shop-category').value;
+        const area = modal.querySelector('#shop-area').value.trim();
+        const address = modal.querySelector('#shop-address').value.trim();
+        const contact = modal.querySelector('#shop-contact').value.trim();
+        const discount = modal.querySelector('#shop-discount').value.trim();
+        const openTime = modal.querySelector('#open-time').value;
+        const closeTime = modal.querySelector('#close-time').value;
+        const password = modal.querySelector('#shop-password').value;
+        const confirmPassword = modal.querySelector('#shop-password-confirm').value;
 
         if (!name || !category || !area || !contact) {
             showToast('Please fill all required fields', 'error');
             return;
         }
-
+        if (!password || password.length < 4) {
+            showToast('Password must be at least 4 characters', 'error');
+            return;
+        }
+        if (password !== confirmPassword) {
+            showToast('Passwords do not match', 'error');
+            return;
+        }
         if (menuItems.length === 0) {
             showToast('Please add at least one menu item', 'error');
             return;
         }
 
-        const maxId = stalls.length > 0 ? Math.max(...stalls.map(s => s.id)) : 0;
+        const submitBtn = modal.querySelector('#submit-shop');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Registering...';
 
-        const newStall = {
-            id: maxId + 1,
-            name,
-            category,
-            area,
-            address: address || `${area}, Chennai`,
-            contact,
-            openTime,
-            closeTime,
-            todayDiscount: discount || null,
-            menu: menuItems,
-            status: 'closed',
-            rating: 0,
-            totalReviews: 0,
-            reviews: [],
-            emoji: categoryEmojis[category] || '🍽️'
-        };
-
-        stalls.push(newStall);
-        saveData();
-
-        showToast('Shop added successfully!', 'success');
-        loadStalls();
-        navigateTo('home');
+        try {
+            const res = await fetch('/api/stalls/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name, category, area,
+                    address: address || `${area}, Tamil Nadu`,
+                    contact, password,
+                    open_time: openTime,
+                    close_time: closeTime,
+                    today_discount: discount || null,
+                    menu: menuItems
+                })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                showToast(data.error || 'Registration failed', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = t('listMyShop');
+                return;
+            }
+            modal.remove();
+            showToast('🎉 Shop registered! Visible to all users now.', 'success');
+            await reloadStalls();
+            navigateTo('home');
+        } catch (e) {
+            showToast('Network error. Please try again.', 'error');
+            submitBtn.disabled = false;
+            submitBtn.textContent = t('listMyShop');
+        }
     });
 }
+
+// Close add shop modal if open (called when navigating away is fine — modal persists)
+function closeAddShopModal() {
+    const modal = document.getElementById('add-shop-modal');
+    if (modal) modal.remove();
+}
+window.closeAddShopModal = closeAddShopModal;
+
+
+
 
 // Render Profile/Vendor Page
 function renderProfilePage() {
     const app = document.getElementById('app');
 
     if (vendorShop) {
+        // Vendor dashboard
         const openTime12 = formatTime12Hour(vendorShop.openTime);
         const closeTime12 = formatTime12Hour(vendorShop.closeTime);
         const isOpen = vendorShop.status === 'open';
 
+        // Render complete HTML including add menu item section
         app.innerHTML = `
             <div class="page vendor-dashboard-page">
                 <div class="dashboard-header">
@@ -1103,6 +1150,7 @@ function renderProfilePage() {
                         `).join('')}
                     </div>
 
+                    <!-- Add New Menu Item Section -->
                     <div class="form-section" style="margin-top: 20px;">
                         <h3 class="section-title">➕ ${t('addNewMenuItem')}</h3>
                         <div class="form-row">
@@ -1121,54 +1169,62 @@ function renderProfilePage() {
             </div>
         `;
 
-        app.querySelector('#status-toggle').addEventListener('click', () => {
+        // Status toggle — API call
+        app.querySelector('#status-toggle').addEventListener('click', async () => {
             const newStatus = vendorShop.status === 'open' ? 'closed' : 'open';
-            const stallIndex = stalls.findIndex(s => s.id === vendorShop.id);
-            if (stallIndex !== -1) {
-                stalls[stallIndex].status = newStatus;
+            try {
+                const res = await fetch(`/api/stalls/${vendorShop.id}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                const data = await res.json();
                 vendorShop.status = newStatus;
-                saveData();
+                await reloadStalls();
                 renderProfilePage();
-                showToast(`Shop is now ${newStatus}`, 'success');
-            }
+                showToast(`Shop is now ${newStatus === 'open' ? '🟢 Open' : '🔴 Closed'}`, 'success');
+            } catch (e) { showToast('Update failed', 'error'); }
         });
 
+        // Discount update — API call
         const discountInput = app.querySelector('#vendor-discount');
         const updateDiscountBtn = app.querySelector('#update-discount');
 
-        const updateDiscount = () => {
+        const updateDiscount = async () => {
             const discount = app.querySelector('#vendor-discount').value.trim();
-            const stallIndex = stalls.findIndex(s => s.id === vendorShop.id);
-            if (stallIndex !== -1) {
-                stalls[stallIndex].todayDiscount = discount || null;
+            try {
+                await fetch(`/api/stalls/${vendorShop.id}/discount`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ discount: discount || null })
+                });
                 vendorShop.todayDiscount = discount || null;
-                saveData();
-                showToast('Discount updated!', 'success');
-            }
+                showToast('Offer updated! 🎉', 'success');
+            } catch (e) { showToast('Update failed', 'error'); }
         };
 
         updateDiscountBtn.addEventListener('click', updateDiscount);
-        discountInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                updateDiscount();
-            }
-        });
+        discountInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') updateDiscount(); });
 
+        // Menu availability toggles — API call
         app.querySelectorAll('.availability-toggle').forEach(toggle => {
-            toggle.addEventListener('click', () => {
+            toggle.addEventListener('click', async () => {
                 const index = parseInt(toggle.dataset.index);
-                const stallIndex = stalls.findIndex(s => s.id === vendorShop.id);
-
-                if (stallIndex !== -1) {
-                    stalls[stallIndex].menu[index].available = !stalls[stallIndex].menu[index].available;
-                    vendorShop.menu[index].available = stalls[stallIndex].menu[index].available;
-                    saveData();
+                const newAvailable = !vendorShop.menu[index].available;
+                try {
+                    await fetch(`/api/stalls/${vendorShop.id}/menu-item`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ item_index: index, available: newAvailable })
+                    });
+                    vendorShop.menu[index].available = newAvailable;
                     renderProfilePage();
-                    showToast('Menu updated!', 'success');
-                }
+                    showToast(`${vendorShop.menu[index].itemName} is now ${newAvailable ? 'available' : 'unavailable'}`, 'success');
+                } catch (e) { showToast('Update failed', 'error'); }
             });
         });
 
+        // Logout
         app.querySelector('#logout-btn').addEventListener('click', () => {
             vendorShop = null;
             localStorage.removeItem('vendorShopId');
@@ -1176,7 +1232,8 @@ function renderProfilePage() {
             showToast('Logged out', 'success');
         });
 
-        app.querySelector('#add-new-item-btn').addEventListener('click', () => {
+        // Add new menu item — API call
+        app.querySelector('#add-new-item-btn').addEventListener('click', async () => {
             const itemName = app.querySelector('#new-item-name').value.trim();
             const price = parseInt(app.querySelector('#new-item-price').value);
 
@@ -1184,29 +1241,39 @@ function renderProfilePage() {
                 showToast('Please enter item name and price', 'error');
                 return;
             }
-
-            const stallIndex = stalls.findIndex(s => s.id === vendorShop.id);
-            if (stallIndex !== -1) {
-                stalls[stallIndex].menu.push({ itemName, price, available: true });
+            try {
+                const res = await fetch(`/api/stalls/${vendorShop.id}/menu`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ itemName, price, available: true })
+                });
+                const updated = await res.json();
+                vendorShop.menu = updated.menu || vendorShop.menu;
                 vendorShop.menu.push({ itemName, price, available: true });
-                saveData();
                 app.querySelector('#new-item-name').value = '';
                 app.querySelector('#new-item-price').value = '';
                 renderProfilePage();
-                showToast('New item added to menu!', 'success');
-            }
+                showToast('New item added! 🍽️', 'success');
+            } catch (e) { showToast('Failed to add item', 'error'); }
         });
 
     } else {
-        let savedShopId = localStorage.getItem('vendorShopId');
+        // Login form — check for persistent login via API
+        const savedShopId = localStorage.getItem('vendorShopId');
+        const savedContact = localStorage.getItem('vendorContact');
 
         if (savedShopId) {
-            const shop = stalls.find(s => s.id === parseInt(savedShopId));
-            if (shop) {
-                vendorShop = shop;
-                renderProfilePage();
-                return;
-            }
+            // Re-fetch from API to get fresh data
+            fetch(`/api/stalls/${savedShopId}`)
+                .then(r => r.json())
+                .then(shop => {
+                    if (shop && shop.id) {
+                        vendorShop = shop;
+                        renderProfilePage();
+                    }
+                })
+                .catch(() => {});
+            return;
         }
 
         app.innerHTML = `
@@ -1236,12 +1303,22 @@ function renderProfilePage() {
                             <input type="tel" id="vendor-contact" placeholder="${t('contactPlaceholder')}">
                         </div>
 
+                        <div class="form-group">
+                            <label>\uD83D\uDD12 Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="vendor-password" placeholder="Your shop password" autocomplete="current-password">
+                                <button type="button" class="eye-toggle-btn" data-target="vendor-password" title="Show/hide password">\uD83D\uDC41\uFE0F</button>
+                            </div>
+                        </div>
+
                         <button class="submit-btn" id="vendor-login-btn">${t('login')}</button>
                     </div>
 
                     <div style="text-align: center; margin-top: 30px; color: #666;">
                         <p>${t('noShopListed')}</p>
-                        <button class="submit-btn" onclick="navigateTo('add')" style="margin-top: 10px; background: #28a745;">${t('addYourShop')}</button>
+                        <button class="add-shop-from-profile-btn" id="add-shop-from-profile">
+                            ➕ ${t('addYourShop')}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1251,6 +1328,20 @@ function renderProfilePage() {
         const searchInput = app.querySelector('#shop-search-input');
         const resultsDropdown = app.querySelector('#shop-search-results');
 
+        // Init password eye toggles
+        initPasswordToggles(app);
+
+        // "Add Your Shop" button — navigate to the full add shop page
+        app.querySelector('#add-shop-from-profile').addEventListener('click', () => {
+            // Keep Profile nav active visually (user came from profile)
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const profileNav = document.querySelector('.nav-item[data-page="profile"]');
+            if (profileNav) profileNav.classList.add('active');
+            // Render the full add shop page
+            navigateTo('add');
+        });
+
+        // Search functionality - show results as user types
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value.trim().toLowerCase();
 
@@ -1283,6 +1374,7 @@ function renderProfilePage() {
 
             resultsDropdown.style.display = 'block';
 
+            // Add click handlers to suggestions
             resultsDropdown.querySelectorAll('.shop-suggestion-item').forEach(item => {
                 item.addEventListener('click', () => {
                     selectedShopId = parseInt(item.dataset.id);
@@ -1293,13 +1385,15 @@ function renderProfilePage() {
             });
         });
 
+        // Close dropdown when clicking outside
         document.addEventListener('click', (e) => {
             if (!searchInput.contains(e.target) && !resultsDropdown.contains(e.target)) {
                 resultsDropdown.style.display = 'none';
             }
         });
 
-        app.querySelector('#vendor-login-btn').addEventListener('click', () => {
+        // Login — verify via API (contact + password)
+        app.querySelector('#vendor-login-btn').addEventListener('click', async () => {
             if (!selectedShopId) {
                 showToast(currentLanguage === 'ta' ? 'தயவுசெய்து உங்கள் கடையைத் தேர்வுசெய்க' : currentLanguage === 'hi' ? 'कृपया अपनी दुकान चुनें' : 'Please select your shop from the list', 'error');
                 searchInput.focus();
@@ -1307,25 +1401,43 @@ function renderProfilePage() {
             }
 
             const contact = app.querySelector('#vendor-contact').value.trim();
+            const password = app.querySelector('#vendor-password').value;
 
             if (!contact) {
                 showToast(currentLanguage === 'ta' ? 'தொடர்பு எண்ணை உள்ளிடுக' : currentLanguage === 'hi' ? 'संपर्क नंबर डालें' : 'Please enter contact number', 'error');
                 return;
             }
+            if (!password) {
+                showToast('Please enter your password', 'error');
+                return;
+            }
 
-            const shop = stalls.find(s => s.id === selectedShopId);
+            const loginBtn = app.querySelector('#vendor-login-btn');
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Logging in...';
 
-            if (shop) {
-                if (shop.contact === contact) {
-                    vendorShop = shop;
+            try {
+                const res = await fetch(`/api/stalls/${selectedShopId}/vendor-login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contact, password })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    vendorShop = data.stall;
                     localStorage.setItem('vendorShopId', selectedShopId);
+                    localStorage.setItem('vendorContact', contact);
                     renderProfilePage();
-                    showToast(currentLanguage === 'ta' ? `வரவேற்கிறோம், ${vendorShop.name}!` : currentLanguage === 'hi' ? `स्वागत है, ${vendorShop.name}!` : `Welcome, ${vendorShop.name}!`, 'success');
+                    showToast(currentLanguage === 'ta' ? `வரவேற்கிறோம், ${vendorShop.name}!` : currentLanguage === 'hi' ? `स्वागत है, ${vendorShop.name}!` : `Welcome, ${vendorShop.name}! 👋`, 'success');
                 } else {
-                    showToast(currentLanguage === 'ta' ? 'தொடர்பு எண் பொருந்தவில்லை' : currentLanguage === 'hi' ? 'संपर्क नंबर मेल नहीं खाता' : 'Contact number does not match', 'error');
+                    showToast(data.error || 'Invalid credentials', 'error');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = t('login');
                 }
-            } else {
-                showToast(currentLanguage === 'ta' ? 'கடை கிடைக்கவில்லை' : currentLanguage === 'hi' ? 'दुकान नहीं मिली' : 'Shop not found', 'error');
+            } catch (e) {
+                showToast('Network error. Please try again.', 'error');
+                loginBtn.disabled = false;
+                loginBtn.textContent = t('login');
             }
         });
     }
@@ -1347,6 +1459,28 @@ function showToast(message, type = 'success') {
         toast.classList.remove('show');
     }, 3000);
 }
+// Password show/hide toggle — works on mobile (iOS + Android)
+function initPasswordToggles(container) {
+    (container || document).querySelectorAll('.eye-toggle-btn').forEach(btn => {
+        const targetId = btn.dataset.target;
+        const input = (container || document).getElementById(targetId);
+        if (!input) return;
+
+        function toggle(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const isHidden = input.type === 'password';
+            input.type = isHidden ? 'text' : 'password';
+            btn.textContent = isHidden ? '🙈' : '👁️';
+            // Keep focus on input so keyboard stays open on mobile
+            input.focus();
+        }
+
+        btn.addEventListener('click', toggle);
+        btn.addEventListener('touchend', toggle, { passive: false });
+    });
+}
+window.initPasswordToggles = initPasswordToggles;
 
 // Change language
 function changeLanguage(lang) {
@@ -1354,13 +1488,13 @@ function changeLanguage(lang) {
     localStorage.setItem('preferredLanguage', lang);
     updateHeaderLanguageSelector();
     updateNavigationLabels();
+    // Re-render current page
     navigateTo(currentPage);
 }
 
-// Make functions globally available
+// Make navigateTo and changeLanguage available globally
 window.navigateTo = navigateTo;
 window.changeLanguage = changeLanguage;
-window.openLocationSelector = openLocationSelector;
 
 // Load saved language preference
 function loadLanguagePreference() {
@@ -1369,3 +1503,226 @@ function loadLanguagePreference() {
         currentLanguage = savedLang;
     }
 }
+
+// ===== Location Picker Functions =====
+
+function updateLocationButtonText() {
+    const btnText = document.getElementById('location-btn-text');
+    if (!btnText) return;
+    if (selectedArea && selectedArea !== 'All Areas') {
+        btnText.textContent = getAreaName(selectedArea);
+    } else if (selectedDistrict) {
+        btnText.textContent = getDistrictName(selectedDistrict);
+    } else {
+        btnText.textContent = t('selectLocation');
+    }
+}
+
+function openLocationPicker() {
+    const overlay = document.getElementById('location-overlay');
+    const sheet = document.getElementById('location-sheet');
+    const searchInput = document.getElementById('sheet-search-input');
+
+    overlay.classList.add('active');
+    sheet.classList.add('active');
+    document.getElementById('location-btn').classList.add('active');
+
+    // If a district is already selected, show areas step
+    if (selectedDistrict && tamilNaduDistricts[selectedDistrict]) {
+        locationStep = 'area';
+        renderAreaList(selectedDistrict);
+    } else {
+        locationStep = 'district';
+        renderDistrictList();
+    }
+
+    searchInput.value = '';
+    // Do NOT auto-focus — prevents unwanted keyboard popup on mobile
+}
+
+function closeLocationPicker() {
+    const overlay = document.getElementById('location-overlay');
+    const sheet = document.getElementById('location-sheet');
+
+    overlay.classList.remove('active');
+    sheet.classList.remove('active');
+    document.getElementById('location-btn').classList.remove('active');
+}
+
+function renderDistrictList() {
+    locationStep = 'district';
+    const list = document.getElementById('sheet-list');
+    const backBtn = document.getElementById('sheet-back-btn');
+    const title = document.getElementById('sheet-title');
+    const searchInput = document.getElementById('sheet-search-input');
+
+    backBtn.style.display = 'none';
+    title.textContent = t('selectDistrict');
+    searchInput.placeholder = t('searchDistrict');
+    searchInput.value = '';
+
+    const districts = Object.keys(tamilNaduDistricts);
+    list.innerHTML = districts.map(district => `
+        <div class="location-item ${selectedDistrict === district ? 'selected' : ''}" onclick="selectDistrictItem('${district}')">
+            <div class="location-item-left">
+                <span class="location-item-emoji">🏛️</span>
+                <div>
+                    <div class="location-item-name">${getDistrictName(district)}</div>
+                    ${currentLanguage !== 'en' ? `<div class="location-item-sub">${district}</div>` : ''}
+                </div>
+            </div>
+            <span class="location-item-arrow">→</span>
+        </div>
+    `).join('');
+}
+
+function selectDistrictItem(district) {
+    selectedDistrict = district;
+    localStorage.setItem('streetbite_district', district);
+    selectedArea = null;
+    localStorage.removeItem('streetbite_area');
+
+    locationStep = 'area';
+    renderAreaList(district);
+}
+
+function renderAreaList(district) {
+    locationStep = 'area';
+    const list = document.getElementById('sheet-list');
+    const backBtn = document.getElementById('sheet-back-btn');
+    const title = document.getElementById('sheet-title');
+    const searchInput = document.getElementById('sheet-search-input');
+
+    backBtn.style.display = 'flex';
+    title.textContent = `${t('selectArea')} ${getDistrictName(district)}`;
+    searchInput.placeholder = t('searchArea');
+    searchInput.value = '';
+
+    const areas = tamilNaduDistricts[district] || [];
+
+    // Add "All Areas" option first
+    let itemsHTML = `
+        <div class="location-item ${selectedArea === 'All Areas' || !selectedArea ? 'selected' : ''}" onclick="selectAreaItem('All Areas')">
+            <div class="location-item-left">
+                <span class="location-item-emoji">🌐</span>
+                <span class="location-item-name">${t('allAreas')}</span>
+            </div>
+            <span class="location-item-arrow">✓</span>
+        </div>
+    `;
+
+    itemsHTML += areas.map(area => `
+        <div class="location-item ${selectedArea === area ? 'selected' : ''}" onclick="selectAreaItem('${area.replace(/'/g, "\\'")}')">
+            <div class="location-item-left">
+                <span class="location-item-emoji">📍</span>
+                <div>
+                    <div class="location-item-name">${getAreaName(area)}</div>
+                    ${currentLanguage !== 'en' && getAreaName(area) !== area ? `<div class="location-item-sub">${area}</div>` : ''}
+                </div>
+            </div>
+            <span class="location-item-arrow">${selectedArea === area ? '✓' : '→'}</span>
+        </div>
+    `).join('');
+
+    list.innerHTML = itemsHTML;
+}
+
+function selectAreaItem(area) {
+    selectedArea = area;
+    localStorage.setItem('streetbite_area', area);
+
+    closeLocationPicker();
+    updateLocationButtonText();
+
+    // Re-render current page with location filter
+    if (currentPage === 'home') {
+        renderHomePage();
+    } else if (currentPage === 'search') {
+        renderSearchPage();
+    }
+
+    const displayName = area === 'All Areas'
+        ? getDistrictName(selectedDistrict)
+        : `${getAreaName(area)}, ${getDistrictName(selectedDistrict)}`;
+    showToast(`📍 ${displayName}`, 'success');
+}
+
+function goBackToDistricts() {
+    renderDistrictList();
+}
+
+function filterLocationList() {
+    const searchInput = document.getElementById('sheet-search-input');
+    const query = searchInput.value.toLowerCase().trim();
+    const list = document.getElementById('sheet-list');
+
+    if (locationStep === 'district') {
+        // Search in both English and localized names
+        const districts = Object.keys(tamilNaduDistricts).filter(d =>
+            d.toLowerCase().includes(query) ||
+            getDistrictName(d).toLowerCase().includes(query)
+        );
+        list.innerHTML = districts.map(district => `
+            <div class="location-item ${selectedDistrict === district ? 'selected' : ''}" onclick="selectDistrictItem('${district}')">
+                <div class="location-item-left">
+                    <span class="location-item-emoji">🏛️</span>
+                    <div>
+                        <div class="location-item-name">${getDistrictName(district)}</div>
+                        ${currentLanguage !== 'en' ? `<div class="location-item-sub">${district}</div>` : ''}
+                    </div>
+                </div>
+                <span class="location-item-arrow">→</span>
+            </div>
+        `).join('');
+
+        if (districts.length === 0) {
+            list.innerHTML = `<div class="empty-state"><p>${t('noShopsFound')}</p></div>`;
+        }
+    } else if (locationStep === 'area' && selectedDistrict) {
+        // Search in both English and localized area names
+        const areas = (tamilNaduDistricts[selectedDistrict] || []).filter(a =>
+            a.toLowerCase().includes(query) ||
+            getAreaName(a).toLowerCase().includes(query)
+        );
+
+        let itemsHTML = '';
+        if (!query || t('allAreas').toLowerCase().includes(query)) {
+            itemsHTML += `
+                <div class="location-item ${selectedArea === 'All Areas' || !selectedArea ? 'selected' : ''}" onclick="selectAreaItem('All Areas')">
+                    <div class="location-item-left">
+                        <span class="location-item-emoji">🌐</span>
+                        <span class="location-item-name">${t('allAreas')}</span>
+                    </div>
+                    <span class="location-item-arrow">✓</span>
+                </div>
+            `;
+        }
+
+        itemsHTML += areas.map(area => `
+            <div class="location-item ${selectedArea === area ? 'selected' : ''}" onclick="selectAreaItem('${area.replace(/'/g, "\\'")}')">
+                <div class="location-item-left">
+                    <span class="location-item-emoji">📍</span>
+                    <div>
+                        <div class="location-item-name">${getAreaName(area)}</div>
+                        ${currentLanguage !== 'en' && getAreaName(area) !== area ? `<div class="location-item-sub">${area}</div>` : ''}
+                    </div>
+                </div>
+                <span class="location-item-arrow">${selectedArea === area ? '✓' : '→'}</span>
+            </div>
+        `).join('');
+
+        list.innerHTML = itemsHTML;
+
+        if (areas.length === 0 && !(!query || t('allAreas').toLowerCase().includes(query))) {
+            list.innerHTML = `<div class="empty-state"><p>${t('noShopsFound')}</p></div>`;
+        }
+    }
+}
+
+// Expose location functions globally
+window.openLocationPicker = openLocationPicker;
+window.closeLocationPicker = closeLocationPicker;
+window.selectDistrictItem = selectDistrictItem;
+window.selectAreaItem = selectAreaItem;
+window.goBackToDistricts = goBackToDistricts;
+window.filterLocationList = filterLocationList;

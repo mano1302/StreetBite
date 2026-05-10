@@ -11,10 +11,11 @@
     <header class="header">
         <div class="header-content">
             <h1 id="app-title"><span class="logo-icon">🍽️</span> StreetBite</h1>
-            <div class="header-buttons">
-                <button class="location-badge" id="header-location-btn" onclick="openLocationSelector()">
-                    <span class="location-icon">📍</span>
-                    <span id="header-location-text">Select Location</span>
+            <div class="header-actions">
+                <button class="location-btn" id="location-btn" onclick="openLocationPicker()">
+                    <span class="location-btn-icon">📍</span>
+                    <span class="location-btn-text" id="location-btn-text">Select Location</span>
+                    <span class="location-btn-arrow">▼</span>
                 </button>
                 <select class="language-selector" id="header-language-select" onchange="changeLanguage(this.value)">
                     <option value="en">🇬🇧 English</option>
@@ -25,32 +26,25 @@
         </div>
     </header>
 
+    <!-- Location Picker Bottom Sheet -->
+    <div class="location-overlay" id="location-overlay" onclick="closeLocationPicker()"></div>
+    <div class="location-sheet" id="location-sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-header">
+            <button class="sheet-back-btn" id="sheet-back-btn" onclick="goBackToDistricts()" style="display:none;">←</button>
+            <h3 class="sheet-title" id="sheet-title">📍 Select Your District</h3>
+            <button class="sheet-close-btn" onclick="closeLocationPicker()">✕</button>
+        </div>
+        <div class="sheet-search">
+            <input type="text" class="sheet-search-input" id="sheet-search-input" placeholder="🔍 Search..." oninput="filterLocationList()">
+        </div>
+        <div class="sheet-list" id="sheet-list"></div>
+    </div>
+
     <!-- Loading Spinner -->
     <div id="loading" class="loading">
         <div class="spinner"></div>
         <p>Loading...</p>
-    </div>
-
-    <!-- Location Selector Modal -->
-    <div id="location-modal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="location-modal-title">📍 Select Your Location</h2>
-                <button class="modal-close" id="modal-close-btn">✕</button>
-            </div>
-            <div class="modal-body">
-                <p class="modal-subtitle" id="location-modal-subtitle">Choose your city to find local street food shops nearby</p>
-                <div class="location-search-box">
-                    <input type="text" id="city-search" class="city-search-input" placeholder="🔍 Search city name..." autocomplete="off">
-                </div>
-                <div class="city-list" id="city-list"></div>
-                <div class="area-section" id="area-section" style="display: none;">
-                    <h3 class="area-title"><span id="area-title-prefix">Select Area in</span> <span id="selected-city-name"></span></h3>
-                    <div class="area-list" id="area-list"></div>
-                    <button class="skip-area-btn" id="skip-area-btn">Skip - Show All Shops</button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Main Content -->
@@ -65,10 +59,6 @@
         <button class="nav-item" data-page="search">
             <span class="nav-icon">🔍</span>
             <span class="nav-label">Search</span>
-        </button>
-        <button class="nav-item" data-page="add">
-            <span class="nav-icon">➕</span>
-            <span class="nav-label">Add Shop</span>
         </button>
         <button class="nav-item" data-page="profile">
             <span class="nav-icon">👤</span>

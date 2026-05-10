@@ -11,13 +11,35 @@
     <header class="header">
         <div class="header-content">
             <h1 id="app-title"><span class="logo-icon">🍽️</span> StreetBite</h1>
-            <select class="language-selector" id="header-language-select" onchange="changeLanguage(this.value)">
-                <option value="en">🇬🇧 English</option>
-                <option value="ta">🇮🇳 தமிழ்</option>
-                <option value="hi">🇮🇳 हिंदी</option>
-            </select>
+            <div class="header-actions">
+                <button class="location-btn" id="location-btn" onclick="openLocationPicker()">
+                    <span class="location-btn-icon">📍</span>
+                    <span class="location-btn-text" id="location-btn-text">Select Location</span>
+                    <span class="location-btn-arrow">▼</span>
+                </button>
+                <select class="language-selector" id="header-language-select" onchange="changeLanguage(this.value)">
+                    <option value="en">🇬🇧 English</option>
+                    <option value="ta">🇮🇳 தமிழ்</option>
+                    <option value="hi">🇮🇳 हिंदी</option>
+                </select>
+            </div>
         </div>
     </header>
+
+    <!-- Location Picker Bottom Sheet -->
+    <div class="location-overlay" id="location-overlay" onclick="closeLocationPicker()"></div>
+    <div class="location-sheet" id="location-sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-header">
+            <button class="sheet-back-btn" id="sheet-back-btn" onclick="goBackToDistricts()" style="display:none;">←</button>
+            <h3 class="sheet-title" id="sheet-title">📍 Select Your District</h3>
+            <button class="sheet-close-btn" onclick="closeLocationPicker()">✕</button>
+        </div>
+        <div class="sheet-search">
+            <input type="text" class="sheet-search-input" id="sheet-search-input" placeholder="🔍 Search..." oninput="filterLocationList()">
+        </div>
+        <div class="sheet-list" id="sheet-list"></div>
+    </div>
 
     <!-- Loading Spinner -->
     <div id="loading" class="loading">
@@ -37,10 +59,6 @@
         <button class="nav-item" data-page="search">
             <span class="nav-icon">🔍</span>
             <span class="nav-label">Search</span>
-        </button>
-        <button class="nav-item" data-page="add">
-            <span class="nav-icon">➕</span>
-            <span class="nav-label">Add Shop</span>
         </button>
         <button class="nav-item" data-page="profile">
             <span class="nav-icon">👤</span>

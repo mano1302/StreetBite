@@ -23,40 +23,55 @@ def get_stalls():
 
 @app.route('/api/stalls/<int:stall_id>', methods=['GET'])
 def get_stall(stall_id):
-    """Get a single stall by ID."""
-    stall = db.get_stall_by_id(stall_id)
+    """Get a single stall by ID (public data only)."""
+    stall = db.get_stall_by_id(stall_id, public=True)
     if stall:
         return jsonify(stall)
     return jsonify({'error': 'Stall not found'}), 404
 
 @app.route('/api/stalls', methods=['POST'])
 def add_stall():
-    """Add a new stall."""
+    """Add a new stall (admin/internal use). For public registration use /api/stalls/signup."""
     stall_data = request.json
-
-    # Set defaults
     if 'status' not in stall_data:
         stall_data['status'] = 'closed'
     if 'openTime' not in stall_data:
         stall_data['openTime'] = '09:00'
     if 'closeTime' not in stall_data:
         stall_data['closeTime'] = '22:00'
-
-    # Add emoji based on category if not provided
     emoji_map = {
-        'Dosa': '🥞',
-        'Biryani': '🍚',
-        'Rolls': '🌯',
-        'Bajji': '🫓',
-        'Juice': '🧃',
-        'Chinese': '🍜',
-        'Snacks': '🍿'
+        'Fast Food': '🍟', 'Biryani': '🍚', 'Parotta & Meals': '🫓',
+        'Grilled & Non-Veg': '🍗', 'Juice': '🧃', 'Sweet & Beverages': '🍧',
+        'Snacks': '🍿', 'Others': '🍽️'
     }
     if 'emoji' not in stall_data:
-        stall_data['emoji'] = emoji_map.get(stall_data.get('category', 'Snacks'), '🍽️')
-
+        stall_data['emoji'] = emoji_map.get(stall_data.get('category', ''), '🍽️')
     new_stall = db.add_stall(stall_data)
     return jsonify(new_stall), 201
+
+
+@app.route('/api/stalls/signup', methods=['POST'])
+def signup_stall():
+    """Public registration: creates a new shop with hashed password."""
+    stall_data = request.json
+    required = ['name', 'category', 'area', 'contact', 'password']
+    for field in required:
+        if not stall_data.get(field):
+            return jsonify({'error': f'{field} is required'}), 400
+    if len(stall_data['password']) < 4:
+        return jsonify({'error': 'Password must be at least 4 characters'}), 400
+    emoji_map = {
+        'Fast Food': '🍟', 'Biryani': '🍚', 'Parotta & Meals': '🫓',
+        'Grilled & Non-Veg': '🍗', 'Juice': '🧃', 'Sweet & Beverages': '🍧',
+        'Snacks': '🍿', 'Others': '🍽️'
+    }
+    stall_data['emoji'] = emoji_map.get(stall_data.get('category', ''), '🍽️')
+    stall_data['status'] = 'closed'
+    try:
+        new_stall = db.signup_stall(stall_data)
+        return jsonify({'success': True, 'stall': new_stall}), 201
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
 
 @app.route('/api/stalls/<int:stall_id>/review', methods=['POST'])
 def add_review(stall_id):
@@ -100,41 +115,48 @@ def update_menu(stall_id):
     stall = db.update_menu(stall_id, menu_data['menu'])
     return jsonify(stall)
 
-@app.route('/api/stalls/<int:stall_id>/menu-item', methods=['POST'])
-def add_menu_item(stall_id):
+@app.route('/api/stalls/<int:stall_id>/menu', methods=['POST'])
+def add_menu_item_post(stall_id):
     """Add a single menu item to a stall."""
     item_data = request.json
-
     if 'itemName' not in item_data or 'price' not in item_data:
         return jsonify({'error': 'Item name and price are required'}), 400
-
     stall = db.add_menu_item(stall_id, item_data)
     return jsonify(stall)
 
-@app.route('/api/stalls/<int:stall_id>/menu-item/<int:item_index>/availability', methods=['PUT'])
-def update_menu_item_availability(stall_id, item_index):
-    """Update a menu item's availability."""
-    availability_data = request.json
-
-    if 'available' not in availability_data:
-        return jsonify({'error': 'Available status is required'}), 400
-
-    stall = db.update_menu_item_availability(stall_id, item_index, availability_data['available'])
-    return jsonify(stall)
+@app.route('/api/stalls/<int:stall_id>/menu-item', methods=['POST', 'PUT'])
+def menu_item_handler(stall_id):
+    """POST: add menu item. PUT: toggle availability by item_index in body."""
+    item_data = request.json
+    if request.method == 'PUT':
+        # Toggle availability: body = {item_index, available}
+        item_index = item_data.get('item_index')
+        available = item_data.get('available')
+        if item_index is None or available is None:
+            return jsonify({'error': 'item_index and available are required'}), 400
+        stall = db.update_menu_item_availability(stall_id, item_index, available)
+        return jsonify(stall)
+    else:
+        if 'itemName' not in item_data or 'price' not in item_data:
+            return jsonify({'error': 'Item name and price are required'}), 400
+        stall = db.add_menu_item(stall_id, item_data)
+        return jsonify(stall)
 
 @app.route('/api/stalls/<int:stall_id>/vendor-login', methods=['POST'])
 def vendor_login(stall_id):
-    """Verify vendor login credentials."""
+    """Verify vendor login credentials (contact + password)."""
     login_data = request.json
-
     if 'contact' not in login_data:
         return jsonify({'error': 'Contact number is required'}), 400
+    if 'password' not in login_data:
+        return jsonify({'error': 'Password is required'}), 400
 
-    if db.verify_vendor_login(stall_id, login_data['contact']):
-        stall = db.get_stall_by_id(stall_id)
+    stall = db.vendor_login(stall_id, login_data['contact'], login_data['password'])
+    if stall:
+        # Return stall data — contact visible to owner only in this response
         return jsonify({'success': True, 'stall': stall})
     else:
-        return jsonify({'success': False, 'error': 'Contact number does not match'}), 401
+        return jsonify({'success': False, 'error': 'Invalid shop ID, contact, or password'}), 401
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
