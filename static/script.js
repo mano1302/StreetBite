@@ -987,14 +987,14 @@ function renderAddShopPage() {
                             <div class="form-group">
                                 <label><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> District *</label>
                                 <select id="shop-district">
-                                    <option value="">Select District</option>
+                                    <option value="">${t('selectDistrict')}</option>
                                     ${Object.keys(tamilNaduDistricts).map(d => `<option value="${d}">${getDistrictName(d)}</option>`).join('')}
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label>${t('areaLocation')} *</label>
                                 <select id="shop-area">
-                                    <option value="">Select area</option>
+                                    <option value="">${t('selectArea')}</option>
                                 </select>
                             </div>
                         </div>
@@ -1083,7 +1083,7 @@ function renderAddShopPage() {
     shopDistrictSelect.addEventListener('change', () => {
         const district = shopDistrictSelect.value;
         const areas = tamilNaduDistricts[district] || [];
-        shopAreaSelect.innerHTML = '<option value="">Select area</option>' +
+        shopAreaSelect.innerHTML = `<option value="">${t('selectArea')}</option>` +
             areas.map(a => `<option value="${a}">${getAreaName(a)}</option>`).join('');
     });
 
@@ -1595,6 +1595,11 @@ function changeLanguage(lang) {
     localStorage.setItem('preferredLanguage', lang);
     updateHeaderLanguageSelector();
     updateNavigationLabels();
+    
+    // Destroy existing Add Shop modal so it re-renders with the new language
+    const modal = document.getElementById('add-shop-modal');
+    if (modal) modal.remove();
+
     // Re-render current page
     navigateTo(currentPage);
 }

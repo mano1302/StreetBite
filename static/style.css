@@ -2256,9 +2256,13 @@ body {
     box-sizing: border-box;
 }
 
-/* Form section inner — provide horizontal padding */
+/* Form section inner — provide horizontal padding, remove inner box styling */
 .add-shop-modal-body .form-section {
     margin: 16px;
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+    border-radius: 0;
 }
 
 /* ========================================
