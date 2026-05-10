@@ -26,14 +26,20 @@ class Database:
 
     def __init__(self):
         self.db_url = os.environ.get('DATABASE_URL')
-        self.is_postgresql = self.db_url is not None and PSYCOPG2_AVAILABLE
-        self.sqlite_path = os.path.join(os.path.dirname(__file__), 'stalls.db')
+        self.is_postgresql = bool(self.db_url) and PSYCOPG2_AVAILABLE
+        # SQLite fallback: use local directory
+        data_dir = os.path.dirname(__file__)
+        self.sqlite_path = os.path.join(data_dir, 'stalls.db')
         self._init_db()
+
+    # ------------------------------------------------------------------
+    # Connection helpers
+    # ------------------------------------------------------------------
 
     def _get_connection(self):
         """Get database connection based on configuration."""
         if self.is_postgresql:
-            # Fix DATABASE_URL for psycopg2 (Render adds postgres:// but psycopg2 needs postgresql://)
+            # Render gives postgres:// but psycopg2 needs postgresql://
             url = self.db_url.replace('postgres://', 'postgresql://', 1)
             conn = psycopg2.connect(url)
             return conn
@@ -60,68 +66,135 @@ class Database:
         finally:
             conn.close()
 
+    def _ph(self, n=1):
+        """Return the correct placeholder(s): %s for PG, ? for SQLite."""
+        ph = '%s' if self.is_postgresql else '?'
+        if n == 1:
+            return ph
+        return ', '.join([ph] * n)
+
+    # ------------------------------------------------------------------
+    # Schema initialisation
+    # ------------------------------------------------------------------
+
     def _init_db(self):
-        """Initialize database schema."""
+        """Initialize database schema (works for both PG and SQLite)."""
         with self._cursor() as cursor:
-            # Stalls table — contact & password_hash are PRIVATE, never returned in public API
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS stalls (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL,
-                    category TEXT NOT NULL,
-                    emoji TEXT,
-                    area TEXT NOT NULL,
-                    address TEXT,
-                    contact TEXT NOT NULL,
-                    password_hash TEXT,
-                    open_time TEXT,
-                    close_time TEXT,
-                    status TEXT DEFAULT 'closed',
-                    rating REAL DEFAULT 0,
-                    total_reviews INTEGER DEFAULT 0,
-                    today_discount TEXT,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            ''')
+            if self.is_postgresql:
+                self._init_postgresql(cursor)
+            else:
+                self._init_sqlite(cursor)
 
-            # Add password_hash column if upgrading from old schema
-            try:
-                cursor.execute('ALTER TABLE stalls ADD COLUMN password_hash TEXT')
-            except Exception:
-                pass  # Column already exists
+    def _init_sqlite(self, cursor):
+        """SQLite schema."""
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS stalls (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                category TEXT NOT NULL,
+                emoji TEXT,
+                area TEXT NOT NULL,
+                address TEXT,
+                contact TEXT NOT NULL,
+                password_hash TEXT,
+                open_time TEXT,
+                close_time TEXT,
+                status TEXT DEFAULT 'closed',
+                rating REAL DEFAULT 0,
+                total_reviews INTEGER DEFAULT 0,
+                today_discount TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        try:
+            cursor.execute('ALTER TABLE stalls ADD COLUMN password_hash TEXT')
+        except Exception:
+            pass
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS menu_items (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                stall_id INTEGER NOT NULL,
+                item_name TEXT NOT NULL,
+                price INTEGER NOT NULL,
+                available BOOLEAN DEFAULT TRUE,
+                FOREIGN KEY (stall_id) REFERENCES stalls(id) ON DELETE CASCADE
+            )
+        ''')
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS reviews (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                stall_id INTEGER NOT NULL,
+                rating INTEGER NOT NULL,
+                comment TEXT,
+                date TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (stall_id) REFERENCES stalls(id) ON DELETE CASCADE
+            )
+        ''')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_stalls_category ON stalls(category)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_stalls_area ON stalls(area)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_stalls_status ON stalls(status)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_menu_items_stall_id ON menu_items(stall_id)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_reviews_stall_id ON reviews(stall_id)')
 
-            # Menu items table
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS menu_items (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    stall_id INTEGER NOT NULL,
-                    item_name TEXT NOT NULL,
-                    price INTEGER NOT NULL,
-                    available BOOLEAN DEFAULT TRUE,
-                    FOREIGN KEY (stall_id) REFERENCES stalls(id) ON DELETE CASCADE
-                )
-            ''')
+    def _init_postgresql(self, cursor):
+        """PostgreSQL schema."""
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS stalls (
+                id SERIAL PRIMARY KEY,
+                name TEXT NOT NULL,
+                category TEXT NOT NULL,
+                emoji TEXT,
+                area TEXT NOT NULL,
+                address TEXT,
+                contact TEXT NOT NULL,
+                password_hash TEXT,
+                open_time TEXT,
+                close_time TEXT,
+                status TEXT DEFAULT 'closed',
+                rating REAL DEFAULT 0,
+                total_reviews INTEGER DEFAULT 0,
+                today_discount TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        # Add password_hash column if upgrading from old schema
+        cursor.execute('''
+            DO $$ BEGIN
+                ALTER TABLE stalls ADD COLUMN password_hash TEXT;
+            EXCEPTION WHEN duplicate_column THEN NULL;
+            END $$;
+        ''')
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS menu_items (
+                id SERIAL PRIMARY KEY,
+                stall_id INTEGER NOT NULL REFERENCES stalls(id) ON DELETE CASCADE,
+                item_name TEXT NOT NULL,
+                price INTEGER NOT NULL,
+                available BOOLEAN DEFAULT TRUE
+            )
+        ''')
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS reviews (
+                id SERIAL PRIMARY KEY,
+                stall_id INTEGER NOT NULL REFERENCES stalls(id) ON DELETE CASCADE,
+                rating INTEGER NOT NULL,
+                comment TEXT,
+                date TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_stalls_category ON stalls(category)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_stalls_area ON stalls(area)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_stalls_status ON stalls(status)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_menu_items_stall_id ON menu_items(stall_id)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_reviews_stall_id ON reviews(stall_id)')
 
-            # Reviews table
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS reviews (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    stall_id INTEGER NOT NULL,
-                    rating INTEGER NOT NULL,
-                    comment TEXT,
-                    date TEXT NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (stall_id) REFERENCES stalls(id) ON DELETE CASCADE
-                )
-            ''')
-
-            # Create indexes for better query performance
-            cursor.execute('CREATE INDEX IF NOT EXISTS idx_stalls_category ON stalls(category)')
-            cursor.execute('CREATE INDEX IF NOT EXISTS idx_stalls_area ON stalls(area)')
-            cursor.execute('CREATE INDEX IF NOT EXISTS idx_stalls_status ON stalls(status)')
-            cursor.execute('CREATE INDEX IF NOT EXISTS idx_menu_items_stall_id ON menu_items(stall_id)')
-            cursor.execute('CREATE INDEX IF NOT EXISTS idx_reviews_stall_id ON reviews(stall_id)')
+    # ------------------------------------------------------------------
+    # Password helpers
+    # ------------------------------------------------------------------
 
     @staticmethod
     def _hash_password(password):
@@ -141,8 +214,13 @@ class Database:
         except Exception:
             return False
 
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
+
     def get_all_stalls(self):
         """Get all stalls — PUBLIC data only (no contact/password)."""
+        ph = '%s' if self.is_postgresql else '?'
         with self._cursor() as cursor:
             cursor.execute('SELECT * FROM stalls ORDER BY id DESC')
             stalls = cursor.fetchall()
@@ -151,16 +229,14 @@ class Database:
             for stall in stalls:
                 stall_dict = self._row_to_dict(stall, public=True)
 
-                # Get menu items
                 cursor.execute(
-                    'SELECT * FROM menu_items WHERE stall_id = ? ORDER BY id',
+                    f'SELECT * FROM menu_items WHERE stall_id = {ph} ORDER BY id',
                     (stall_dict['id'],)
                 )
                 stall_dict['menu'] = [self._row_to_dict(m) for m in cursor.fetchall()]
 
-                # Get reviews
                 cursor.execute(
-                    'SELECT * FROM reviews WHERE stall_id = ? ORDER BY date DESC',
+                    f'SELECT * FROM reviews WHERE stall_id = {ph} ORDER BY date DESC',
                     (stall_dict['id'],)
                 )
                 stall_dict['reviews'] = [self._row_to_dict(r) for r in cursor.fetchall()]
@@ -171,8 +247,9 @@ class Database:
 
     def get_stall_by_id(self, stall_id, public=True):
         """Get a single stall by ID. public=True strips private fields."""
+        ph = '%s' if self.is_postgresql else '?'
         with self._cursor() as cursor:
-            cursor.execute('SELECT * FROM stalls WHERE id = ?', (stall_id,))
+            cursor.execute(f'SELECT * FROM stalls WHERE id = {ph}', (stall_id,))
             stall = cursor.fetchone()
 
             if not stall:
@@ -180,16 +257,14 @@ class Database:
 
             stall_dict = self._row_to_dict(stall, public=public)
 
-            # Get menu items
             cursor.execute(
-                'SELECT * FROM menu_items WHERE stall_id = ? ORDER BY id',
+                f'SELECT * FROM menu_items WHERE stall_id = {ph} ORDER BY id',
                 (stall_id,)
             )
             stall_dict['menu'] = [self._row_to_dict(m) for m in cursor.fetchall()]
 
-            # Get reviews
             cursor.execute(
-                'SELECT * FROM reviews WHERE stall_id = ? ORDER BY date DESC',
+                f'SELECT * FROM reviews WHERE stall_id = {ph} ORDER BY date DESC',
                 (stall_id,)
             )
             stall_dict['reviews'] = [self._row_to_dict(r) for r in cursor.fetchall()]
@@ -202,14 +277,35 @@ class Database:
         if not password or len(password) < 4:
             raise ValueError('Password must be at least 4 characters')
 
+        # Check duplicate contact
+        ph = '%s' if self.is_postgresql else '?'
+        with self._cursor() as cursor:
+            cursor.execute(f'SELECT id FROM stalls WHERE contact = {ph}', (stall_data['contact'],))
+            if cursor.fetchone():
+                raise ValueError('A shop with this mobile number is already registered')
+
         password_hash = self._hash_password(password)
         stall_data['password_hash'] = password_hash
         return self.add_stall(stall_data)
 
+    def login_by_contact(self, contact, password):
+        """Login vendor by mobile number + password only (no shop ID needed)."""
+        ph = '%s' if self.is_postgresql else '?'
+        with self._cursor() as cursor:
+            cursor.execute(f'SELECT * FROM stalls WHERE contact = {ph}', (contact,))
+            stall = cursor.fetchone()
+            if not stall:
+                return None
+            row = self._row_to_dict(stall, public=False)
+            if not self._verify_password(password, row.get('passwordHash')):
+                return None
+            return self.get_stall_by_id(row['id'], public=False)
+
     def vendor_login(self, stall_id, contact, password):
         """Login vendor — verify contact + password. Returns stall dict (private) or None."""
+        ph = '%s' if self.is_postgresql else '?'
         with self._cursor() as cursor:
-            cursor.execute('SELECT * FROM stalls WHERE id = ?', (stall_id,))
+            cursor.execute(f'SELECT * FROM stalls WHERE id = {ph}', (stall_id,))
             stall = cursor.fetchone()
             if not stall:
                 return None
@@ -222,12 +318,15 @@ class Database:
 
     def add_stall(self, stall_data):
         """Add a new stall (internal — use signup_stall for public registration)."""
+        ph = '%s' if self.is_postgresql else '?'
+        ret = 'RETURNING id' if self.is_postgresql else ''
         with self._cursor() as cursor:
-            cursor.execute('''
+            cursor.execute(f'''
                 INSERT INTO stalls (name, category, emoji, area, address, contact,
                                    password_hash, open_time, close_time, status,
                                    rating, total_reviews, today_discount)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES ({self._ph(13)})
+                {ret}
             ''', (
                 stall_data['name'],
                 stall_data['category'],
@@ -244,102 +343,127 @@ class Database:
                 stall_data.get('today_discount', stall_data.get('todayDiscount'))
             ))
 
-            stall_id = cursor.lastrowid
+            if self.is_postgresql:
+                stall_id = cursor.fetchone()['id']
+            else:
+                stall_id = cursor.lastrowid
 
             # Add menu items
             for item in stall_data.get('menu', []):
-                cursor.execute('''
+                cursor.execute(f'''
                     INSERT INTO menu_items (stall_id, item_name, price, available)
-                    VALUES (?, ?, ?, ?)
+                    VALUES ({self._ph(4)})
                 ''', (stall_id, item['itemName'], item['price'], item.get('available', True)))
 
             return self.get_stall_by_id(stall_id)
 
     def add_review(self, stall_id, review_data):
         """Add a review to a stall."""
+        ph = '%s' if self.is_postgresql else '?'
         with self._cursor() as cursor:
-            cursor.execute('''
+            cursor.execute(f'''
                 INSERT INTO reviews (stall_id, rating, comment, date)
-                VALUES (?, ?, ?, ?)
+                VALUES ({self._ph(4)})
             ''', (stall_id, review_data['rating'], review_data.get('comment', ''),
                   datetime.now().strftime('%Y-%m-%d')))
 
-            # Update stall rating
-            cursor.execute('''
+            cursor.execute(f'''
                 UPDATE stalls
-                SET total_reviews = (SELECT COUNT(*) FROM reviews WHERE stall_id = ?),
-                    rating = (SELECT AVG(rating) FROM reviews WHERE stall_id = ?)
-                WHERE id = ?
+                SET total_reviews = (SELECT COUNT(*) FROM reviews WHERE stall_id = {ph}),
+                    rating = (SELECT AVG(rating) FROM reviews WHERE stall_id = {ph})
+                WHERE id = {ph}
             ''', (stall_id, stall_id, stall_id))
 
             return self.get_stall_by_id(stall_id)
 
     def update_stall_status(self, stall_id, status):
         """Update stall open/closed status."""
+        ph = '%s' if self.is_postgresql else '?'
         with self._cursor() as cursor:
-            cursor.execute('''
-                UPDATE stalls SET status = ?, updated_at = CURRENT_TIMESTAMP
-                WHERE id = ?
+            cursor.execute(f'''
+                UPDATE stalls SET status = {ph}, updated_at = CURRENT_TIMESTAMP
+                WHERE id = {ph}
             ''', (status, stall_id))
             return self.get_stall_by_id(stall_id)
 
     def update_stall_discount(self, stall_id, discount):
         """Update stall's today discount."""
+        ph = '%s' if self.is_postgresql else '?'
         with self._cursor() as cursor:
-            cursor.execute('''
-                UPDATE stalls SET today_discount = ?, updated_at = CURRENT_TIMESTAMP
-                WHERE id = ?
+            cursor.execute(f'''
+                UPDATE stalls SET today_discount = {ph}, updated_at = CURRENT_TIMESTAMP
+                WHERE id = {ph}
             ''', (discount, stall_id))
             return self.get_stall_by_id(stall_id)
 
     def update_menu_item_availability(self, stall_id, item_index, available):
         """Update a menu item's availability."""
+        ph = '%s' if self.is_postgresql else '?'
         with self._cursor() as cursor:
-            # Get menu items for this stall
             cursor.execute(
-                'SELECT id FROM menu_items WHERE stall_id = ? ORDER BY id',
+                f'SELECT id FROM menu_items WHERE stall_id = {ph} ORDER BY id',
                 (stall_id,)
             )
             items = cursor.fetchall()
 
             if item_index < len(items):
-                item_id = items[item_index]['id'] if isinstance(items[item_index], dict) else items[item_index][0]
-                cursor.execute('''
-                    UPDATE menu_items SET available = ? WHERE id = ?
+                item_row = items[item_index]
+                item_id = item_row['id'] if isinstance(item_row, dict) else item_row[0]
+                cursor.execute(f'''
+                    UPDATE menu_items SET available = {ph} WHERE id = {ph}
                 ''', (available, item_id))
 
             return self.get_stall_by_id(stall_id)
 
     def add_menu_item(self, stall_id, item_data):
         """Add a new menu item to a stall."""
+        ph = '%s' if self.is_postgresql else '?'
         with self._cursor() as cursor:
-            cursor.execute('''
+            cursor.execute(f'''
                 INSERT INTO menu_items (stall_id, item_name, price, available)
-                VALUES (?, ?, ?, ?)
+                VALUES ({self._ph(4)})
             ''', (stall_id, item_data['itemName'], item_data['price'],
                   item_data.get('available', True)))
             return self.get_stall_by_id(stall_id)
 
     def update_menu(self, stall_id, menu_data):
         """Update entire menu for a stall."""
+        ph = '%s' if self.is_postgresql else '?'
         with self._cursor() as cursor:
-            # Delete existing menu items
-            cursor.execute('DELETE FROM menu_items WHERE stall_id = ?', (stall_id,))
+            cursor.execute(f'DELETE FROM menu_items WHERE stall_id = {ph}', (stall_id,))
 
-            # Add new menu items
             for item in menu_data:
-                cursor.execute('''
+                cursor.execute(f'''
                     INSERT INTO menu_items (stall_id, item_name, price, available)
-                    VALUES (?, ?, ?, ?)
+                    VALUES ({self._ph(4)})
                 ''', (stall_id, item['itemName'], item['price'], item.get('available', True)))
 
             return self.get_stall_by_id(stall_id)
 
+    def delete_stall(self, stall_id, contact, password):
+        """Permanently delete a stall after verifying credentials."""
+        ph = '%s' if self.is_postgresql else '?'
+        with self._cursor() as cursor:
+            cursor.execute(f'SELECT * FROM stalls WHERE id = {ph}', (stall_id,))
+            stall = cursor.fetchone()
+            if not stall:
+                return False, 'Shop not found'
+            row = self._row_to_dict(stall, public=False)
+            if row.get('contact') != contact:
+                return False, 'Invalid credentials'
+            if not self._verify_password(password, row.get('passwordHash')):
+                return False, 'Invalid credentials'
+            cursor.execute(f'DELETE FROM menu_items WHERE stall_id = {ph}', (stall_id,))
+            cursor.execute(f'DELETE FROM reviews WHERE stall_id = {ph}', (stall_id,))
+            cursor.execute(f'DELETE FROM stalls WHERE id = {ph}', (stall_id,))
+            return True, 'Shop deleted'
+
     def verify_vendor_login(self, stall_id, contact, password=None):
-        """Legacy: verify contact only (kept for backward compat). Use vendor_login for full auth."""
+        """Legacy: verify contact only (kept for backward compat)."""
+        ph = '%s' if self.is_postgresql else '?'
         with self._cursor() as cursor:
             cursor.execute(
-                'SELECT * FROM stalls WHERE id = ? AND contact = ?',
+                f'SELECT * FROM stalls WHERE id = {ph} AND contact = {ph}',
                 (stall_id, contact)
             )
             stall = cursor.fetchone()
@@ -349,6 +473,10 @@ class Database:
                 row = self._row_to_dict(stall, public=False)
                 return self._verify_password(password, row.get('passwordHash'))
             return True
+
+    # ------------------------------------------------------------------
+    # Row conversion
+    # ------------------------------------------------------------------
 
     def _row_to_dict(self, row, public=True):
         """Convert database row to dictionary. If public=True, strip private fields."""
@@ -380,6 +508,10 @@ class Database:
 
         return result
 
+    # ------------------------------------------------------------------
+    # Data import
+    # ------------------------------------------------------------------
+
     def import_from_json(self, json_path):
         """Import data from JSON file (for migration)."""
         with open(json_path, 'r', encoding='utf-8') as f:
@@ -388,7 +520,6 @@ class Database:
         stalls = data.get('stalls', [])
 
         for stall in stalls:
-            # Check if stall already exists
             existing = self.get_stall_by_id(stall.get('id'))
             if existing:
                 continue
@@ -407,7 +538,6 @@ class Database:
                 'menu': stall.get('menu', [])
             })
 
-            # Add reviews
             for review in stall.get('reviews', []):
                 self.add_review(stall['id'], {
                     'rating': review['rating'],
