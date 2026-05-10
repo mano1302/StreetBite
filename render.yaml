@@ -1,20 +1,9 @@
-services:
-  - type: web
-    name: streetbite
-    env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 60
-    rootDir: .
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
-      - key: DATABASE_URL
-        fromDatabase:
-          name: streetbite-db
-          property: connectionString
-
-databases:
-  - name: streetbite-db
-    plan: free
-    databaseName: streetbite
-    user: streetbite
+# render.yaml - for reference only (not used in manual Web Service deployment)
+# Deploy this app on Render as a Web Service (Free plan) manually:
+#
+# Build Command : pip install -r requirements.txt
+# Start Command : gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 60
+# Python Version: 3.11.0
+#
+# Environment Variable to add manually:
+#   DATABASE_URL = <your Neon/Supabase free PostgreSQL connection string>
