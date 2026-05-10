@@ -479,7 +479,13 @@ function setupNavigation() {
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             item.classList.add('active');
             const page = item.dataset.page;
+            // If the add-shop modal is currently open and visible, just render
+            // the page BEHIND it — the modal stays on top (data preserved).
+            const modal = document.getElementById('add-shop-modal');
+            const modalOpen = modal && modal.classList.contains('active');
             navigateTo(page);
+            // Re-show modal on top if it was open
+            if (modalOpen) modal.classList.add('active');
         });
     });
 }
@@ -521,6 +527,8 @@ function navigateTo(page) {
             renderSearchPage();
             break;
         case 'add':
+            // 'add' is now always a modal overlay — render profile page behind it
+            renderProfilePage();
             renderAddShopPage();
             break;
         case 'profile':
@@ -998,14 +1006,17 @@ function renderAddShopPage() {
     // Init eye toggles
     initPasswordToggles(modal);
 
-    // ✕ Close — go back to Profile
+    // ✕ Close — hide modal (keep DOM intact so form data is preserved)
+    // If user opens "Add Your Shop" again, data will still be there.
     modal.querySelector('#add-shop-close-btn').addEventListener('click', () => {
         modal.classList.remove('active');
-        // Navigate back to profile
+        // Make sure profile nav is highlighted
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         const profileNav = document.querySelector('.nav-item[data-page="profile"]');
         if (profileNav) profileNav.classList.add('active');
-        navigateTo('profile');
+        // Render profile page (login screen) behind
+        currentPage = 'profile';
+        renderProfilePage();
     });
 
     // Add menu item
@@ -1080,7 +1091,12 @@ function renderAddShopPage() {
             modal.remove();
             showToast('🎉 Shop registered! Visible to all users now.', 'success');
             await reloadStalls();
-            navigateTo('home');
+            // Go to home and mark Home nav active
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const homeNav = document.querySelector('.nav-item[data-page="home"]');
+            if (homeNav) homeNav.classList.add('active');
+            currentPage = 'home';
+            renderHomePage();
         } catch (e) {
             showToast('Network error. Please try again.', 'error');
             submitBtn.disabled = false;
@@ -1331,14 +1347,14 @@ function renderProfilePage() {
         // Init password eye toggles
         initPasswordToggles(app);
 
-        // "Add Your Shop" button — navigate to the full add shop page
+        // "Add Your Shop" button — open the persistent modal overlay directly
         app.querySelector('#add-shop-from-profile').addEventListener('click', () => {
             // Keep Profile nav active visually (user came from profile)
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             const profileNav = document.querySelector('.nav-item[data-page="profile"]');
             if (profileNav) profileNav.classList.add('active');
-            // Render the full add shop page
-            navigateTo('add');
+            // Open the add-shop modal (creates it if not exists, or re-shows with preserved data)
+            renderAddShopPage();
         });
 
         // Search functionality - show results as user types
