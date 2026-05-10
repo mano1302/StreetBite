@@ -206,6 +206,18 @@ class Database:
         stall_data['password_hash'] = password_hash
         return self.add_stall(stall_data)
 
+    def login_by_contact(self, contact, password):
+        """Login vendor by mobile number + password only (no shop ID needed)."""
+        with self._cursor() as cursor:
+            cursor.execute('SELECT * FROM stalls WHERE contact = ?', (contact,))
+            stall = cursor.fetchone()
+            if not stall:
+                return None
+            row = self._row_to_dict(stall, public=False)
+            if not self._verify_password(password, row.get('passwordHash')):
+                return None
+            return self.get_stall_by_id(row['id'], public=False)
+
     def vendor_login(self, stall_id, contact, password):
         """Login vendor — verify contact + password. Returns stall dict (private) or None."""
         with self._cursor() as cursor:
@@ -334,6 +346,25 @@ class Database:
                 ''', (stall_id, item['itemName'], item['price'], item.get('available', True)))
 
             return self.get_stall_by_id(stall_id)
+
+    def delete_stall(self, stall_id, contact, password):
+        """Permanently delete a stall after verifying credentials."""
+        with self._cursor() as cursor:
+            cursor.execute('SELECT * FROM stalls WHERE id = ?', (stall_id,))
+            stall = cursor.fetchone()
+            if not stall:
+                return False, 'Shop not found'
+            row = self._row_to_dict(stall, public=False)
+            if row.get('contact') != contact:
+                return False, 'Invalid credentials'
+            if not self._verify_password(password, row.get('passwordHash')):
+                return False, 'Invalid credentials'
+            # Delete menu items and reviews (CASCADE handles it if FK enabled,
+            # but we delete explicitly for SQLite compatibility)
+            cursor.execute('DELETE FROM menu_items WHERE stall_id = ?', (stall_id,))
+            cursor.execute('DELETE FROM reviews WHERE stall_id = ?', (stall_id,))
+            cursor.execute('DELETE FROM stalls WHERE id = ?', (stall_id,))
+            return True, 'Shop deleted'
 
     def verify_vendor_login(self, stall_id, contact, password=None):
         """Legacy: verify contact only (kept for backward compat). Use vendor_login for full auth."""

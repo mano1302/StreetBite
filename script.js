@@ -931,18 +931,12 @@ function renderAddShopPage() {
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>\uD83D\uDD12 Password *</label>
-                        <div class="password-wrapper">
-                            <input type="password" id="shop-password" placeholder="Min 4 characters" autocomplete="new-password">
-                            <button type="button" class="eye-toggle-btn" data-target="shop-password" title="Show/hide password">\uD83D\uDC41\uFE0F</button>
-                        </div>
+                        <label>🔒 Password *</label>
+                        <input type="text" id="shop-password" placeholder="Min 4 characters" autocomplete="new-password">
                     </div>
                     <div class="form-group">
-                        <label>\uD83D\uDD12 Confirm Password *</label>
-                        <div class="password-wrapper">
-                            <input type="password" id="shop-password-confirm" placeholder="Repeat password" autocomplete="new-password">
-                            <button type="button" class="eye-toggle-btn" data-target="shop-password-confirm" title="Show/hide password">\uD83D\uDC41\uFE0F</button>
-                        </div>
+                        <label>🔒 Confirm Password *</label>
+                        <input type="text" id="shop-password-confirm" placeholder="Repeat password" autocomplete="new-password">
                     </div>
                 </div>
 
@@ -995,9 +989,6 @@ function renderAddShopPage() {
 
     renderMenuList();
 
-    // Init eye toggles
-    initPasswordToggles(modal);
-
     // ✕ Close — go back to Profile
     modal.querySelector('#add-shop-close-btn').addEventListener('click', () => {
         modal.classList.remove('active');
@@ -1012,7 +1003,7 @@ function renderAddShopPage() {
     modal.querySelector('#add-menu-item').addEventListener('click', () => {
         const name = modal.querySelector('#menu-item-name').value.trim();
         const price = parseInt(modal.querySelector('#menu-item-price').value);
-        if (!name || !price) {
+        if (!name || isNaN(price) || price <= 0) {
             showToast('Please enter item name and price', 'error');
             return;
         }
@@ -1304,11 +1295,8 @@ function renderProfilePage() {
                         </div>
 
                         <div class="form-group">
-                            <label>\uD83D\uDD12 Password</label>
-                            <div class="password-wrapper">
-                                <input type="password" id="vendor-password" placeholder="Your shop password" autocomplete="current-password">
-                                <button type="button" class="eye-toggle-btn" data-target="vendor-password" title="Show/hide password">\uD83D\uDC41\uFE0F</button>
-                            </div>
+                            <label>🔒 Password</label>
+                            <input type="text" id="vendor-password" placeholder="Your shop password" autocomplete="current-password">
                         </div>
 
                         <button class="submit-btn" id="vendor-login-btn">${t('login')}</button>
@@ -1328,8 +1316,6 @@ function renderProfilePage() {
         const searchInput = app.querySelector('#shop-search-input');
         const resultsDropdown = app.querySelector('#shop-search-results');
 
-        // Init password eye toggles
-        initPasswordToggles(app);
 
         // "Add Your Shop" button — navigate to the full add shop page
         app.querySelector('#add-shop-from-profile').addEventListener('click', () => {

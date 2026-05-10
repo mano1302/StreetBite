@@ -1796,3 +1796,72 @@ body {
     color: #FF6B35;
     outline: none;
 }
+
+/* Select Location Prompt — shown when no area selected */
+.select-location-prompt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 24px;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 4px 20px rgba(249, 115, 22, 0.1);
+    border: 2px dashed rgba(249, 115, 22, 0.3);
+    margin-top: 10px;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.prompt-icon {
+    font-size: 3rem;
+    margin-bottom: 14px;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-8px); }
+}
+
+.prompt-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.prompt-desc {
+    font-size: 0.9rem;
+    color: #777;
+    line-height: 1.6;
+    margin-bottom: 22px;
+    max-width: 280px;
+}
+
+.prompt-btn {
+    background: linear-gradient(135deg, #f97316, #fb923c);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+    transition: all 0.3s ease;
+}
+
+.prompt-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(249, 115, 22, 0.5);
+}
+
+/* Hide welcome-stats (removed from banner) */
+.welcome-stats { display: none; }
+.welcome-text { margin-bottom: 0; }

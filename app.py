@@ -158,6 +158,36 @@ def vendor_login(stall_id):
     else:
         return jsonify({'success': False, 'error': 'Invalid shop ID, contact, or password'}), 401
 
+@app.route('/api/stalls/<int:stall_id>', methods=['DELETE'])
+def delete_stall(stall_id):
+    """Delete a stall — requires contact + password verification."""
+    data = request.json or {}
+    contact = data.get('contact', '').strip()
+    password = data.get('password', '')
+    if not contact or not password:
+        return jsonify({'error': 'Contact and password are required'}), 400
+    success, message = db.delete_stall(stall_id, contact, password)
+    if success:
+        return jsonify({'success': True, 'message': message})
+    return jsonify({'success': False, 'error': message}), 401
+
+@app.route('/api/vendor-login', methods=['POST'])
+def vendor_login_by_contact():
+    """Vendor login using mobile number + password only (no shop ID required)."""
+    login_data = request.json
+    contact = login_data.get('contact', '').strip()
+    password = login_data.get('password', '')
+    if not contact:
+        return jsonify({'error': 'Mobile number is required'}), 400
+    if not password:
+        return jsonify({'error': 'Password is required'}), 400
+
+    stall = db.login_by_contact(contact, password)
+    if stall:
+        return jsonify({'success': True, 'stall': stall})
+    else:
+        return jsonify({'success': False, 'error': 'Invalid mobile number or password'}), 401
+
 @app.route('/api/health', methods=['GET'])
 def health_check():
     """Health check endpoint."""
