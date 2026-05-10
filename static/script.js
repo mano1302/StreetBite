@@ -6,10 +6,14 @@ let searchQuery = '';
 let vendorShop = null;
 let currentLanguage = 'en';
 
-// API base URL — always use relative paths.
-// Flask serves both the frontend HTML and the /api/... routes on the same server,
-// so relative paths work correctly on localhost, Render, or any other host.
-const API_BASE = '';
+// API base URL — smart detection so every environment works:
+//   localhost / Render → '' (Flask serves both frontend + /api/... on same origin)
+//   GitHub Pages or any other static host → full Render URL
+const API_BASE = (() => {
+    const h = window.location.hostname;
+    if (h === 'localhost' || h === '127.0.0.1' || h.endsWith('.onrender.com')) return '';
+    return 'https://streetbite.onrender.com';
+})();
 
 // Location state — district is remembered for display only; area is NOT persisted
 // so all shops always show by default when the user opens the app
@@ -180,7 +184,7 @@ async function initializeData() {
 async function loadStalls() {
     showLoading(true);
     try {
-        const res = await fetch(`${API_BASE}/api/stalls`);
+        const res = await fetch('/api/stalls');
         stalls = await res.json();
     } catch (e) {
         console.error('Could not load stalls:', e);
@@ -454,46 +458,16 @@ const translations = {
     }
 };
 
-// SVG Icons (inline SVG strings for professional look)
-const svgIcons = {
-    home: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
-    search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
-    user: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
-    mapPin: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
-    phone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.62 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.14 6.14l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
-    star: `<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
-    starEmpty: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
-    tag: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>`,
-    clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
-    menu: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`,
-    plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
-    lock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
-    trash: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`,
-    alert: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
-    building: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>`,
-    globe: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
-    check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
-    arrowRight: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`,
-    arrowLeft: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`,
-    food: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>`,
-    utensils: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>`,
-    x: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
-    eye: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
-    eyeOff: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`,
-    logOut: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`,
-    store: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
-};
-
-// Category icon map (SVG per category)
+// Category emojis
 const categoryEmojis = {
-    'Fast Food': svgIcons.food,
-    'Biryani': svgIcons.utensils,
-    'Parotta & Meals': svgIcons.utensils,
-    'Grilled & Non-Veg': svgIcons.food,
-    'Juice': svgIcons.food,
-    'Sweet & Beverages': svgIcons.food,
-    'Snacks': svgIcons.food,
-    'Others': svgIcons.utensils
+    'Fast Food': '🍟',
+    'Biryani': '🍚',
+    'Parotta & Meals': '🫓',
+    'Grilled & Non-Veg': '🍗',
+    'Juice': '🧃',
+    'Sweet & Beverages': '🍧',
+    'Snacks': '🍿',
+    'Others': '🍽️'
 };
 
 // Convert 24-hour time to 12-hour format
@@ -609,7 +583,7 @@ function renderHomePage() {
     if (selectedDistrict && selectedArea && selectedArea !== 'All Areas') {
         locationChipHTML = `
             <div class="selected-location-chip">
-                <span class="location-chip-icon" style="display:inline-flex;width:18px;height:18px;color:#f97316;">${svgIcons.mapPin}</span>
+                <span class="location-chip-icon">📍</span>
                 <span class="location-chip-text">${t('nearbyShops')} <strong>${getAreaName(selectedArea)}, ${getDistrictName(selectedDistrict)}</strong></span>
                 <button class="location-chip-change" onclick="openLocationPicker()">${t('changeLocation')}</button>
             </div>
@@ -617,7 +591,7 @@ function renderHomePage() {
     } else if (selectedDistrict) {
         locationChipHTML = `
             <div class="selected-location-chip">
-                <span class="location-chip-icon" style="display:inline-flex;width:18px;height:18px;color:#f97316;">${svgIcons.mapPin}</span>
+                <span class="location-chip-icon">📍</span>
                 <span class="location-chip-text">${t('nearbyShops')} <strong>${getDistrictName(selectedDistrict)}</strong></span>
                 <button class="location-chip-change" onclick="openLocationPicker()">${t('changeLocation')}</button>
             </div>
@@ -648,10 +622,10 @@ function renderHomePage() {
             <div class="shop-grid" id="shop-grid"></div>
             ` : `
             <div class="select-location-prompt">
-                <div class="prompt-icon">${svgIcons.mapPin}</div>
+                <div class="prompt-icon">📍</div>
                 <h3 class="prompt-title">Select Your Location</h3>
                 <p class="prompt-desc">Tap the location button above to pick your district and area — we'll show you all street food shops near you!</p>
-                <button class="prompt-btn" onclick="openLocationPicker()">Select Location</button>
+                <button class="prompt-btn" onclick="openLocationPicker()">📍 Select Location</button>
             </div>
             `}
         </div>
@@ -722,7 +696,7 @@ function renderShopGrid() {
     if (filtered.length === 0) {
         grid.innerHTML = `
             <div class="empty-state">
-                <div class="icon">${svgIcons.search}</div>
+                <div class="icon">🔍</div>
                 <p>${t('noShopsFound')}</p>
             </div>
         `;
@@ -733,15 +707,15 @@ function renderShopGrid() {
         <div class="shop-card" data-id="${stall.id}">
             <div class="shop-card-header">
                 <span class="shop-name">${stall.name}</span>
-                <span class="shop-icon" style="display:flex;align-items:center;color:#f97316;width:28px;height:28px;">${categoryEmojis[stall.category] || svgIcons.utensils}</span>
+                <span class="shop-emoji">${stall.emoji || categoryEmojis[stall.category] || '🍽️'}</span>
             </div>
             <span class="shop-category">${stall.category}</span>
-            <div class="shop-area"><span style="display:inline-flex;width:14px;height:14px;vertical-align:middle;margin-right:4px;color:#f97316;">${svgIcons.mapPin}</span>${stall.area}</div>
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                <span class="shop-status ${stall.status}">${stall.status === 'open' ? t('open') : t('closed')}</span>
-                <span class="shop-rating"><span style="display:inline-flex;width:14px;height:14px;vertical-align:middle;color:#f59e0b;">${svgIcons.star}</span> ${(stall.rating || 0).toFixed(1)} (${stall.totalReviews || 0})</span>
+            <div class="shop-area">📍 ${stall.area}</div>
+            <div>
+                <span class="shop-status ${stall.status}">${stall.status === 'open' ? '✓ ' + t('open') : '✕ ' + t('closed')}</span>
+                <span class="shop-rating">⭐ ${(stall.rating || 0).toFixed(1)} (${stall.totalReviews || 0})</span>
             </div>
-            ${stall.todayDiscount ? `<div class="shop-discount"><span style="display:inline-flex;width:14px;height:14px;vertical-align:middle;margin-right:4px;">${svgIcons.tag}</span>${stall.todayDiscount}</div>` : ''}
+            ${stall.todayDiscount ? `<div class="shop-discount">🎉 ${stall.todayDiscount}</div>` : ''}
         </div>
     `).join('');
 
@@ -838,16 +812,16 @@ function renderShopDetailPage(stall) {
 
                 <div class="detail-info">
                     <div class="info-row">
-                        <span class="icon">${svgIcons.mapPin}</span>
+                        <span class="icon">📍</span>
                         <span>${stall.address || stall.area}</span>
                     </div>
                     ${stall.contact ? `
                     <div class="info-row">
-                        <span class="icon">${svgIcons.phone}</span>
+                        <span class="icon">📞</span>
                         <a href="tel:${stall.contact}">${stall.contact}</a>
                     </div>` : ''}
                     <div class="info-row">
-                        <span class="icon" style="color:#f59e0b;">${svgIcons.star}</span>
+                        <span class="icon">⭐</span>
                         <span>${(stall.rating || 0).toFixed(1)} ${t('rating')} (${stall.totalReviews || 0})</span>
                     </div>
                 </div>
@@ -855,7 +829,7 @@ function renderShopDetailPage(stall) {
 
             ${stall.todayDiscount ? `
                 <div class="discount-banner">
-                    <span style="display:inline-flex;width:16px;height:16px;vertical-align:middle;margin-right:6px;">${svgIcons.tag}</span>${stall.todayDiscount}
+                    🎉 ${stall.todayDiscount}
                 </div>
             ` : ''}
 
@@ -879,18 +853,18 @@ function renderShopDetailPage(stall) {
                 ${stall.reviews.length > 0 ? stall.reviews.map(review => `
                     <div class="review-card">
                         <div class="review-header">
-                            <div class="review-stars" style="display:flex;gap:2px;color:#f59e0b;">${Array.from({length:5},(_,i)=>`<span style="display:inline-flex;width:16px;height:16px;">${i<review.rating?svgIcons.star:svgIcons.starEmpty}</span>`).join('')}</div>
+                            <div class="review-stars">${'⭐'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</div>
                             <span class="review-date">${review.date}</span>
                         </div>
                         <div class="review-comment">${review.comment}</div>
                     </div>
-                `).join('') : `<div class="empty-state"><div class="icon">${svgIcons.menu}</div><p>${t('noReviews')}</p></div>`}
+                `).join('') : `<div class="empty-state"><p>${t('noReviews')}</p></div>`}
             </div>
 
             <div class="add-review-form">
                 <h3 class="section-title">${t('writeReview')}</h3>
                 <div class="star-rating" id="star-rating">
-                    ${[1,2,3,4,5].map(n => `<button data-rating="${n}" class="star-btn" style="color:#ddd;">${svgIcons.starEmpty}</button>`).join('')}
+                    ${[1,2,3,4,5].map(n => `<button data-rating="${n}" class="star-btn">☆</button>`).join('')}
                 </div>
                 <textarea class="review-input" placeholder="${t('reviewPlaceholder')}" id="review-text"></textarea>
                 <button class="submit-btn" id="submit-review">${t('submitReview')}</button>
@@ -906,8 +880,7 @@ function renderShopDetailPage(stall) {
             selectedRating = parseInt(btn.dataset.rating);
             starButtons.forEach((b, i) => {
                 b.classList.toggle('active', i < selectedRating);
-                b.innerHTML = i < selectedRating ? svgIcons.star : svgIcons.starEmpty;
-                b.style.color = i < selectedRating ? '#f59e0b' : '#ddd';
+                b.textContent = i < selectedRating ? '★' : '☆';
             });
         });
     });
@@ -939,110 +912,133 @@ function renderShopDetailPage(stall) {
 
 // Render Add Shop as a persistent full-screen modal
 function renderAddShopPage() {
-    // If modal already exists, just show it (preserves form data)
+    console.log('[AddShop] renderAddShopPage() called');
+
+    // If modal already exists, just show it (preserves form data) — PREVENTS DUPLICATE MOUNT
     if (document.getElementById('add-shop-modal')) {
+        console.log('[AddShop] Modal already exists — showing existing modal');
         document.getElementById('add-shop-modal').classList.add('active');
         return;
     }
 
+    console.log('[AddShop] Creating new modal instance');
     let menuItems = [];
 
     // Create modal element and append to body
     const modal = document.createElement('div');
     modal.id = 'add-shop-modal';
     modal.className = 'add-shop-modal active';
+
     modal.innerHTML = `
-        <div class="add-shop-modal-header">
-            <h2 class="add-shop-modal-title">${t('addNewShop')}</h2>
-            <button class="add-shop-close-btn" id="add-shop-close-btn" title="Close">✕</button>
-        </div>
-        <div class="add-shop-modal-body">
-            <div class="form-section">
-                <div class="form-group">
-                    <label>${t('shopName')} *</label>
-                    <input type="text" id="shop-name" placeholder="${t('shopNamePlaceholder')}" required>
+        <div class="add-shop-modal-inner">
+            <!-- LEFT: Orange preview panel (visible on laptop+) -->
+            <div class="add-shop-preview-panel">
+                <div class="add-shop-preview-icon">🍽️</div>
+                <div class="add-shop-preview-title">List Your Street Food Shop</div>
+                <div class="add-shop-preview-sub">Join hundreds of vendors on StreetBite and reach customers in your area instantly.</div>
+                <div class="add-shop-preview-badges">
+                    <span class="add-shop-preview-badge">📍 Location Pinned</span>
+                    <span class="add-shop-preview-badge">⭐ Get Reviews</span>
+                    <span class="add-shop-preview-badge">📋 Digital Menu</span>
+                    <span class="add-shop-preview-badge">🔔 Live Status</span>
                 </div>
+            </div>
 
-                <div class="form-group">
-                    <label>${t('foodCategory')} *</label>
-                    <select id="shop-category">
-                        <option value="">${t('selectCategory')}</option>
-                        <option value="Fast Food">${t('categoryFastFood')}</option>
-                        <option value="Biryani">${t('categoryBiryani')}</option>
-                        <option value="Parotta &amp; Meals">${t('categoryParottaMeals')}</option>
-                        <option value="Grilled &amp; Non-Veg">${t('categoryGrilledNonVeg')}</option>
-                        <option value="Juice">${t('categoryJuice')}</option>
-                        <option value="Sweet &amp; Beverages">${t('categorySweetBeverages')}</option>
-                        <option value="Snacks">${t('categorySnacks')}</option>
-                        <option value="Others">${t('categoryOthers')}</option>
-                    </select>
+            <!-- RIGHT: Form section -->
+            <div class="add-shop-form-section">
+                <div class="add-shop-modal-header">
+                    <h2 class="add-shop-modal-title">${t('addNewShop')}</h2>
+                    <button class="add-shop-close-btn" id="add-shop-close-btn" title="Close">✕</button>
                 </div>
+                <div class="add-shop-modal-body">
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label>${t('shopName')} *</label>
+                            <input type="text" id="shop-name" placeholder="${t('shopNamePlaceholder')}" required>
+                        </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label><span style="display:inline-flex;width:16px;height:16px;vertical-align:middle;margin-right:4px;">${svgIcons.mapPin}</span> District *</label>
-                        <select id="shop-district">
-                            <option value="">Select District</option>
-                            ${Object.keys(tamilNaduDistricts).map(d => `<option value="${d}">${getDistrictName(d)}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>${t('areaLocation')} *</label>
-                        <select id="shop-area">
-                            <option value="">Select area</option>
-                        </select>
+                        <div class="form-group">
+                            <label>${t('foodCategory')} *</label>
+                            <select id="shop-category">
+                                <option value="">${t('selectCategory')}</option>
+                                <option value="Fast Food">${t('categoryFastFood')}</option>
+                                <option value="Biryani">${t('categoryBiryani')}</option>
+                                <option value="Parotta &amp; Meals">${t('categoryParottaMeals')}</option>
+                                <option value="Grilled &amp; Non-Veg">${t('categoryGrilledNonVeg')}</option>
+                                <option value="Juice">${t('categoryJuice')}</option>
+                                <option value="Sweet &amp; Beverages">${t('categorySweetBeverages')}</option>
+                                <option value="Snacks">${t('categorySnacks')}</option>
+                                <option value="Others">${t('categoryOthers')}</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>📍 District *</label>
+                                <select id="shop-district">
+                                    <option value="">Select District</option>
+                                    ${Object.keys(tamilNaduDistricts).map(d => `<option value="${d}">${getDistrictName(d)}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>${t('areaLocation')} *</label>
+                                <select id="shop-area">
+                                    <option value="">Select area</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>${t('fullAddress')}</label>
+                            <textarea id="shop-address" placeholder="${t('addressPlaceholder')}" rows="2"></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>${t('contactNumber')} *</label>
+                                <input type="tel" id="shop-contact" placeholder="9876543210" pattern="[0-9]{10}">
+                            </div>
+                            <div class="form-group">
+                                <label>${t('todaysDiscount')}</label>
+                                <input type="text" id="shop-discount" placeholder="${t('discountPlaceholder')}">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>🔒 Password *</label>
+                                <input type="text" id="shop-password" placeholder="Min 4 characters" autocomplete="new-password">
+                            </div>
+                            <div class="form-group">
+                                <label>🔒 Confirm Password *</label>
+                                <input type="text" id="shop-password-confirm" placeholder="Repeat password" autocomplete="new-password">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>${t('openingTime')}</label>
+                                <input type="time" id="open-time" value="09:00">
+                            </div>
+                            <div class="form-group">
+                                <label>${t('closingTime')}</label>
+                                <input type="time" id="close-time" value="22:00">
+                            </div>
+                        </div>
+
+                        <div class="menu-items-section">
+                            <h3 class="section-title">${t('menuItems')}</h3>
+                            <div class="menu-input-row">
+                                <input type="text" id="menu-item-name" placeholder="${t('itemName')}">
+                                <input type="number" id="menu-item-price" placeholder="${t('price')}">
+                                <button class="add-menu-btn" id="add-menu-item">+</button>
+                            </div>
+                            <div class="added-menu-list" id="added-menu-list"></div>
+                        </div>
+
+                        <button class="submit-btn" id="submit-shop" style="margin-top: 20px;">${t('listMyShop')}</button>
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label>${t('fullAddress')}</label>
-                    <textarea id="shop-address" placeholder="${t('addressPlaceholder')}" rows="2"></textarea>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>${t('contactNumber')} *</label>
-                        <input type="tel" id="shop-contact" placeholder="9876543210" pattern="[0-9]{10}">
-                    </div>
-                    <div class="form-group">
-                        <label>${t('todaysDiscount')}</label>
-                        <input type="text" id="shop-discount" placeholder="${t('discountPlaceholder')}">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label><span style="display:inline-flex;width:16px;height:16px;vertical-align:middle;margin-right:4px;">${svgIcons.lock}</span> Password *</label>
-                        <input type="text" id="shop-password" placeholder="Min 4 characters" autocomplete="new-password">
-                    </div>
-                    <div class="form-group">
-                        <label><span style="display:inline-flex;width:16px;height:16px;vertical-align:middle;margin-right:4px;">${svgIcons.lock}</span> Confirm Password *</label>
-                        <input type="text" id="shop-password-confirm" placeholder="Repeat password" autocomplete="new-password">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>${t('openingTime')}</label>
-                        <input type="time" id="open-time" value="09:00">
-                    </div>
-                    <div class="form-group">
-                        <label>${t('closingTime')}</label>
-                        <input type="time" id="close-time" value="22:00">
-                    </div>
-                </div>
-
-                <div class="menu-items-section">
-                    <h3 class="section-title">${t('menuItems')}</h3>
-                    <div class="menu-input-row">
-                        <input type="text" id="menu-item-name" placeholder="${t('itemName')}">
-                        <input type="number" id="menu-item-price" placeholder="${t('price')}">
-                        <button class="add-menu-btn" id="add-menu-item">+</button>
-                    </div>
-                    <div class="added-menu-list" id="added-menu-list"></div>
-                </div>
-
-                <button class="submit-btn" id="submit-shop" style="margin-top: 20px;">${t('listMyShop')}</button>
             </div>
         </div>
     `;
@@ -1083,6 +1079,7 @@ function renderAddShopPage() {
     // ✕ Close — hide modal (keep DOM intact so form data is preserved)
     // If user opens "Add Your Shop" again, data will still be there.
     modal.querySelector('#add-shop-close-btn').addEventListener('click', () => {
+        console.log('[AddShop] Close button clicked — hiding modal');
         modal.classList.remove('active');
         // Make sure profile nav is highlighted
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -1109,6 +1106,7 @@ function renderAddShopPage() {
 
     // Submit shop — POST to /api/stalls/signup
     modal.querySelector('#submit-shop').addEventListener('click', async () => {
+        console.log('[AddShop] Submit button clicked — form render fires once per click');
         const name = modal.querySelector('#shop-name').value.trim();
         const category = modal.querySelector('#shop-category').value;
         const shopDistrict = modal.querySelector('#shop-district').value;
@@ -1143,7 +1141,7 @@ function renderAddShopPage() {
         submitBtn.textContent = 'Registering...';
 
         try {
-            const res = await fetch(`${API_BASE}/api/stalls/signup`, {
+            const res = await fetch('/api/stalls/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -1259,9 +1257,9 @@ function renderProfilePage() {
 
                     <!-- Delete Account Section -->
                     <div class="form-section" style="margin-top: 30px; border-top: 2px solid #fee2e2; padding-top: 20px;">
-                        <h3 class="section-title" style="color:#dc2626;"><span style="display:inline-flex;width:18px;height:18px;vertical-align:middle;margin-right:6px;">${svgIcons.alert}</span>Danger Zone</h3>
+                        <h3 class="section-title" style="color:#dc2626;">⚠️ Danger Zone</h3>
                         <p style="color:#666; font-size:0.85rem; margin-bottom:12px;">This will permanently delete your shop and all its data. This action cannot be undone.</p>
-                        <button class="submit-btn" id="delete-shop-btn" style="background:#dc2626; margin-top:0; display:flex; align-items:center; justify-content:center; gap:8px;"><span style="display:inline-flex;width:16px;height:16px;">${svgIcons.trash}</span>Delete My Shop</button>
+                        <button class="submit-btn" id="delete-shop-btn" style="background:#dc2626; margin-top:0;">🗑️ Delete My Shop</button>
                     </div>
                 </div>
             </div>
@@ -1280,7 +1278,7 @@ function renderProfilePage() {
                 vendorShop.status = newStatus;
                 await reloadStalls();
                 renderProfilePage();
-                showToast(`Shop is now ${newStatus === 'open' ? 'Open' : 'Closed'}`, 'success');
+                showToast(`Shop is now ${newStatus === 'open' ? '🟢 Open' : '🔴 Closed'}`, 'success');
             } catch (e) { showToast('Update failed', 'error'); }
         });
 
@@ -1455,7 +1453,7 @@ function renderProfilePage() {
                         </div>
 
                         <div class="form-group">
-                            <label><span style="display:inline-flex;width:16px;height:16px;vertical-align:middle;margin-right:4px;">${svgIcons.lock}</span> Password</label>
+                            <label>🔒 Password</label>
                             <input type="text" id="vendor-password" placeholder="Your shop password" autocomplete="current-password">
                         </div>
 
@@ -1465,7 +1463,7 @@ function renderProfilePage() {
                     <div style="text-align: center; margin-top: 30px; color: #666;">
                         <p>${t('noShopListed')}</p>
                         <button class="add-shop-from-profile-btn" id="add-shop-from-profile">
-                            <span style="display:inline-flex;width:16px;height:16px;vertical-align:middle;margin-right:6px;">${svgIcons.plus}</span>${t('addYourShop')}
+                            ➕ ${t('addYourShop')}
                         </button>
                     </div>
                 </div>
@@ -1501,7 +1499,7 @@ function renderProfilePage() {
             loginBtn.textContent = 'Logging in...';
 
             try {
-                const res = await fetch(`${API_BASE}/api/vendor-login`, {
+                const res = await fetch('/api/vendor-login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contact, password })
@@ -1692,25 +1690,25 @@ function renderAreaList(district) {
 
     // Add "All Areas" option first
     let itemsHTML = `
-        <div class="location-item ${selectedArea === 'All Areas' || !selectedArea ? 'selected' : ''}" onclick="selectAreaItem('All Areas')" role="listitem">
+        <div class="location-item ${selectedArea === 'All Areas' || !selectedArea ? 'selected' : ''}" onclick="selectAreaItem('All Areas')">
             <div class="location-item-left">
-                <span class="location-item-emoji">${svgIcons.globe}</span>
+                <span class="location-item-emoji">🌐</span>
                 <span class="location-item-name">${t('allAreas')}</span>
             </div>
-            <span class="location-item-arrow">${svgIcons.check}</span>
+            <span class="location-item-arrow">✓</span>
         </div>
     `;
 
     itemsHTML += areas.map(area => `
-        <div class="location-item ${selectedArea === area ? 'selected' : ''}" onclick="selectAreaItem('${area.replace(/'/g, "\\'")}')" role="listitem">
+        <div class="location-item ${selectedArea === area ? 'selected' : ''}" onclick="selectAreaItem('${area.replace(/'/g, "\\'")}')">
             <div class="location-item-left">
-                <span class="location-item-emoji">${svgIcons.mapPin}</span>
+                <span class="location-item-emoji">📍</span>
                 <div>
                     <div class="location-item-name">${getAreaName(area)}</div>
                     ${currentLanguage !== 'en' && getAreaName(area) !== area ? `<div class="location-item-sub">${area}</div>` : ''}
                 </div>
             </div>
-            <span class="location-item-arrow">${selectedArea === area ? svgIcons.check : svgIcons.arrowRight}</span>
+            <span class="location-item-arrow">${selectedArea === area ? '✓' : '→'}</span>
         </div>
     `).join('');
 
@@ -1778,26 +1776,26 @@ function filterLocationList() {
         let itemsHTML = '';
         if (!query || t('allAreas').toLowerCase().includes(query)) {
             itemsHTML += `
-                <div class="location-item ${selectedArea === 'All Areas' || !selectedArea ? 'selected' : ''}" onclick="selectAreaItem('All Areas')" role="listitem">
+                <div class="location-item ${selectedArea === 'All Areas' || !selectedArea ? 'selected' : ''}" onclick="selectAreaItem('All Areas')">
                     <div class="location-item-left">
-                        <span class="location-item-emoji">${svgIcons.globe}</span>
+                        <span class="location-item-emoji">🌐</span>
                         <span class="location-item-name">${t('allAreas')}</span>
                     </div>
-                    <span class="location-item-arrow">${svgIcons.check}</span>
+                    <span class="location-item-arrow">✓</span>
                 </div>
             `;
         }
 
         itemsHTML += areas.map(area => `
-            <div class="location-item ${selectedArea === area ? 'selected' : ''}" onclick="selectAreaItem('${area.replace(/'/g, "\\'")}')" role="listitem">
+            <div class="location-item ${selectedArea === area ? 'selected' : ''}" onclick="selectAreaItem('${area.replace(/'/g, "\\'")}')">
                 <div class="location-item-left">
-                    <span class="location-item-emoji">${svgIcons.mapPin}</span>
+                    <span class="location-item-emoji">📍</span>
                     <div>
                         <div class="location-item-name">${getAreaName(area)}</div>
                         ${currentLanguage !== 'en' && getAreaName(area) !== area ? `<div class="location-item-sub">${area}</div>` : ''}
                     </div>
                 </div>
-                <span class="location-item-arrow">${selectedArea === area ? svgIcons.check : svgIcons.arrowRight}</span>
+                <span class="location-item-arrow">${selectedArea === area ? '✓' : '→'}</span>
             </div>
         `).join('');
 

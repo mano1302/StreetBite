@@ -912,110 +912,133 @@ function renderShopDetailPage(stall) {
 
 // Render Add Shop as a persistent full-screen modal
 function renderAddShopPage() {
-    // If modal already exists, just show it (preserves form data)
+    console.log('[AddShop] renderAddShopPage() called');
+
+    // If modal already exists, just show it (preserves form data) — PREVENTS DUPLICATE MOUNT
     if (document.getElementById('add-shop-modal')) {
+        console.log('[AddShop] Modal already exists — showing existing modal');
         document.getElementById('add-shop-modal').classList.add('active');
         return;
     }
 
+    console.log('[AddShop] Creating new modal instance');
     let menuItems = [];
 
     // Create modal element and append to body
     const modal = document.createElement('div');
     modal.id = 'add-shop-modal';
     modal.className = 'add-shop-modal active';
+
     modal.innerHTML = `
-        <div class="add-shop-modal-header">
-            <h2 class="add-shop-modal-title">${t('addNewShop')}</h2>
-            <button class="add-shop-close-btn" id="add-shop-close-btn" title="Close">✕</button>
-        </div>
-        <div class="add-shop-modal-body">
-            <div class="form-section">
-                <div class="form-group">
-                    <label>${t('shopName')} *</label>
-                    <input type="text" id="shop-name" placeholder="${t('shopNamePlaceholder')}" required>
+        <div class="add-shop-modal-inner">
+            <!-- LEFT: Orange preview panel (visible on laptop+) -->
+            <div class="add-shop-preview-panel">
+                <div class="add-shop-preview-icon">🍽️</div>
+                <div class="add-shop-preview-title">List Your Street Food Shop</div>
+                <div class="add-shop-preview-sub">Join hundreds of vendors on StreetBite and reach customers in your area instantly.</div>
+                <div class="add-shop-preview-badges">
+                    <span class="add-shop-preview-badge">📍 Location Pinned</span>
+                    <span class="add-shop-preview-badge">⭐ Get Reviews</span>
+                    <span class="add-shop-preview-badge">📋 Digital Menu</span>
+                    <span class="add-shop-preview-badge">🔔 Live Status</span>
                 </div>
+            </div>
 
-                <div class="form-group">
-                    <label>${t('foodCategory')} *</label>
-                    <select id="shop-category">
-                        <option value="">${t('selectCategory')}</option>
-                        <option value="Fast Food">${t('categoryFastFood')}</option>
-                        <option value="Biryani">${t('categoryBiryani')}</option>
-                        <option value="Parotta &amp; Meals">${t('categoryParottaMeals')}</option>
-                        <option value="Grilled &amp; Non-Veg">${t('categoryGrilledNonVeg')}</option>
-                        <option value="Juice">${t('categoryJuice')}</option>
-                        <option value="Sweet &amp; Beverages">${t('categorySweetBeverages')}</option>
-                        <option value="Snacks">${t('categorySnacks')}</option>
-                        <option value="Others">${t('categoryOthers')}</option>
-                    </select>
+            <!-- RIGHT: Form section -->
+            <div class="add-shop-form-section">
+                <div class="add-shop-modal-header">
+                    <h2 class="add-shop-modal-title">${t('addNewShop')}</h2>
+                    <button class="add-shop-close-btn" id="add-shop-close-btn" title="Close">✕</button>
                 </div>
+                <div class="add-shop-modal-body">
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label>${t('shopName')} *</label>
+                            <input type="text" id="shop-name" placeholder="${t('shopNamePlaceholder')}" required>
+                        </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>📍 District *</label>
-                        <select id="shop-district">
-                            <option value="">Select District</option>
-                            ${Object.keys(tamilNaduDistricts).map(d => `<option value="${d}">${getDistrictName(d)}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>${t('areaLocation')} *</label>
-                        <select id="shop-area">
-                            <option value="">Select area</option>
-                        </select>
+                        <div class="form-group">
+                            <label>${t('foodCategory')} *</label>
+                            <select id="shop-category">
+                                <option value="">${t('selectCategory')}</option>
+                                <option value="Fast Food">${t('categoryFastFood')}</option>
+                                <option value="Biryani">${t('categoryBiryani')}</option>
+                                <option value="Parotta &amp; Meals">${t('categoryParottaMeals')}</option>
+                                <option value="Grilled &amp; Non-Veg">${t('categoryGrilledNonVeg')}</option>
+                                <option value="Juice">${t('categoryJuice')}</option>
+                                <option value="Sweet &amp; Beverages">${t('categorySweetBeverages')}</option>
+                                <option value="Snacks">${t('categorySnacks')}</option>
+                                <option value="Others">${t('categoryOthers')}</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>📍 District *</label>
+                                <select id="shop-district">
+                                    <option value="">Select District</option>
+                                    ${Object.keys(tamilNaduDistricts).map(d => `<option value="${d}">${getDistrictName(d)}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>${t('areaLocation')} *</label>
+                                <select id="shop-area">
+                                    <option value="">Select area</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>${t('fullAddress')}</label>
+                            <textarea id="shop-address" placeholder="${t('addressPlaceholder')}" rows="2"></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>${t('contactNumber')} *</label>
+                                <input type="tel" id="shop-contact" placeholder="9876543210" pattern="[0-9]{10}">
+                            </div>
+                            <div class="form-group">
+                                <label>${t('todaysDiscount')}</label>
+                                <input type="text" id="shop-discount" placeholder="${t('discountPlaceholder')}">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>🔒 Password *</label>
+                                <input type="text" id="shop-password" placeholder="Min 4 characters" autocomplete="new-password">
+                            </div>
+                            <div class="form-group">
+                                <label>🔒 Confirm Password *</label>
+                                <input type="text" id="shop-password-confirm" placeholder="Repeat password" autocomplete="new-password">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>${t('openingTime')}</label>
+                                <input type="time" id="open-time" value="09:00">
+                            </div>
+                            <div class="form-group">
+                                <label>${t('closingTime')}</label>
+                                <input type="time" id="close-time" value="22:00">
+                            </div>
+                        </div>
+
+                        <div class="menu-items-section">
+                            <h3 class="section-title">${t('menuItems')}</h3>
+                            <div class="menu-input-row">
+                                <input type="text" id="menu-item-name" placeholder="${t('itemName')}">
+                                <input type="number" id="menu-item-price" placeholder="${t('price')}">
+                                <button class="add-menu-btn" id="add-menu-item">+</button>
+                            </div>
+                            <div class="added-menu-list" id="added-menu-list"></div>
+                        </div>
+
+                        <button class="submit-btn" id="submit-shop" style="margin-top: 20px;">${t('listMyShop')}</button>
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label>${t('fullAddress')}</label>
-                    <textarea id="shop-address" placeholder="${t('addressPlaceholder')}" rows="2"></textarea>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>${t('contactNumber')} *</label>
-                        <input type="tel" id="shop-contact" placeholder="9876543210" pattern="[0-9]{10}">
-                    </div>
-                    <div class="form-group">
-                        <label>${t('todaysDiscount')}</label>
-                        <input type="text" id="shop-discount" placeholder="${t('discountPlaceholder')}">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>🔒 Password *</label>
-                        <input type="text" id="shop-password" placeholder="Min 4 characters" autocomplete="new-password">
-                    </div>
-                    <div class="form-group">
-                        <label>🔒 Confirm Password *</label>
-                        <input type="text" id="shop-password-confirm" placeholder="Repeat password" autocomplete="new-password">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>${t('openingTime')}</label>
-                        <input type="time" id="open-time" value="09:00">
-                    </div>
-                    <div class="form-group">
-                        <label>${t('closingTime')}</label>
-                        <input type="time" id="close-time" value="22:00">
-                    </div>
-                </div>
-
-                <div class="menu-items-section">
-                    <h3 class="section-title">${t('menuItems')}</h3>
-                    <div class="menu-input-row">
-                        <input type="text" id="menu-item-name" placeholder="${t('itemName')}">
-                        <input type="number" id="menu-item-price" placeholder="${t('price')}">
-                        <button class="add-menu-btn" id="add-menu-item">+</button>
-                    </div>
-                    <div class="added-menu-list" id="added-menu-list"></div>
-                </div>
-
-                <button class="submit-btn" id="submit-shop" style="margin-top: 20px;">${t('listMyShop')}</button>
             </div>
         </div>
     `;
@@ -1056,6 +1079,7 @@ function renderAddShopPage() {
     // ✕ Close — hide modal (keep DOM intact so form data is preserved)
     // If user opens "Add Your Shop" again, data will still be there.
     modal.querySelector('#add-shop-close-btn').addEventListener('click', () => {
+        console.log('[AddShop] Close button clicked — hiding modal');
         modal.classList.remove('active');
         // Make sure profile nav is highlighted
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -1082,6 +1106,7 @@ function renderAddShopPage() {
 
     // Submit shop — POST to /api/stalls/signup
     modal.querySelector('#submit-shop').addEventListener('click', async () => {
+        console.log('[AddShop] Submit button clicked — form render fires once per click');
         const name = modal.querySelector('#shop-name').value.trim();
         const category = modal.querySelector('#shop-category').value;
         const shopDistrict = modal.querySelector('#shop-district').value;
