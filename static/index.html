@@ -2,66 +2,118 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreetBite - Street Food Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>StreetBite - Discover Street Food Near You</title>
+    <meta name="description" content="StreetBite helps you discover the best street food shops in Tamil Nadu. Browse local vendors, check menus, timings and offers.">
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Header -->
-    <header class="header">
+    <header class="header" role="banner">
         <div class="header-content">
-            <h1 id="app-title"><span class="logo-icon">🍽️</span> StreetBite</h1>
+            <h1 id="app-title">
+                <span class="logo-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 11l19-9-9 19-2-8-8-2z"/>
+                    </svg>
+                </span>
+                StreetBite
+            </h1>
             <div class="header-actions">
-                <button class="location-btn" id="location-btn" onclick="openLocationPicker()">
-                    <span class="location-btn-icon">📍</span>
+                <button class="location-btn" id="location-btn" onclick="openLocationPicker()" aria-label="Select location">
+                    <span class="location-btn-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                    </span>
                     <span class="location-btn-text" id="location-btn-text">Select Location</span>
-                    <span class="location-btn-arrow">▼</span>
+                    <span class="location-btn-arrow" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </span>
                 </button>
-                <select class="language-selector" id="header-language-select" onchange="changeLanguage(this.value)">
-                    <option value="en">🇬🇧 English</option>
-                    <option value="ta">🇮🇳 தமிழ்</option>
-                    <option value="hi">🇮🇳 हिंदी</option>
+                <select class="language-selector" id="header-language-select" onchange="changeLanguage(this.value)" aria-label="Select language">
+                    <option value="en">EN</option>
+                    <option value="ta">தமிழ்</option>
+                    <option value="hi">हिंदी</option>
                 </select>
             </div>
         </div>
     </header>
 
     <!-- Location Picker Bottom Sheet -->
-    <div class="location-overlay" id="location-overlay" onclick="closeLocationPicker()"></div>
-    <div class="location-sheet" id="location-sheet">
-        <div class="sheet-handle"></div>
+    <div class="location-overlay" id="location-overlay" onclick="closeLocationPicker()" role="presentation"></div>
+    <div class="location-sheet" id="location-sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+        <div class="sheet-handle" aria-hidden="true"></div>
         <div class="sheet-header">
-            <button class="sheet-back-btn" id="sheet-back-btn" onclick="goBackToDistricts()" style="display:none;">←</button>
-            <h3 class="sheet-title" id="sheet-title">📍 Select Your District</h3>
-            <button class="sheet-close-btn" onclick="closeLocationPicker()">✕</button>
+            <button class="sheet-back-btn" id="sheet-back-btn" onclick="goBackToDistricts()" style="display:none;" aria-label="Go back to districts">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+            </button>
+            <h3 class="sheet-title" id="sheet-title">Select Your District</h3>
+            <button class="sheet-close-btn" onclick="closeLocationPicker()" aria-label="Close location picker">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
         </div>
         <div class="sheet-search">
-            <input type="text" class="sheet-search-input" id="sheet-search-input" placeholder="🔍 Search..." oninput="filterLocationList()">
+            <div class="sheet-search-wrapper">
+                <span class="sheet-search-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                </span>
+                <input type="text" class="sheet-search-input" id="sheet-search-input" placeholder="Search..." oninput="filterLocationList()" aria-label="Search locations">
+            </div>
         </div>
-        <div class="sheet-list" id="sheet-list"></div>
+        <div class="sheet-list" id="sheet-list" role="list"></div>
     </div>
 
     <!-- Loading Spinner -->
-    <div id="loading" class="loading">
-        <div class="spinner"></div>
+    <div id="loading" class="loading" role="status" aria-live="polite" aria-label="Loading">
+        <div class="spinner" aria-hidden="true"></div>
         <p>Loading...</p>
     </div>
 
     <!-- Main Content -->
-    <main id="app" class="main-content"></main>
+    <main id="app" class="main-content" role="main"></main>
 
     <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <button class="nav-item active" data-page="home">
-            <span class="nav-icon">🏠</span>
+    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+        <button class="nav-item active" data-page="home" aria-label="Home" aria-current="page">
+            <span class="nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+            </span>
             <span class="nav-label">Home</span>
         </button>
-        <button class="nav-item" data-page="search">
-            <span class="nav-icon">🔍</span>
+        <button class="nav-item" data-page="search" aria-label="Search">
+            <span class="nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+            </span>
             <span class="nav-label">Search</span>
         </button>
-        <button class="nav-item" data-page="profile">
-            <span class="nav-icon">👤</span>
+        <button class="nav-item" data-page="profile" aria-label="Profile">
+            <span class="nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+            </span>
             <span class="nav-label">Profile</span>
         </button>
     </nav>

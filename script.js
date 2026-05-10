@@ -6,6 +6,15 @@ let searchQuery = '';
 let vendorShop = null;
 let currentLanguage = 'en';
 
+// API base URL — smart detection so every environment works:
+//   localhost / Render → '' (Flask serves both frontend + /api/... on same origin)
+//   GitHub Pages or any other static host → full Render URL
+const API_BASE = (() => {
+    const h = window.location.hostname;
+    if (h === 'localhost' || h === '127.0.0.1' || h.endsWith('.onrender.com')) return '';
+    return 'https://streetbite.onrender.com';
+})();
+
 // Location state — district is remembered for display only; area is NOT persisted
 // so all shops always show by default when the user opens the app
 let selectedDistrict = localStorage.getItem('streetbite_district') || null;

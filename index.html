@@ -3,69 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreetBite - Street Food Tracker</title>
-    <link rel="stylesheet" href="style.css">
+    <title>StreetBite - Redirecting...</title>
+    <style>
+        body { margin: 0; font-family: 'Inter', sans-serif; display: flex; align-items: center;
+               justify-content: center; min-height: 100vh; background: #1a1a2e; color: #fff; text-align: center; }
+        .msg { font-size: 1.2rem; opacity: 0.8; }
+        .logo { display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+        .logo svg { width: 48px; height: 48px; stroke: #f97316; }
+    </style>
+    <!-- Redirect GitHub Pages visitors to the live Render app -->
+    <meta http-equiv="refresh" content="0; url=https://streetbite.onrender.com">
+    <script>window.location.replace('https://streetbite.onrender.com');</script>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <h1 id="app-title"><span class="logo-icon">🍽️</span> StreetBite</h1>
-            <div class="header-actions">
-                <button class="location-btn" id="location-btn" onclick="openLocationPicker()">
-                    <span class="location-btn-icon">📍</span>
-                    <span class="location-btn-text" id="location-btn-text">Select Location</span>
-                    <span class="location-btn-arrow">▼</span>
-                </button>
-                <select class="language-selector" id="header-language-select" onchange="changeLanguage(this.value)">
-                    <option value="en">🇬🇧 English</option>
-                    <option value="ta">🇮🇳 தமிழ்</option>
-                    <option value="hi">🇮🇳 हिंदी</option>
-                </select>
-            </div>
+    <div>
+        <div class="logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 11l19-9-9 19-2-8-8-2z"/>
+            </svg>
         </div>
-    </header>
-
-    <!-- Location Picker Bottom Sheet -->
-    <div class="location-overlay" id="location-overlay" onclick="closeLocationPicker()"></div>
-    <div class="location-sheet" id="location-sheet">
-        <div class="sheet-handle"></div>
-        <div class="sheet-header">
-            <button class="sheet-back-btn" id="sheet-back-btn" onclick="goBackToDistricts()" style="display:none;">←</button>
-            <h3 class="sheet-title" id="sheet-title">📍 Select Your District</h3>
-            <button class="sheet-close-btn" onclick="closeLocationPicker()">✕</button>
+        <div class="msg">Redirecting to StreetBite…<br>
+            <a href="https://streetbite.onrender.com" style="color:#f97316;">Click here if not redirected</a>
         </div>
-        <div class="sheet-search">
-            <input type="text" class="sheet-search-input" id="sheet-search-input" placeholder="🔍 Search..." oninput="filterLocationList()">
-        </div>
-        <div class="sheet-list" id="sheet-list"></div>
     </div>
-
-    <!-- Loading Spinner -->
-    <div id="loading" class="loading">
-        <div class="spinner"></div>
-        <p>Loading...</p>
-    </div>
-
-    <!-- Main Content -->
-    <main id="app" class="main-content"></main>
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <button class="nav-item active" data-page="home">
-            <span class="nav-icon">🏠</span>
-            <span class="nav-label">Home</span>
-        </button>
-        <button class="nav-item" data-page="search">
-            <span class="nav-icon">🔍</span>
-            <span class="nav-label">Search</span>
-        </button>
-        <button class="nav-item" data-page="profile">
-            <span class="nav-icon">👤</span>
-            <span class="nav-label">Profile</span>
-        </button>
-    </nav>
-
-    <script src="script.js"></script>
 </body>
 </html>
