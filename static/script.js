@@ -6,12 +6,10 @@ let searchQuery = '';
 let vendorShop = null;
 let currentLanguage = 'en';
 
-// API base URL — auto-detects environment
-// On GitHub Pages: uses deployed Render backend
-// On localhost: uses relative path (Flask serves both frontend & API)
-const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? ''  // relative — Flask serves /api/... directly
-    : 'https://streetbite-backend.onrender.com'; // ← Render URL (updated after deploy)
+// API base URL — always use relative paths.
+// Flask serves both the frontend HTML and the /api/... routes on the same server,
+// so relative paths work correctly on localhost, Render, or any other host.
+const API_BASE = '';
 
 // Location state — district is remembered for display only; area is NOT persisted
 // so all shops always show by default when the user opens the app
@@ -182,7 +180,7 @@ async function initializeData() {
 async function loadStalls() {
     showLoading(true);
     try {
-        const res = await fetch(\/api/stalls');
+        const res = await fetch(`${API_BASE}/api/stalls`);
         stalls = await res.json();
     } catch (e) {
         console.error('Could not load stalls:', e);
@@ -1114,7 +1112,7 @@ function renderAddShopPage() {
         submitBtn.textContent = 'Registering...';
 
         try {
-            const res = await fetch(\/api/stalls/signup', {
+            const res = await fetch(`${API_BASE}/api/stalls/signup`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -1472,7 +1470,7 @@ function renderProfilePage() {
             loginBtn.textContent = 'Logging in...';
 
             try {
-                const res = await fetch(\/api/vendor-login', {
+                const res = await fetch(`${API_BASE}/api/vendor-login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contact, password })
