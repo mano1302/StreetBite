@@ -199,8 +199,8 @@ function saveData() {}
 // Translations
 const translations = {
     en: {
-        appName: '🍽️ StreetBite',
-        searchPlaceholder: '🔍 Search shops or food...',
+        appName: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg> StreetBite',
+        searchPlaceholder: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg> Search shops or food...',
         home: 'Home',
         search: 'Search',
         addShop: 'Add Shop',
@@ -217,7 +217,7 @@ const translations = {
         submitReview: 'Submit Review',
         reviewPlaceholder: 'Share your experience...',
         noReviews: 'No reviews yet. Be the first!',
-        addNewShop: '➕ Add New Shop',
+        addNewShop: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M5 12h14"/><path d="M12 5v14"/></svg> Add New Shop',
         shopName: 'Shop Name',
         shopNamePlaceholder: 'Enter shop name',
         foodCategory: 'Food Category',
@@ -231,12 +231,12 @@ const translations = {
         discountPlaceholder: 'e.g., 10% off',
         openingTime: 'Opening Time',
         closingTime: 'Closing Time',
-        menuItems: '📋 Menu Items',
+        menuItems: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg> Menu Items',
         itemName: 'Item name',
         price: '₹',
         listMyShop: 'List My Shop',
         noItemsAdded: 'No items added yet',
-        vendorLogin: '👤 Vendor Login',
+        vendorLogin: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Vendor Login',
         vendorLoginSub: 'Manage your shop status and menu',
         selectYourShop: 'Select Your Shop',
         chooseYourShop: 'Choose your shop',
@@ -245,9 +245,9 @@ const translations = {
         login: 'Login',
         noShopListed: "Don't have a shop listed?",
         addYourShop: 'Add Your Shop',
-        vendorDashboard: '👤 Vendor Dashboard',
+        vendorDashboard: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Vendor Dashboard',
         logout: 'Logout',
-        menuAvailability: '📋 Menu Availability',
+        menuAvailability: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg> Menu Availability',
         updateDiscount: 'Update Offer',
         language: 'Language',
         selectLanguage: 'Select Language',
@@ -270,23 +270,23 @@ const translations = {
         categorySweetBeverages: 'Sweet & Beverages',
         categorySnacks: 'Snacks',
         categoryOthers: 'Others',
-        welcomeTitle: 'Welcome to StreetBite! 😋',
+        welcomeTitle: 'Welcome to StreetBite!',
         welcomeSubtitle: 'Discover the best street food near you',
         shopsAvailable: 'shops available',
-        toggleOpen: '✓ Open',
-        toggleClosed: '✕ Closed',
+        toggleOpen: 'Open',
+        toggleClosed: 'Closed',
         selectLocation: 'Select Location',
-        selectDistrict: '📍 Select Your District',
-        selectArea: '📍 Select Area in',
+        selectDistrict: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Select Your District',
+        selectArea: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Select Area in',
         changeLocation: 'Change',
         nearbyShops: 'Nearby shops in',
-        searchDistrict: '🔍 Search district...',
-        searchArea: '🔍 Search area...',
+        searchDistrict: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg> Search district...',
+        searchArea: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg> Search area...',
         allAreas: 'All Areas'
     },
     ta: {
-        appName: '🍽️ ஸ்ட்ரீட்பைட்',
-        searchPlaceholder: '🔍 கடை அல்லது உணவைத் தேடு...',
+        appName: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg> ஸ்ட்ரீட்பைட்',
+        searchPlaceholder: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg> கடை அல்லது உணவைத் தேடு...',
         home: 'முகப்பு',
         search: 'தேடல்',
         addShop: 'கடை சேர்',
@@ -303,7 +303,7 @@ const translations = {
         submitReview: 'சமர்ப்பி',
         reviewPlaceholder: 'உங்கள் அனுபவத்தைப் பகிர்ந்து கொள்ளுங்கள்...',
         noReviews: 'இன்னும் மதிப்புரைகள் இல்லை! முதலில் எழுதுங்கள்!',
-        addNewShop: '➕ புதிய கடை சேர்',
+        addNewShop: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M5 12h14"/><path d="M12 5v14"/></svg> புதிய கடை சேர்',
         shopName: 'கடை பெயர்',
         shopNamePlaceholder: 'கடை பெயரை உள்ளிடுக',
         foodCategory: 'உணவு வகை',
@@ -317,12 +317,12 @@ const translations = {
         discountPlaceholder: 'உதா: 10% தள்ளுபடி',
         openingTime: 'திறக்கும் நேரம்',
         closingTime: 'மூடும் நேரம்',
-        menuItems: '📋 உணவுப் பட்டியல்',
+        menuItems: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg> உணவுப் பட்டியல்',
         itemName: 'உணவு பெயர்',
         price: '₹',
         listMyShop: 'என் கடையைப் பதிவு செய்',
         noItemsAdded: 'இன்னும் உணவுகள் சேர்க்கப்படவில்லை',
-        vendorLogin: '👤 வியாபாரி நுழைவு',
+        vendorLogin: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> வியாபாரி நுழைவு',
         vendorLoginSub: 'உங்கள் கடை நிலை மற்றும் உணவுப் பட்டியலை நிர்வகிக்க',
         selectYourShop: 'உங்கள் கடையைத் தேர்வு செய்',
         chooseYourShop: 'உங்கள் கடையைத் தேர்ந்தெடுக்கவும்',
@@ -331,9 +331,9 @@ const translations = {
         login: 'உள்நுழை',
         noShopListed: 'கடை இல்லையா?',
         addYourShop: 'உங்கள் கடையைச் சேர்',
-        vendorDashboard: '👤 வியாபாரி கட்டுப்பாட்டறை',
+        vendorDashboard: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> வியாபாரி கட்டுப்பாட்டறை',
         logout: 'வெளியேறு',
-        menuAvailability: '📋 உணவு கிடைக்கும் நிலை',
+        menuAvailability: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg> உணவு கிடைக்கும் நிலை',
         updateDiscount: 'சலுகையைப் புதுப்பி',
         language: 'மொழி',
         selectLanguage: 'மொழியைத் தேர்வு செய்',
@@ -356,23 +356,23 @@ const translations = {
         categorySweetBeverages: 'இனிப்பு & பானங்கள்',
         categorySnacks: 'சிற்றுண்டி',
         categoryOthers: 'மற்றவை',
-        welcomeTitle: 'ஸ்ட்ரீட்பைட்-க்கு வரவேற்பு! 😋',
+        welcomeTitle: 'ஸ்ட்ரீட்பைட்-க்கு வரவேற்பு!',
         welcomeSubtitle: 'உங்கள் அருகில் சிறந்த தெரு உணவுகளைக் கண்டறியுங்கள்',
         shopsAvailable: 'கடைகள் கிடைக்கின்றன',
-        toggleOpen: '✓ திறந்திருக்கிறது',
-        toggleClosed: '✕ மூடியிருக்கிறது',
+        toggleOpen: 'திறந்திருக்கிறது',
+        toggleClosed: 'மூடியிருக்கிறது',
         selectLocation: 'இடம் தேர்வு',
-        selectDistrict: '📍 மாவட்டம் தேர்வு',
-        selectArea: '📍 பகுதி தேர்வு -',
+        selectDistrict: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> மாவட்டம் தேர்வு',
+        selectArea: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> பகுதி தேர்வு -',
         changeLocation: 'மாற்று',
         nearbyShops: 'அருகிலுள்ள கடைகள் -',
-        searchDistrict: '🔍 மாவட்டம் தேடு...',
-        searchArea: '🔍 பகுதி தேடு...',
+        searchDistrict: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg> மாவட்டம் தேடு...',
+        searchArea: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg> பகுதி தேடு...',
         allAreas: 'அனைத்து பகுதிகள்'
     },
     hi: {
-        appName: '🍽️ स्ट्रीटबाइट',
-        searchPlaceholder: '🔍 दुकान या खाना खोजें...',
+        appName: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg> स्ट्रीटबाइट',
+        searchPlaceholder: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg> दुकान या खाना खोजें...',
         home: 'मुख्य पृष्ठ',
         search: 'खोजें',
         addShop: 'दुकान जोड़ें',
@@ -389,7 +389,7 @@ const translations = {
         submitReview: 'जमा करें',
         reviewPlaceholder: 'अपना अनुभव साझा करें...',
         noReviews: 'अभी कोई समीक्षा नहीं! पहली समीक्षा दें!',
-        addNewShop: '➕ नई दुकान जोड़ें',
+        addNewShop: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M5 12h14"/><path d="M12 5v14"/></svg> नई दुकान जोड़ें',
         shopName: 'दुकान का नाम',
         shopNamePlaceholder: 'दुकान का नाम लिखें',
         foodCategory: 'खाने की श्रेणी',
@@ -403,12 +403,12 @@ const translations = {
         discountPlaceholder: 'जैसे: 10% छूट',
         openingTime: 'खुलने का समय',
         closingTime: 'बंद होने का समय',
-        menuItems: '📋 मेनू आइटम',
+        menuItems: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg> मेनू आइटम',
         itemName: 'आइटम का नाम',
         price: '₹',
         listMyShop: 'अपनी दुकान सूचीबद्ध करें',
         noItemsAdded: 'कोई आइटम नहीं जोड़ा गया',
-        vendorLogin: '👤 विक्रेता लॉगिन',
+        vendorLogin: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> विक्रेता लॉगिन',
         vendorLoginSub: 'अपनी दुकान की स्थिति और मेनू प्रबंधित करें',
         selectYourShop: 'अपनी दुकान चुनें',
         chooseYourShop: 'अपनी दुकान का चयन करें',
@@ -417,9 +417,9 @@ const translations = {
         login: 'लॉगिन',
         noShopListed: 'दुकान सूचीबद्ध नहीं है?',
         addYourShop: 'अपनी दुकान जोड़ें',
-        vendorDashboard: '👤 विक्रेता डैशबोर्ड',
+        vendorDashboard: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> विक्रेता डैशबोर्ड',
         logout: 'लॉगआउट',
-        menuAvailability: '📋 मेनू उपलब्धता',
+        menuAvailability: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg> मेनू उपलब्धता',
         updateDiscount: 'पेशकश अपडेट करें',
         language: 'भाषा',
         selectLanguage: 'भाषा चुनें',
@@ -442,18 +442,18 @@ const translations = {
         categorySweetBeverages: 'मिठाई & पेय',
         categorySnacks: 'नाश्ता',
         categoryOthers: 'अन्य',
-        welcomeTitle: 'स्ट्रीटबाइट में आपका स्वागत है! 😋',
+        welcomeTitle: 'स्ट्रीटबाइट में आपका स्वागत है!',
         welcomeSubtitle: 'आपके आस-पास का बेहतरीन स्ट्रीट फूड खोजें',
         shopsAvailable: 'दुकानें उपलब्ध',
-        toggleOpen: '✓ खुला है',
-        toggleClosed: '✕ बंद है',
+        toggleOpen: 'खुला है',
+        toggleClosed: 'बंद है',
         selectLocation: 'स्थान चुनें',
-        selectDistrict: '📍 अपना जिला चुनें',
-        selectArea: '📍 क्षेत्र चुनें -',
+        selectDistrict: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> अपना जिला चुनें',
+        selectArea: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> क्षेत्र चुनें -',
         changeLocation: 'बदलें',
         nearbyShops: 'आस-पास की दुकानें -',
-        searchDistrict: '🔍 जिला खोजें...',
-        searchArea: '🔍 क्षेत्र खोजें...',
+        searchDistrict: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg> जिला खोजें...',
+        searchArea: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg> क्षेत्र खोजें...',
         allAreas: 'सभी क्षेत्र'
     }
 };
@@ -462,12 +462,12 @@ const translations = {
 const categorySVGs = {
     'Fast Food': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 11h.01"/><path d="M11 15h.01"/><path d="M16 16h.01"/><path d="m2 16 20 6-6-20A20 20 0 0 0 2 16"/><path d="M5.71 17.11a17.04 17.04 0 0 1 11.4-11.4"/></svg>',
     'Biryani': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>',
-    'Parotta & Meals': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>',
-    'Grilled & Non-Veg': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Z"/><path d="M12 12c2 2.67 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.33-6 4Z"/></svg>',
+    'Parotta & Meals': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>',
+    'Grilled & Non-Veg': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
     'Juice': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>',
     'Sweet & Beverages': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 11 4.08 10.35a1 1 0 0 0 1.84 0L17 11"/><path d="M17 7A5 5 0 0 0 7 7"/><path d="M17 7H7"/></svg>',
     'Snacks': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a2 2 0 0 0 0-4 2 2 0 0 0-4 0 2 2 0 0 0-4 0 2 2 0 0 0-4 0 2 2 0 0 0 0 4"/><path d="M10 22 9 8"/><path d="m14 22 1-14"/></svg>',
-    'Others': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>'
+    'Others': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>'
 };
 
 // Legacy compat — categoryEmojis now returns SVG markup
@@ -610,7 +610,7 @@ function renderHomePage() {
     if (selectedDistrict && selectedArea && selectedArea !== 'All Areas') {
         locationChipHTML = `
             <div class="selected-location-chip">
-                <span class="location-chip-icon">📍</span>
+                <span class="location-chip-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
                 <span class="location-chip-text">${t('nearbyShops')} <strong>${getAreaName(selectedArea)}, ${getDistrictName(selectedDistrict)}</strong></span>
                 <button class="location-chip-change" onclick="openLocationPicker()">${t('changeLocation')}</button>
             </div>
@@ -618,7 +618,7 @@ function renderHomePage() {
     } else if (selectedDistrict) {
         locationChipHTML = `
             <div class="selected-location-chip">
-                <span class="location-chip-icon">📍</span>
+                <span class="location-chip-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
                 <span class="location-chip-text">${t('nearbyShops')} <strong>${getDistrictName(selectedDistrict)}</strong></span>
                 <button class="location-chip-change" onclick="openLocationPicker()">${t('changeLocation')}</button>
             </div>
@@ -641,10 +641,10 @@ function renderHomePage() {
             <div class="shop-grid" id="shop-grid"></div>
             ` : `
             <div class="select-location-prompt">
-                <div class="prompt-icon">📍</div>
+                <div class="prompt-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
                 <h3 class="prompt-title">Select Your Location</h3>
                 <p class="prompt-desc">Tap the location button above to pick your district and area — we'll show you all street food shops near you!</p>
-                <button class="prompt-btn" onclick="openLocationPicker()">📍 Select Location</button>
+                <button class="prompt-btn" onclick="openLocationPicker()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Select Location</button>
             </div>
             `}
         </div>
@@ -715,7 +715,7 @@ function renderShopGrid() {
     if (filtered.length === 0) {
         grid.innerHTML = `
             <div class="empty-state">
-                <div class="icon">🔍</div>
+                <div class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
                 <p>${t('noShopsFound')}</p>
             </div>
         `;
@@ -726,15 +726,15 @@ function renderShopGrid() {
         <div class="shop-card" data-id="${stall.id}">
             <div class="shop-card-header">
                 <span class="shop-name">${stall.name}</span>
-                <span class="shop-emoji">${stall.emoji || categoryEmojis[stall.category] || '🍽️'}</span>
+                <span class="shop-emoji">${stall.emoji || categoryEmojis[stall.category] || '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>'}</span>
             </div>
             <span class="shop-category">${stall.category}</span>
-            <div class="shop-area">📍 ${stall.area}</div>
+            <div class="shop-area"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${stall.area}</div>
             <div>
                 <span class="shop-status ${stall.status}">${stall.status === 'open' ? '✓ ' + t('open') : '✕ ' + t('closed')}</span>
-                <span class="shop-rating">⭐ ${(stall.rating || 0).toFixed(1)} (${stall.totalReviews || 0})</span>
+                <span class="shop-rating"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#fbbf24;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> ${(stall.rating || 0).toFixed(1)} (${stall.totalReviews || 0})</span>
             </div>
-            ${stall.todayDiscount ? `<div class="shop-discount">🎉 ${stall.todayDiscount}</div>` : ''}
+            ${stall.todayDiscount ? `<div class="shop-discount"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#22c55e;"><polyline points="20 6 9 17 4 12"/></svg> ${stall.todayDiscount}</div>` : ''}
         </div>
     `).join('');
 
@@ -812,7 +812,7 @@ function renderShopDetailPage(stall) {
             </div>
 
             <div class="detail-header">
-                <div class="detail-name">${stall.emoji || categoryEmojis[stall.category] || '🍽️'} ${stall.name}</div>
+                <div class="detail-name">${stall.emoji || categoryEmojis[stall.category] || '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>'} ${stall.name}</div>
                 <div class="detail-category">${stall.category}</div>
 
                 <div class="status-banner ${stall.status}">
@@ -823,16 +823,16 @@ function renderShopDetailPage(stall) {
 
                 <div class="detail-info">
                     <div class="info-row">
-                        <span class="icon">📍</span>
+                        <span class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
                         <span>${stall.address || stall.area}</span>
                     </div>
                     ${stall.contact ? `
                     <div class="info-row">
-                        <span class="icon">📞</span>
+                        <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
                         <a href="tel:${stall.contact}">${stall.contact}</a>
                     </div>` : ''}
                     <div class="info-row">
-                        <span class="icon">⭐</span>
+                        <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#fbbf24;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
                         <span>${(stall.rating || 0).toFixed(1)} ${t('rating')} (${stall.totalReviews || 0})</span>
                     </div>
                 </div>
@@ -840,7 +840,7 @@ function renderShopDetailPage(stall) {
 
             ${stall.todayDiscount ? `
                 <div class="discount-banner">
-                    🎉 ${stall.todayDiscount}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#22c55e;"><polyline points="20 6 9 17 4 12"/></svg> ${stall.todayDiscount}
                 </div>
             ` : ''}
 
@@ -864,7 +864,7 @@ function renderShopDetailPage(stall) {
                 ${stall.reviews.length > 0 ? stall.reviews.map(review => `
                     <div class="review-card">
                         <div class="review-header">
-                            <div class="review-stars">${'⭐'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</div>
+                            <div class="review-stars">${'<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#fbbf24;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</div>
                             <span class="review-date">${review.date}</span>
                         </div>
                         <div class="review-comment">${review.comment}</div>
@@ -913,7 +913,7 @@ function renderShopDetailPage(stall) {
             // Update local stall data
             const idx = stalls.findIndex(s => s.id === stall.id);
             if (idx !== -1) stalls[idx] = updated;
-            showToast('Review submitted! ⭐', 'success');
+            showToast('Review submitted! <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#fbbf24;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>', 'success');
             renderShopDetailPage(updated);
         } catch (e) {
             showToast('Could not submit review', 'error');
@@ -944,14 +944,14 @@ function renderAddShopPage() {
         <div class="add-shop-modal-inner">
             <!-- LEFT: Orange preview panel (visible on laptop+) -->
             <div class="add-shop-preview-panel">
-                <div class="add-shop-preview-icon">🍽️</div>
+                <div class="add-shop-preview-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg></div>
                 <div class="add-shop-preview-title">List Your Street Food Shop</div>
                 <div class="add-shop-preview-sub">Join hundreds of vendors on StreetBite and reach customers in your area instantly.</div>
                 <div class="add-shop-preview-badges">
-                    <span class="add-shop-preview-badge">📍 Location Pinned</span>
-                    <span class="add-shop-preview-badge">⭐ Get Reviews</span>
-                    <span class="add-shop-preview-badge">📋 Digital Menu</span>
-                    <span class="add-shop-preview-badge">🔔 Live Status</span>
+                    <span class="add-shop-preview-badge"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Location Pinned</span>
+                    <span class="add-shop-preview-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#fbbf24;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Get Reviews</span>
+                    <span class="add-shop-preview-badge"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg> Digital Menu</span>
+                    <span class="add-shop-preview-badge"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg> Live Status</span>
                 </div>
             </div>
 
@@ -985,7 +985,7 @@ function renderAddShopPage() {
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>📍 District *</label>
+                                <label><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> District *</label>
                                 <select id="shop-district">
                                     <option value="">Select District</option>
                                     ${Object.keys(tamilNaduDistricts).map(d => `<option value="${d}">${getDistrictName(d)}</option>`).join('')}
@@ -1017,11 +1017,11 @@ function renderAddShopPage() {
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>🔒 Password *</label>
+                                <label><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Password *</label>
                                 <input type="text" id="shop-password" placeholder="Min 4 characters" autocomplete="new-password">
                             </div>
                             <div class="form-group">
-                                <label>🔒 Confirm Password *</label>
+                                <label><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Confirm Password *</label>
                                 <input type="text" id="shop-password-confirm" placeholder="Repeat password" autocomplete="new-password">
                             </div>
                         </div>
@@ -1173,7 +1173,7 @@ function renderAddShopPage() {
                 return;
             }
             modal.remove();
-            showToast('🎉 Shop registered! Visible to all users now.', 'success');
+            showToast('<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#22c55e;"><polyline points="20 6 9 17 4 12"/></svg> Shop registered! Visible to all users now.', 'success');
             await reloadStalls();
             // Go to home and mark Home nav active
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -1220,7 +1220,7 @@ function renderProfilePage() {
                 <div class="vendor-dashboard">
                     <h3>${vendorShop.emoji || categoryEmojis[vendorShop.category]} ${vendorShop.name}</h3>
                     <p style="color: #666; margin-bottom: 20px;">${vendorShop.area}</p>
-                    <p style="font-size: 0.85rem; color: #888; margin-bottom: 15px;">⏰ ${openTime12} - ${closeTime12}</p>
+                    <p style="font-size: 0.85rem; color: #888; margin-bottom: 15px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${openTime12} - ${closeTime12}</p>
 
                     <div class="toggle-section-large">
                         <button class="toggle-switch-large ${vendorShop.status}" id="status-toggle">
@@ -1252,7 +1252,7 @@ function renderProfilePage() {
 
                     <!-- Add New Menu Item Section -->
                     <div class="form-section" style="margin-top: 20px;">
-                        <h3 class="section-title">➕ ${t('addNewMenuItem')}</h3>
+                        <h3 class="section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M5 12h14"/><path d="M12 5v14"/></svg> ${t('addNewMenuItem')}</h3>
                         <div class="form-row">
                             <div class="form-group">
                                 <label>${t('itemName')}</label>
@@ -1268,9 +1268,9 @@ function renderProfilePage() {
 
                     <!-- Delete Account Section -->
                     <div class="form-section" style="margin-top: 30px; border-top: 2px solid #fee2e2; padding-top: 20px;">
-                        <h3 class="section-title" style="color:#dc2626;">⚠️ Danger Zone</h3>
+                        <h3 class="section-title" style="color:#dc2626;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Danger Zone</h3>
                         <p style="color:#666; font-size:0.85rem; margin-bottom:12px;">This will permanently delete your shop and all its data. This action cannot be undone.</p>
-                        <button class="submit-btn" id="delete-shop-btn" style="background:#dc2626; margin-top:0;">🗑️ Delete My Shop</button>
+                        <button class="submit-btn" id="delete-shop-btn" style="background:#dc2626; margin-top:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg> Delete My Shop</button>
                     </div>
                 </div>
             </div>
@@ -1289,7 +1289,7 @@ function renderProfilePage() {
                 vendorShop.status = newStatus;
                 await reloadStalls();
                 renderProfilePage();
-                showToast(`Shop is now ${newStatus === 'open' ? '🟢 Open' : '🔴 Closed'}`, 'success');
+                showToast(`Shop is now ${newStatus === 'open' ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#16a34a;"><circle cx="12" cy="12" r="10"/></svg> Open' : '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#dc2626;"><circle cx="12" cy="12" r="10"/></svg> Closed'}`, 'success');
             } catch (e) { showToast('Update failed', 'error'); }
         });
 
@@ -1306,7 +1306,7 @@ function renderProfilePage() {
                     body: JSON.stringify({ discount: discount || null })
                 });
                 vendorShop.todayDiscount = discount || null;
-                showToast('Offer updated! 🎉', 'success');
+                showToast('Offer updated! <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#22c55e;"><polyline points="20 6 9 17 4 12"/></svg>', 'success');
             } catch (e) { showToast('Update failed', 'error'); }
         };
 
@@ -1360,21 +1360,26 @@ function renderProfilePage() {
                 app.querySelector('#new-item-name').value = '';
                 app.querySelector('#new-item-price').value = '';
                 renderProfilePage();
-                showToast('New item added! 🍽️', 'success');
+                showToast('New item added! <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>', 'success');
             } catch (e) { showToast('Failed to add item', 'error'); }
         });
 
         // Delete My Shop
-        app.querySelector('#delete-shop-btn').addEventListener('click', async () => {
+        app.querySelector('#delete-shop-btn').addEventListener('click', async (e) => {
+            const btn = e.target;
+            if (btn.disabled) return;
+            
             // Step 1: Confirm intent
-            const confirmed = confirm(`⚠️ Are you sure you want to permanently delete "${vendorShop.name}"?\n\nThis will remove your shop, menu, and all reviews. This CANNOT be undone.`);
+            const confirmed = confirm(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Are you sure you want to permanently delete "${vendorShop.name}"?\n\nThis will remove your shop, menu, and all reviews. This CANNOT be undone.`);
             if (!confirmed) return;
 
-            // Step 2: Ask for password to verify
-            const pwd = prompt('Enter your shop password to confirm deletion:');
-            if (!pwd) return;
+            // Step 2: Use saved password or prompt
+            let pwd = localStorage.getItem('vendorPassword');
+            if (!pwd) {
+                pwd = prompt('Enter your shop password to confirm deletion:');
+                if (!pwd) return;
+            }
 
-            const btn = app.querySelector('#delete-shop-btn');
             btn.disabled = true;
             btn.textContent = 'Deleting...';
 
@@ -1389,18 +1394,19 @@ function renderProfilePage() {
                     vendorShop = null;
                     localStorage.removeItem('vendorShopId');
                     localStorage.removeItem('vendorContact');
+                    localStorage.removeItem('vendorPassword');
                     await reloadStalls();
                     renderProfilePage();
                     showToast('Your shop has been permanently deleted.', 'success');
                 } else {
                     showToast(data.error || 'Deletion failed. Check your password.', 'error');
                     btn.disabled = false;
-                    btn.textContent = '🗑️ Delete My Shop';
+                    btn.textContent = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg> Delete My Shop';
                 }
             } catch (e) {
                 showToast('Network error. Please try again.', 'error');
                 btn.disabled = false;
-                btn.textContent = '🗑️ Delete My Shop';
+                btn.textContent = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg> Delete My Shop';
             }
         });
 
@@ -1408,6 +1414,7 @@ function renderProfilePage() {
         // Login form — check for persistent login via API
         const savedShopId = localStorage.getItem('vendorShopId');
         const savedContact = localStorage.getItem('vendorContact');
+        const savedPassword = localStorage.getItem('vendorPassword');
 
         if (savedShopId) {
             // Show a loading placeholder immediately so the page visibly changes
@@ -1464,7 +1471,7 @@ function renderProfilePage() {
                         </div>
 
                         <div class="form-group">
-                            <label>🔒 Password</label>
+                            <label><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Password</label>
                             <input type="text" id="vendor-password" placeholder="Your shop password" autocomplete="current-password">
                         </div>
 
@@ -1474,7 +1481,7 @@ function renderProfilePage() {
                     <div style="text-align: center; margin-top: 30px; color: #666;">
                         <p>${t('noShopListed')}</p>
                         <button class="add-shop-from-profile-btn" id="add-shop-from-profile">
-                            ➕ ${t('addYourShop')}
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M5 12h14"/><path d="M12 5v14"/></svg> ${t('addYourShop')}
                         </button>
                     </div>
                 </div>
@@ -1521,8 +1528,9 @@ function renderProfilePage() {
                     vendorShop.contact = contact; // keep contact in memory for delete/actions
                     localStorage.setItem('vendorShopId', vendorShop.id);
                     localStorage.setItem('vendorContact', contact);
+                    localStorage.setItem('vendorPassword', password);
                     renderProfilePage();
-                    showToast(currentLanguage === 'ta' ? `வரவேற்கிறோம், ${vendorShop.name}!` : currentLanguage === 'hi' ? `स्वागत है, ${vendorShop.name}!` : `Welcome, ${vendorShop.name}! 👋`, 'success');
+                    showToast(currentLanguage === 'ta' ? `வரவேற்கிறோம், ${vendorShop.name}!` : currentLanguage === 'hi' ? `स्वागत है, ${vendorShop.name}!` : `Welcome, ${vendorShop.name}! `, 'success');
                 } else {
                     showToast(data.error || 'Invalid mobile number or password', 'error');
                     loginBtn.disabled = false;
@@ -1570,7 +1578,7 @@ function initPasswordToggles(container) {
             e.stopPropagation();
             const isHidden = input.type === 'password';
             input.type = isHidden ? 'text' : 'password';
-            btn.textContent = isHidden ? '🙈' : '👁️';
+            btn.textContent = isHidden ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>' : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
             // Keep focus on input so keyboard stays open on mobile
             input.focus();
         }
@@ -1664,10 +1672,9 @@ function renderDistrictList() {
     list.innerHTML = districts.map(district => `
         <div class="location-item ${selectedDistrict === district ? 'selected' : ''}" onclick="selectDistrictItem('${district}')">
             <div class="location-item-left">
-                <span class="location-item-emoji">🏛️</span>
+                <span class="location-item-emoji"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></span>
                 <div>
                     <div class="location-item-name">${getDistrictName(district)}</div>
-                    ${currentLanguage !== 'en' ? `<div class="location-item-sub">${district}</div>` : ''}
                 </div>
             </div>
             <span class="location-item-arrow">→</span>
@@ -1703,7 +1710,7 @@ function renderAreaList(district) {
     let itemsHTML = `
         <div class="location-item ${selectedArea === 'All Areas' || !selectedArea ? 'selected' : ''}" onclick="selectAreaItem('All Areas')">
             <div class="location-item-left">
-                <span class="location-item-emoji">🌐</span>
+                <span class="location-item-emoji"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></span>
                 <span class="location-item-name">${t('allAreas')}</span>
             </div>
             <span class="location-item-arrow">✓</span>
@@ -1713,10 +1720,9 @@ function renderAreaList(district) {
     itemsHTML += areas.map(area => `
         <div class="location-item ${selectedArea === area ? 'selected' : ''}" onclick="selectAreaItem('${area.replace(/'/g, "\\'")}')">
             <div class="location-item-left">
-                <span class="location-item-emoji">📍</span>
+                <span class="location-item-emoji"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
                 <div>
                     <div class="location-item-name">${getAreaName(area)}</div>
-                    ${currentLanguage !== 'en' && getAreaName(area) !== area ? `<div class="location-item-sub">${area}</div>` : ''}
                 </div>
             </div>
             <span class="location-item-arrow">${selectedArea === area ? '✓' : '→'}</span>
@@ -1743,7 +1749,7 @@ function selectAreaItem(area) {
     const displayName = area === 'All Areas'
         ? getDistrictName(selectedDistrict)
         : `${getAreaName(area)}, ${getDistrictName(selectedDistrict)}`;
-    showToast(`📍 ${displayName}`, 'success');
+    showToast(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${displayName}`, 'success');
 }
 
 function goBackToDistricts() {
@@ -1764,7 +1770,7 @@ function filterLocationList() {
         list.innerHTML = districts.map(district => `
             <div class="location-item ${selectedDistrict === district ? 'selected' : ''}" onclick="selectDistrictItem('${district}')">
                 <div class="location-item-left">
-                    <span class="location-item-emoji">🏛️</span>
+                    <span class="location-item-emoji"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></span>
                     <div>
                         <div class="location-item-name">${getDistrictName(district)}</div>
                         ${currentLanguage !== 'en' ? `<div class="location-item-sub">${district}</div>` : ''}
@@ -1789,7 +1795,7 @@ function filterLocationList() {
             itemsHTML += `
                 <div class="location-item ${selectedArea === 'All Areas' || !selectedArea ? 'selected' : ''}" onclick="selectAreaItem('All Areas')">
                     <div class="location-item-left">
-                        <span class="location-item-emoji">🌐</span>
+                        <span class="location-item-emoji"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></span>
                         <span class="location-item-name">${t('allAreas')}</span>
                     </div>
                     <span class="location-item-arrow">✓</span>
@@ -1800,7 +1806,7 @@ function filterLocationList() {
         itemsHTML += areas.map(area => `
             <div class="location-item ${selectedArea === area ? 'selected' : ''}" onclick="selectAreaItem('${area.replace(/'/g, "\\'")}')">
                 <div class="location-item-left">
-                    <span class="location-item-emoji">📍</span>
+                    <span class="location-item-emoji"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
                     <div>
                         <div class="location-item-name">${getAreaName(area)}</div>
                         ${currentLanguage !== 'en' && getAreaName(area) !== area ? `<div class="location-item-sub">${area}</div>` : ''}
