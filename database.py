@@ -362,9 +362,13 @@ class Database:
             ))
 
             if self.is_postgresql:
-                stall_id = cursor.fetchone()['id']
+                res = cursor.fetchone()
+                stall_id = res['id'] if res else None
             else:
                 stall_id = cursor.lastrowid
+
+            if not stall_id:
+                raise ValueError("Failed to create stall record")
 
             # Add menu items
             for item in stall_data.get('menu', []):

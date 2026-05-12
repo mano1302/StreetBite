@@ -1953,14 +1953,14 @@ function renderShopDetailPage(stall) {
 function renderAddShopPage() {
     console.log('[AddShop] renderAddShopPage() called');
 
-    // If modal already exists, just show it (preserves form data) — PREVENTS DUPLICATE MOUNT
-    if (document.getElementById('add-shop-modal')) {
-        console.log('[AddShop] Modal already exists — showing existing modal');
-        document.getElementById('add-shop-modal').classList.add('active');
-        return;
+    // If modal already exists, remove it and recreate (ensures latest logic/listeners are used)
+    const existingModal = document.getElementById('add-shop-modal');
+    if (existingModal) {
+        console.log('[AddShop] Removing existing modal to refresh logic');
+        existingModal.remove();
     }
-
-    console.log('[AddShop] Creating new modal instance');
+    
+    console.log('[AddShop] Creating fresh modal instance');
     let menuItems = [];
 
     // Create modal element and append to body
@@ -2158,7 +2158,7 @@ function renderAddShopPage() {
         const password = modal.querySelector('#shop-password').value;
         const confirmPassword = modal.querySelector('#shop-password-confirm').value;
 
-        if (!name || !category || !area || !contact) {
+        if (!name || !category || !shopDistrict || !area || !contact) {
             showToast(t('fillRequired'), 'error');
             return;
         }
@@ -2180,7 +2180,7 @@ function renderAddShopPage() {
         submitBtn.textContent = t('registering');
 
         try {
-                const res = await fetch('/api/stalls/signup', {
+            const res = await fetch('/api/stalls/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -2193,24 +2193,39 @@ function renderAddShopPage() {
                     menu: menuItems
                 })
             });
-            const data = await res.json();
+            
+            let data;
+            const contentType = res.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                data = await res.json();
+            } else {
+                const text = await res.text();
+                console.error('[AddShop] Non-JSON response:', text);
+                throw new Error('Server returned an unexpected response');
+            }
+
             if (!res.ok) {
                 showToast(data.error || t('registrationFailed'), 'error');
                 submitBtn.disabled = false;
                 submitBtn.textContent = t('listMyShop');
                 return;
             }
+
+            // Success
             modal.remove();
             showToast(t('shopRegistered'), 'success');
             await reloadStalls();
+            
             // Go to home and mark Home nav active
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             const homeNav = document.querySelector('.nav-item[data-page="home"]');
             if (homeNav) homeNav.classList.add('active');
             currentPage = 'home';
             renderHomePage();
+            
         } catch (e) {
-            showToast(t('networkError'), 'error');
+            console.error('[AddShop] Submission error:', e);
+            showToast(e.message || t('networkError'), 'error');
             submitBtn.disabled = false;
             submitBtn.textContent = t('listMyShop');
         }

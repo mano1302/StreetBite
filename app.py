@@ -83,7 +83,13 @@ def signup_stall():
         new_stall = db.signup_stall(stall_data)
         return jsonify({'success': True, 'stall': new_stall}), 201
     except ValueError as e:
+        print(f"[Signup] Validation error: {e}")
         return jsonify({'error': str(e)}), 400
+    except Exception as e:
+        print(f"[Signup] Server error: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': 'An internal server error occurred during registration'}), 500
 
 @app.route('/api/stalls/<int:stall_id>/review', methods=['POST'])
 def add_review(stall_id):
