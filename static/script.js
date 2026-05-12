@@ -828,7 +828,40 @@ const translations = {
         nearbyShops: 'Nearby shops in',
         searchDistrict: 'Search district...',
         searchArea: 'Search area...',
-        allAreas: 'All Areas'
+        allAreas: 'All Areas',
+        district: 'District',
+        listShopTitle: 'List Your Street Food Shop',
+        listShopSub: 'Join hundreds of vendors on StreetBite and reach customers in your area instantly.',
+        locationPinned: 'Location Pinned',
+        getReviews: 'Get Reviews',
+        digitalMenu: 'Digital Menu',
+        liveStatus: 'Live Status',
+        password: 'Password',
+        confirmPassword: 'Confirm Password',
+        passwordPlaceholder: 'Min 4 characters',
+        confirmPasswordPlaceholder: 'Repeat password',
+        vendorPasswordPlaceholder: 'Your shop password',
+        passwordTooShort: 'Password must be at least 4 characters',
+        passwordsDoNotMatch: 'Passwords do not match',
+        registrationFailed: 'Registration failed',
+        shopRegistered: 'Shop registered! Visible to all users now.',
+        networkError: 'Network error. Please try again.',
+        loggingIn: 'Logging in...',
+        invalidCredentials: 'Invalid mobile number or password',
+        welcomeVendor: 'Welcome',
+        registering: 'Registering...',
+        fillRequired: 'Please fill all required fields',
+        addMenuItemError: 'Please add at least one menu item',
+        dangerZone: 'Danger Zone',
+        deleteShop: 'Delete My Shop',
+        deleteShopDesc: 'This will permanently delete your shop and all its data. This action cannot be undone.',
+        deleteConfirmTitle: 'Are you sure you want to permanently delete "{name}"?',
+        deleteConfirmDesc: 'This will remove your shop, menu, and all reviews. This CANNOT be undone.',
+        enterPasswordConfirm: 'Enter your shop password to confirm deletion:',
+        shopDeleted: 'Your shop has been permanently deleted.',
+        deleting: 'Deleting...',
+        ok: 'OK',
+        cancel: 'Cancel'
     },
     ta: {
         appName: 'ஸ்ட்ரீட்பைட்',
@@ -914,7 +947,40 @@ const translations = {
         nearbyShops: 'அருகிலுள்ள கடைகள் -',
         searchDistrict: 'மாவட்டம் தேடு...',
         searchArea: 'பகுதி தேடு...',
-        allAreas: 'அனைத்து பகுதிகள்'
+        allAreas: 'அனைத்து பகுதிகள்',
+        district: 'மாவட்டம்',
+        listShopTitle: 'உங்கள் தெரு உணவுக் கடையைப் பதிவு செய்யுங்கள்',
+        listShopSub: 'ஸ்ட்ரீட்பைட்-இல் நூற்றுக்கணக்கான வியாபாரிகளுடன் இணைந்து, உங்கள் பகுதியில் உள்ள வாடிக்கையாளர்களை உடனடியாக சென்றடையுங்கள்.',
+        locationPinned: 'இடம் குறிக்கப்பட்டது',
+        getReviews: 'மதிப்புரைகளைப் பெறுங்கள்',
+        digitalMenu: 'டிஜிட்டல் மெனு',
+        liveStatus: 'நேரடி நிலை',
+        password: 'கடவுச்சொல்',
+        confirmPassword: 'கடவுச்சொல்லை உறுதிப்படுத்தவும்',
+        passwordPlaceholder: 'குறைந்தது 4 எழுத்துக்கள்',
+        confirmPasswordPlaceholder: 'கடவுச்சொல்லை மீண்டும் உள்ளிடவும்',
+        vendorPasswordPlaceholder: 'உங்கள் கடையின் கடவுச்சொல்',
+        passwordTooShort: 'கடவுச்சொல் குறைந்தது 4 எழுத்துக்கள் இருக்க வேண்டும்',
+        passwordsDoNotMatch: 'கடவுச்சொற்கள் பொருந்தவில்லை',
+        registrationFailed: 'பதிவு தோல்வியடைந்தது',
+        shopRegistered: 'கடை பதிவு செய்யப்பட்டது! இப்போது அனைவருக்கும் தெரியும்.',
+        networkError: 'பிணைய பிழை. மீண்டும் முயற்சிக்கவும்.',
+        loggingIn: 'உள்நுழைகிறது...',
+        invalidCredentials: 'தவறான மொபைல் எண் அல்லது கடவுச்சொல்',
+        welcomeVendor: 'வரவேற்கிறோம்',
+        registering: 'பதிவு செய்யப்படுகிறது...',
+        fillRequired: 'அனைத்து கட்டாய புலங்களையும் நிரப்பவும்',
+        addMenuItemError: 'குறைந்தது ஒரு உணவையாவது சேர்க்கவும்',
+        dangerZone: 'ஆபத்தான பகுதி',
+        deleteShop: 'என் கடையை நீக்கு',
+        deleteShopDesc: 'இது உங்கள் கடையையும் அதன் அனைத்து தரவுகளையும் நிரந்தரமாக நீக்கிவிடும். இந்த செயலை மாற்ற முடியாது.',
+        deleteConfirmTitle: '"{name}" கடையை நிரந்தரமாக நீக்க விரும்புகிறீர்களா?',
+        deleteConfirmDesc: 'இது உங்கள் கடை, உணவுப் பட்டியல் மற்றும் அனைத்து மதிப்புரைகளையும் நீக்கிவிடும். இதை மாற்ற முடியாது.',
+        enterPasswordConfirm: 'நீக்குவதை உறுதிப்படுத்த உங்கள் கடையின் கடவுச்சொல்லை உள்ளிடவும்:',
+        shopDeleted: 'உங்கள் கடை நிரந்தரமாக நீக்கப்பட்டது.',
+        deleting: 'நீக்கப்படுகிறது...',
+        ok: 'சரி',
+        cancel: 'ரத்து'
     },
     hi: {
         appName: 'स्ट्रीटबाइट',
@@ -1000,7 +1066,40 @@ const translations = {
         nearbyShops: 'आस-पास की दुकानें -',
         searchDistrict: 'जिला खोजें...',
         searchArea: 'क्षेत्र खोजें...',
-        allAreas: 'सभी क्षेत्र'
+        allAreas: 'सभी क्षेत्र',
+        district: 'जिला',
+        listShopTitle: 'अपनी स्ट्रीट फूड दुकान सूचीबद्ध करें',
+        listShopSub: 'स्ट्रीटबाइट पर सैकड़ों विक्रेताओं से जुड़ें और तुरंत अपने क्षेत्र के ग्राहकों तक पहुंचें।',
+        locationPinned: 'स्थान पिन किया गया',
+        getReviews: 'समीक्षाएँ प्राप्त करें',
+        digitalMenu: 'डिजिटल मेनू',
+        liveStatus: 'लाइव स्थिति',
+        password: 'पासवर्ड',
+        confirmPassword: 'पासवर्ड की पुष्टि करें',
+        passwordPlaceholder: 'कम से कम 4 अक्षर',
+        confirmPasswordPlaceholder: 'पासवर्ड दोबारा डालें',
+        vendorPasswordPlaceholder: 'आपकी दुकान का पासवर्ड',
+        passwordTooShort: 'पासवर्ड कम कम 4 अक्षर का होना चाहिए',
+        passwordsDoNotMatch: 'पासवर्ड मेल नहीं खाते',
+        registrationFailed: 'पंजीकरण विफल रहा',
+        shopRegistered: 'दुकान पंजीकृत! अब सभी उपयोगकर्ताओं के लिए दृश्यमान है।',
+        networkError: 'नेटवर्क त्रुटि। कृपया पुनः प्रयास करें।',
+        loggingIn: 'लॉग इन हो रहा है...',
+        invalidCredentials: 'अमान्य मोबाइल नंबर या पासवर्ड',
+        welcomeVendor: 'स्वागत है',
+        registering: 'पंजीकरण हो रहा है...',
+        fillRequired: 'कृपया सभी आवश्यक फ़ील्ड भरें',
+        addMenuItemError: 'कृपया कम से कम एक मेनू आइटम जोड़ें',
+        dangerZone: 'खतरा क्षेत्र',
+        deleteShop: 'मेरी दुकान हटाएँ',
+        deleteShopDesc: 'यह आपकी दुकान और उसके सभी डेटा को स्थायी रूप से हटा देगा। यह क्रिया वापस नहीं ली जा सकती।',
+        deleteConfirmTitle: 'क्या आप वाकई "{name}" को स्थायी रूप से हटाना चाहते हैं?',
+        deleteConfirmDesc: 'यह आपकी दुकान, मेनू और सभी समीक्षाओं को हटा देगा। इसे वापस नहीं लिया जा सकता।',
+        enterPasswordConfirm: 'हटाने की पुष्टि करने के लिए अपनी दुकान का पासवर्ड दर्ज करें:',
+        shopDeleted: 'आपकी दुकान स्थायी रूप से हटा दी गई है।',
+        deleting: 'हटाया जा रहा है...',
+        ok: 'ठीक है',
+        cancel: 'रद्द करें'
     }
 };
 
@@ -1400,7 +1499,6 @@ function renderShopDetailPage(stall) {
                             <div class="menu-item-name">${item.itemName}</div>
                             <div class="menu-item-price">₹${item.price}</div>
                         </div>
-                        <span class="availability-toggle ${itemAvailable ? 'available' : 'unavailable'}" style="cursor: default; transform: none;">${itemAvailable ? 'ON' : 'OFF'}</span>
                     </div>
                 `}).join('')}
             </div>
@@ -1491,13 +1589,13 @@ function renderAddShopPage() {
             <!-- LEFT: Orange preview panel (visible on laptop+) -->
             <div class="add-shop-preview-panel">
                 <div class="add-shop-preview-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg></div>
-                <div class="add-shop-preview-title">List Your Street Food Shop</div>
-                <div class="add-shop-preview-sub">Join hundreds of vendors on StreetBite and reach customers in your area instantly.</div>
+                <div class="add-shop-preview-title">${t('listShopTitle')}</div>
+                <div class="add-shop-preview-sub">${t('listShopSub')}</div>
                 <div class="add-shop-preview-badges">
-                    <span class="add-shop-preview-badge"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Location Pinned</span>
-                    <span class="add-shop-preview-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#fbbf24;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Get Reviews</span>
-                    <span class="add-shop-preview-badge"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg> Digital Menu</span>
-                    <span class="add-shop-preview-badge"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg> Live Status</span>
+                    <span class="add-shop-preview-badge"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${t('locationPinned')}</span>
+                    <span class="add-shop-preview-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#fbbf24;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> ${t('getReviews')}</span>
+                    <span class="add-shop-preview-badge"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg> ${t('digitalMenu')}</span>
+                    <span class="add-shop-preview-badge"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg> ${t('liveStatus')}</span>
                 </div>
             </div>
 
@@ -1531,7 +1629,7 @@ function renderAddShopPage() {
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> District *</label>
+                                <label><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${t('district')} *</label>
                                 <select id="shop-district">
                                     <option value="">${t('selectDistrict')}</option>
                                     ${Object.keys(tamilNaduDistricts).map(d => `<option value="${d}">${getDistrictName(d)}</option>`).join('')}
@@ -1563,12 +1661,12 @@ function renderAddShopPage() {
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Password *</label>
-                                <input type="text" id="shop-password" placeholder="Min 4 characters" autocomplete="new-password">
+                                <label><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> ${t('password')} *</label>
+                                <input type="text" id="shop-password" placeholder="${t('passwordPlaceholder')}" autocomplete="new-password">
                             </div>
                             <div class="form-group">
-                                <label><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Confirm Password *</label>
-                                <input type="text" id="shop-password-confirm" placeholder="Repeat password" autocomplete="new-password">
+                                <label><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> ${t('confirmPassword')} *</label>
+                                <input type="text" id="shop-password-confirm" placeholder="${t('confirmPasswordPlaceholder')}" autocomplete="new-password">
                             </div>
                         </div>
 
@@ -1677,25 +1775,25 @@ function renderAddShopPage() {
         const confirmPassword = modal.querySelector('#shop-password-confirm').value;
 
         if (!name || !category || !area || !contact) {
-            showToast('Please fill all required fields', 'error');
+            showToast(t('fillRequired'), 'error');
             return;
         }
         if (!password || password.length < 4) {
-            showToast('Password must be at least 4 characters', 'error');
+            showToast(t('passwordTooShort'), 'error');
             return;
         }
         if (password !== confirmPassword) {
-            showToast('Passwords do not match', 'error');
+            showToast(t('passwordsDoNotMatch'), 'error');
             return;
         }
         if (menuItems.length === 0) {
-            showToast('Please add at least one menu item', 'error');
+            showToast(t('addMenuItemError'), 'error');
             return;
         }
 
         const submitBtn = modal.querySelector('#submit-shop');
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Registering...';
+        submitBtn.textContent = t('registering');
 
         try {
             const res = await fetch('/api/stalls/signup', {
@@ -1713,13 +1811,13 @@ function renderAddShopPage() {
             });
             const data = await res.json();
             if (!res.ok) {
-                showToast(data.error || 'Registration failed', 'error');
+                showToast(data.error || t('registrationFailed'), 'error');
                 submitBtn.disabled = false;
                 submitBtn.textContent = t('listMyShop');
                 return;
             }
             modal.remove();
-            showToast('Shop registered! Visible to all users now.', 'success');
+            showToast(t('shopRegistered'), 'success');
             await reloadStalls();
             // Go to home and mark Home nav active
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -1728,7 +1826,7 @@ function renderAddShopPage() {
             currentPage = 'home';
             renderHomePage();
         } catch (e) {
-            showToast('Network error. Please try again.', 'error');
+            showToast(t('networkError'), 'error');
             submitBtn.disabled = false;
             submitBtn.textContent = t('listMyShop');
         }
@@ -1814,9 +1912,9 @@ function renderProfilePage() {
 
                     <!-- Delete Account Section -->
                     <div class="form-section" style="margin-top: 30px; border-top: 2px solid #fee2e2; padding-top: 20px;">
-                        <h3 class="section-title" style="color:#dc2626;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Danger Zone</h3>
-                        <p style="color:#666; font-size:0.85rem; margin-bottom:12px;">This will permanently delete your shop and all its data. This action cannot be undone.</p>
-                        <button class="submit-btn" id="delete-shop-btn" style="background:#dc2626; margin-top:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg> Delete My Shop</button>
+                        <h3 class="section-title" style="color:#dc2626;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> ${t('dangerZone')}</h3>
+                        <p style="color:#666; font-size:0.85rem; margin-bottom:12px;">${t('deleteShopDesc')}</p>
+                        <button class="submit-btn" id="delete-shop-btn" style="background:#dc2626; margin-top:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg> ${t('deleteShop')}</button>
                     </div>
                 </div>
             </div>
@@ -1910,25 +2008,69 @@ function renderProfilePage() {
             } catch (e) { showToast('Failed to add item', 'error'); }
         });
 
+        // Custom translation-friendly Confirm
+        const showCustomConfirm = (msg, onOk) => {
+            const overlay = document.createElement('div');
+            overlay.className = 'location-overlay active';
+            overlay.style.display = 'flex'; overlay.style.alignItems = 'center'; overlay.style.justifyContent = 'center';
+            overlay.innerHTML = `
+                <div class="location-sheet active" style="position:relative; width:90%; max-width:400px; padding:30px; border-radius:24px; transform:none;">
+                    <h3 class="section-title" style="margin-top:0; color:#dc2626;">${t('dangerZone')}</h3>
+                    <p style="margin-bottom:24px; line-height:1.6; color:#444;">${msg}</p>
+                    <div style="display:flex; gap:12px;">
+                        <button class="submit-btn" style="background:#eee; color:#333; margin:0; flex:1;" id="modal-cancel">${t('cancel')}</button>
+                        <button class="submit-btn" style="background:#dc2626; margin:0; flex:1;" id="modal-ok">${t('ok')}</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            overlay.querySelector('#modal-cancel').onclick = () => overlay.remove();
+            overlay.querySelector('#modal-ok').onclick = () => { overlay.remove(); onOk(); };
+        };
+
+        // Custom translation-friendly Prompt
+        const showCustomPrompt = (msg, onOk) => {
+            const overlay = document.createElement('div');
+            overlay.className = 'location-overlay active';
+            overlay.style.display = 'flex'; overlay.style.alignItems = 'center'; overlay.style.justifyContent = 'center';
+            overlay.innerHTML = `
+                <div class="location-sheet active" style="position:relative; width:90%; max-width:400px; padding:30px; border-radius:24px; transform:none;">
+                    <h3 class="section-title" style="margin-top:0; color:#dc2626;">${t('confirmPassword')}</h3>
+                    <p style="margin-bottom:16px; line-height:1.6; color:#444;">${msg}</p>
+                    <input type="password" id="modal-pwd" class="search-input" style="margin-bottom:20px;" placeholder="${t('passwordPlaceholder')}">
+                    <div style="display:flex; gap:12px;">
+                        <button class="submit-btn" style="background:#eee; color:#333; margin:0; flex:1;" id="modal-cancel">${t('cancel')}</button>
+                        <button class="submit-btn" style="background:#dc2626; margin:0; flex:1;" id="modal-ok">${t('ok')}</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            const input = overlay.querySelector('#modal-pwd');
+            input.focus();
+            overlay.querySelector('#modal-cancel').onclick = () => overlay.remove();
+            overlay.querySelector('#modal-ok').onclick = () => { if(input.value) { overlay.remove(); onOk(input.value); } };
+        };
+
         // Delete My Shop
         app.querySelector('#delete-shop-btn').addEventListener('click', async (e) => {
             const btn = e.target;
             if (btn.disabled) return;
             
-            // Step 1: Confirm intent
-            const confirmed = confirm(`Are you sure you want to permanently delete "${vendorShop.name}"?\n\nThis will remove your shop, menu, and all reviews. This CANNOT be undone.`);
-            if (!confirmed) return;
+            showCustomConfirm(`${t('deleteConfirmTitle').replace('{name}', vendorShop.name)}\n\n${t('deleteConfirmDesc')}`, () => {
+                let pwd = localStorage.getItem('vendorPassword');
+                if (!pwd) {
+                    showCustomPrompt(t('enterPasswordConfirm'), async (enteredPwd) => {
+                        performDelete(enteredPwd, btn);
+                    });
+                } else {
+                    performDelete(pwd, btn);
+                }
+            });
+        });
 
-            // Step 2: Use saved password or prompt
-            let pwd = localStorage.getItem('vendorPassword');
-            if (!pwd) {
-                pwd = prompt('Enter your shop password to confirm deletion:');
-                if (!pwd) return;
-            }
-
+        async function performDelete(pwd, btn) {
             btn.disabled = true;
-            btn.textContent = 'Deleting...';
-
+            btn.textContent = t('deleting');
             try {
                 const res = await fetch(`/api/stalls/${vendorShop.id}`, {
                     method: 'DELETE',
@@ -1943,18 +2085,18 @@ function renderProfilePage() {
                     localStorage.removeItem('vendorPassword');
                     await reloadStalls();
                     renderProfilePage();
-                    showToast('Your shop has been permanently deleted.', 'success');
+                    showToast(t('shopDeleted'), 'success');
                 } else {
                     showToast(data.error || 'Deletion failed. Check your password.', 'error');
                     btn.disabled = false;
-                    btn.textContent = 'Delete My Shop';
+                    btn.textContent = t('deleteShop');
                 }
             } catch (e) {
-                showToast('Network error. Please try again.', 'error');
+                showToast(t('networkError'), 'error');
                 btn.disabled = false;
-                btn.textContent = 'Delete My Shop';
+                btn.textContent = t('deleteShop');
             }
-        });
+        }
 
     } else {
         // Login form — check for persistent login via API
@@ -2017,8 +2159,8 @@ function renderProfilePage() {
                         </div>
 
                         <div class="form-group">
-                            <label><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Password</label>
-                            <input type="text" id="vendor-password" placeholder="Your shop password" autocomplete="current-password">
+                            <label><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> ${t('password')}</label>
+                            <input type="text" id="vendor-password" placeholder="${t('vendorPasswordPlaceholder')}" autocomplete="current-password">
                         </div>
 
                         <button class="submit-btn" id="vendor-login-btn">${t('login')}</button>
@@ -2060,7 +2202,7 @@ function renderProfilePage() {
 
             const loginBtn = app.querySelector('#vendor-login-btn');
             loginBtn.disabled = true;
-            loginBtn.textContent = 'Logging in...';
+            loginBtn.textContent = t('loggingIn');
 
             try {
                 const res = await fetch('/api/vendor-login', {
@@ -2076,14 +2218,14 @@ function renderProfilePage() {
                     localStorage.setItem('vendorContact', contact);
                     localStorage.setItem('vendorPassword', password);
                     renderProfilePage();
-                    showToast(currentLanguage === 'ta' ? `வரவேற்கிறோம், ${vendorShop.name}!` : currentLanguage === 'hi' ? `स्वागत है, ${vendorShop.name}!` : `Welcome, ${vendorShop.name}! `, 'success');
+                    showToast(`${t('welcomeVendor')}, ${vendorShop.name}!`, 'success');
                 } else {
-                    showToast(data.error || 'Invalid mobile number or password', 'error');
+                    showToast(data.error || t('invalidCredentials'), 'error');
                     loginBtn.disabled = false;
                     loginBtn.textContent = t('login');
                 }
             } catch (e) {
-                showToast('Network error. Please try again.', 'error');
+                showToast(t('networkError'), 'error');
                 loginBtn.disabled = false;
                 loginBtn.textContent = t('login');
             }

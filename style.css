@@ -1032,57 +1032,84 @@ body {
 
 /* Menu Section */
 .section-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 15px;
-    color: #333;
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-top: 25px;
+    margin-bottom: 18px;
+    color: #1a1a1a;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    letter-spacing: -0.3px;
 }
 
 .menu-list {
     background: white;
-    border-radius: 12px;
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 24px;
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
 .menu-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px;
+    padding: 16px 20px;
     border-bottom: 1px solid #f0f0f0;
+    transition: all 0.3s ease;
+    gap: 12px;
 }
 
 .menu-item:last-child {
     border-bottom: none;
 }
 
+.menu-item:hover:not(.menu-item-unavailable) {
+    background-color: #fff9f5;
+}
+
 .menu-item-info {
     flex: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    overflow: hidden;
 }
 
 .menu-item-name {
-    font-weight: 500;
+    font-weight: 600;
+    color: #1a1a1a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Dot leader for hotel menu look */
+.menu-item-info::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1.5px dotted #e0e0e0;
+    height: 1px;
     margin-bottom: 4px;
 }
 
 .menu-item-price {
-    color: #f97316;
-    font-weight: 600;
+    color: var(--primary);
+    font-weight: 800;
+    font-size: 1.1rem;
+    white-space: nowrap;
+    min-width: 60px;
+    text-align: right;
 }
 
 .menu-item-unavailable {
-    opacity: 0.5;
-}
-
-.menu-item-unavailable .menu-item-name::after {
-    content: ' - Unavailable';
-    color: #dc3545;
-    font-size: 0.8rem;
+    opacity: 0.6;
+    filter: blur(3px);
+    pointer-events: none;
+    user-select: none;
+    transform: scale(0.98);
 }
 
 .availability-toggle {
