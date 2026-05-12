@@ -1,0 +1,8 @@
+[ta] Amma Hotel -> அம்மா ஹோட்டல்
+[hi] Amma Hotel -> अम्मा होटल
+[ta] Masala Dosa -> மசாலா தோசை
+[hi] Masala Dosa -> मसाला डोसा
+[ta] Chicken Biryani -> சிக்கன் பிரியாணி
+[hi] Chicken Biryani -> चिकन बिरयानी
+[ta] New Shop -> நியூ கடை
+[hi] New Shop -> नई दुकान

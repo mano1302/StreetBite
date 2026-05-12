@@ -1,0 +1,7 @@
+[ta] Chicken Puffs -> சிக்கன் பப்ஸ்
+[hi] Chicken Puffs -> चिकन पफ्स
+[ta] Veg Puffs -> வெஜ் பப்ஸ்
+[hi] Veg Puffs -> वेज पफ्स
+[ta] Egg Puffs -> முட்டை பப்ஸ்
+[hi] Egg Puffs -> एग पफ्स
+[hi] Puffs -> पफ्स
