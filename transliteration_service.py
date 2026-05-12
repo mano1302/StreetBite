@@ -7,8 +7,8 @@ DYNAMIC_TRANSLATIONS = {
     'Idli': { 'ta': 'இட்லி', 'hi': 'इडली' },
     'Vada': { 'ta': 'வடை', 'hi': 'वड़ा' },
     'Samosa': { 'ta': 'சமோசா', 'hi': 'समोसा' },
-    'Biryani': { 'ta': 'பிரியாணி', 'hi': 'बिरयानी' },
-    'Parotta': { 'ta': 'பரோட்டா', 'hi': 'परोठा' },
+    'Biryani': { 'ta': 'பிரியாணி', 'hi': 'बिरயானி' },
+    'Parotta': { 'ta': 'பரோட்டா', 'hi': 'पரோठा' },
     'Noodles': { 'ta': 'நூடுல்ஸ்', 'hi': 'नूडल्स' },
     'Fried Rice': { 'ta': 'ப்ரைடு ரைஸ்', 'hi': 'फ्राइड राइस' },
     'Omelette': { 'ta': 'ஆம்லெட்', 'hi': 'आमलेट' },
@@ -28,7 +28,7 @@ DYNAMIC_TRANSLATIONS = {
     'Juice': { 'ta': 'ஜூஸ்', 'hi': 'जूस' },
     'Water': { 'ta': 'தண்ணீர்', 'hi': 'पानी' },
     'Rose Milk': { 'ta': 'ரோஸ் மில்க்', 'hi': 'रोज मिल्क' },
-    'Badam Milk': { 'ta': 'பாதாம் பால்', 'hi': 'बादाम दूध' },
+    'Badam Milk': { 'ta': 'பாதாம் பால்', 'hi': 'बादாம் दूध' },
     'Chai': { 'ta': 'டீ', 'hi': 'चाय' },
     'Pav Bhaji': { 'ta': 'பாவ் பாஜி', 'hi': 'पाव भाजी' },
     'Pani Puri': { 'ta': 'பாணி பூரி', 'hi': 'पानी पूरी' },
@@ -78,7 +78,7 @@ DYNAMIC_TRANSLATIONS = {
     'New': { 'ta': 'நியூ', 'hi': 'न्यू' },
     'Classic': { 'ta': 'கிளாசிக்', 'hi': 'क्लासिक' },
     'Street': { 'ta': 'ஸ்ட்ரீட்', 'hi': 'स्ट्रीट' },
-    'Bite': { 'ta': 'பைட்', 'hi': 'बाइट' },
+    'Bite': { 'ta': 'பைட்', 'hi': 'बைட்' },
     'Taste': { 'ta': 'டேஸ்ட்', 'hi': 'टेस्ट' },
     'Tasty': { 'ta': 'டேஸ்டி', 'hi': 'टेस्टी' },
     'Yummy': { 'ta': 'யம்மி', 'hi': 'यम्मी' },
@@ -140,7 +140,8 @@ def transliterate(text, target_lang):
     for i, key in enumerate(sorted_keys):
         trans = DYNAMIC_TRANSLATIONS[key]
         if trans.get(target_lang):
-            pattern = re.compile(rf'\b{re.escape(key)}\b', re.IGNORECASE)
+            # Case-insensitive word boundary replacement with lookahead/lookbehind for delimiters
+            pattern = re.compile(rf'(?i)\b{re.escape(key)}\b')
             if pattern.search(processed_text):
                 placeholder = f"__PH_{i}__"
                 placeholders[placeholder] = trans[target_lang]
