@@ -6,9 +6,9 @@ DYNAMIC_TRANSLATIONS = {
     'Dosa': { 'ta': 'தோசை', 'hi': 'डोसा' },
     'Idli': { 'ta': 'இட்லி', 'hi': 'इडली' },
     'Vada': { 'ta': 'வடை', 'hi': 'वड़ा' },
-    'Samosa': { 'ta': 'சமோசா', 'hi': 'समोसा' },
-    'Biryani': { 'ta': 'பிரியாணி', 'hi': 'बिरயானி' },
-    'Parotta': { 'ta': 'பரோட்டா', 'hi': 'पரோठा' },
+    'Samosa': { 'ta': 'சமோசா', 'hi': 'सமோசா' },
+    'Biryani': { 'ta': 'பிரியாணி', 'hi': 'बिरयानी' },
+    'Parotta': { 'ta': 'பரோட்டா', 'hi': 'पரோடா' },
     'Noodles': { 'ta': 'நூடுல்ஸ்', 'hi': 'नूडल्स' },
     'Fried Rice': { 'ta': 'ப்ரைடு ரைஸ்', 'hi': 'फ्राइड राइस' },
     'Omelette': { 'ta': 'ஆம்லெட்', 'hi': 'आमलेट' },
@@ -28,7 +28,7 @@ DYNAMIC_TRANSLATIONS = {
     'Juice': { 'ta': 'ஜூஸ்', 'hi': 'जूस' },
     'Water': { 'ta': 'தண்ணீர்', 'hi': 'पानी' },
     'Rose Milk': { 'ta': 'ரோஸ் மில்க்', 'hi': 'रोज मिल्क' },
-    'Badam Milk': { 'ta': 'பாதாம் பால்', 'hi': 'बादாம் दूध' },
+    'Badam Milk': { 'ta': 'பாதாம் பால்', 'hi': 'बादाम दूध' },
     'Chai': { 'ta': 'டீ', 'hi': 'चाय' },
     'Pav Bhaji': { 'ta': 'பாவ் பாஜி', 'hi': 'पाव भाजी' },
     'Pani Puri': { 'ta': 'பாணி பூரி', 'hi': 'पानी पूरी' },
@@ -73,12 +73,13 @@ DYNAMIC_TRANSLATIONS = {
     'Drinks': { 'ta': 'டிரிங்க்ஸ்', 'hi': 'ड्रिंक्स' },
     'Cool': { 'ta': 'கூல்', 'hi': 'कूल' },
     'Fresh': { 'ta': 'ப்ரெஷ்', 'hi': 'फ्रेश' },
-    'Special': { 'ta': 'ஸ்பெஷல்', 'hi': 'स्पेशल' },
+    'Special': { 'ta': 'ஸ்பெஷல்', 'hi': 'स्पेशல்' },
     'Grand': { 'ta': 'கிராண்ட்', 'hi': 'ग्रैंड' },
     'New': { 'ta': 'நியூ', 'hi': 'न्यू' },
     'Classic': { 'ta': 'கிளாசிக்', 'hi': 'क्लासिक' },
     'Street': { 'ta': 'ஸ்ட்ரீட்', 'hi': 'स्ट्रीट' },
-    'Bite': { 'ta': 'பைட்', 'hi': 'बைட்' },
+    'Bite': { 'ta': 'பைட்', 'hi': 'बाइट' },
+    'StreetBite': { 'ta': 'ஸ்ட்ரீட்பைட்', 'hi': 'स्ट्रीटबाइट' },
     'Taste': { 'ta': 'டேஸ்ட்', 'hi': 'टेस्ट' },
     'Tasty': { 'ta': 'டேஸ்டி', 'hi': 'टेस्टी' },
     'Yummy': { 'ta': 'யம்மி', 'hi': 'यम्मी' },
@@ -99,10 +100,13 @@ DYNAMIC_TRANSLATIONS = {
 
 def call_google_api(text, itc):
     """Internal helper to call Google Input Tools API."""
+    if not any(c.isalpha() for c in text):
+        return text
+        
     try:
         url = "https://inputtools.google.com/request"
         params = {
-            'text': text,
+            'text': text.strip(),
             'itc': itc,
             'num': 1,
             'cp': 0,
@@ -118,7 +122,11 @@ def call_google_api(text, itc):
             for part in data[1]:
                 if part[1] and len(part[1]) > 0:
                     result += part[1][0]
-            return result.strip()
+            
+            # Restore surrounding spaces
+            prefix = re.match(r'^\s*', text).group()
+            suffix = re.search(r'\s*$', text).group()
+            return f"{prefix}{result.strip()}{suffix}"
     except Exception as e:
         print(f"API Error: {e}")
     return text
@@ -140,11 +148,10 @@ def transliterate(text, target_lang):
     for i, key in enumerate(sorted_keys):
         trans = DYNAMIC_TRANSLATIONS[key]
         if trans.get(target_lang):
-            # Case-insensitive word boundary replacement with lookahead/lookbehind for delimiters
             pattern = re.compile(rf'(?i)\b{re.escape(key)}\b')
             if pattern.search(processed_text):
-                placeholder = f"__PH_{i}__"
-                placeholders[placeholder] = trans[target_lang]
+                placeholder = f" __PH_{i}__ " # Add spaces to ensure word boundary for splitting
+                placeholders[placeholder.strip()] = trans[target_lang]
                 processed_text = pattern.sub(placeholder, processed_text)
 
     # 2. Transliterate remaining English parts using API
@@ -152,14 +159,14 @@ def transliterate(text, target_lang):
     itc = itc_map.get(target_lang)
     
     if itc:
-        # Split by placeholders to find pure English segments
+        # Split by placeholders
         segments = re.split(r'(__PH_\d+__)', processed_text)
         final_segments = []
         for seg in segments:
-            if seg in placeholders:
-                final_segments.append(placeholders[seg])
+            stripped = seg.strip()
+            if stripped in placeholders:
+                final_segments.append(placeholders[stripped])
             elif any(c.isalpha() for c in seg):
-                # This segment contains English — transliterate it
                 final_segments.append(call_google_api(seg, itc))
             else:
                 final_segments.append(seg)
@@ -167,8 +174,10 @@ def transliterate(text, target_lang):
     else:
         # Fallback: just restore placeholders
         for ph, val in placeholders.items():
-            processed_text = processed_text.replace(ph, val)
+            processed_text = processed_text.replace(f" {ph} ", val)
 
+    # Final cleanup of multiple spaces
+    processed_text = re.sub(r'\s+', ' ', processed_text)
     return processed_text.strip()
 
 def get_localized_data(text):
