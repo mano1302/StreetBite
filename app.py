@@ -3,6 +3,7 @@ from flask_cors import CORS
 import os
 
 from database import db
+from transliteration_service import transliterate
 
 app = Flask(__name__, static_folder='static')
 CORS(app)  # Enable CORS for API requests
@@ -67,6 +68,17 @@ def signup_stall():
     }
     stall_data['emoji'] = emoji_map.get(stall_data.get('category', ''), '🍽️')
     stall_data['status'] = 'closed'
+    
+    # Auto-transliterate shop name
+    stall_data['name_ta'] = transliterate(stall_data['name'], 'ta')
+    stall_data['name_hi'] = transliterate(stall_data['name'], 'hi')
+    
+    # Auto-transliterate menu items
+    if 'menu' in stall_data:
+        for item in stall_data['menu']:
+            item['itemName_ta'] = transliterate(item['itemName'], 'ta')
+            item['itemName_hi'] = transliterate(item['itemName'], 'hi')
+
     try:
         new_stall = db.signup_stall(stall_data)
         return jsonify({'success': True, 'stall': new_stall}), 201
@@ -108,10 +120,13 @@ def update_discount(stall_id):
 def update_menu(stall_id):
     """Update entire menu for a stall."""
     menu_data = request.json
-
     if 'menu' not in menu_data:
         return jsonify({'error': 'Menu data is required'}), 400
 
+    for item in menu_data['menu']:
+        item['itemName_ta'] = transliterate(item['itemName'], 'ta')
+        item['itemName_hi'] = transliterate(item['itemName'], 'hi')
+        
     stall = db.update_menu(stall_id, menu_data['menu'])
     return jsonify(stall)
 
@@ -121,6 +136,11 @@ def add_menu_item_post(stall_id):
     item_data = request.json
     if 'itemName' not in item_data or 'price' not in item_data:
         return jsonify({'error': 'Item name and price are required'}), 400
+    
+    # Auto-transliterate
+    item_data['itemName_ta'] = transliterate(item_data['itemName'], 'ta')
+    item_data['itemName_hi'] = transliterate(item_data['itemName'], 'hi')
+    
     stall = db.add_menu_item(stall_id, item_data)
     return jsonify(stall)
 

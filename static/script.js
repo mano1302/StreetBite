@@ -98,6 +98,95 @@ const districtNamesHi = {
     'Viluppuram':'विल्लुपुरम','Virudhunagar':'विरुधुनगर'
 };
 
+// Dynamic Translation for User Content (Shop Names, Menu Items)
+const dynamicTranslations = {
+    // Common Food Items
+    'Dosa': { ta: 'தோசை', hi: 'डोसा' },
+    'Idli': { ta: 'இட்லி', hi: 'इडली' },
+    'Vada': { ta: 'வடை', hi: 'वड़ा' },
+    'Samosa': { ta: 'சமோசா', hi: 'समोसा' },
+    'Biryani': { ta: 'பிரியாணி', hi: 'बिरयानी' },
+    'Parotta': { ta: 'பரோட்டா', hi: 'परोटा' },
+    'Noodles': { ta: 'நூடுல்ஸ்', hi: 'नूडल्स' },
+    'Fried Rice': { ta: 'ப்ரைடு ரைஸ்', hi: 'फ्राइड राइस' },
+    'Omelette': { ta: 'ஆம்லெட்', hi: 'आमलेट' },
+    'Bread Omelette': { ta: 'பிரட் ஆம்லெட்', hi: 'ब्रेड आमलेट' },
+    'Poori': { ta: 'பூரி', hi: 'पूरी' },
+    'Pongal': { ta: 'பொங்கல்', hi: 'पोंगल' },
+    'Meals': { ta: 'சாப்பாடு', hi: 'भोजन' },
+    'Chicken': { ta: 'சிக்கன்', hi: 'चिकन' },
+    'Mutton': { ta: 'மட்டன்', hi: 'मटन' },
+    'Fish': { ta: 'மீன்', hi: 'मछली' },
+    'Egg': { ta: 'முட்டை', hi: 'अंडा' },
+    'Veg': { ta: 'வெஜ்', hi: 'वेज' },
+    'Non-Veg': { ta: 'நான்-வெஜ்', hi: 'नॉन-वेज' },
+    'Tea': { ta: 'டீ', hi: 'चाय' },
+    'Coffee': { ta: 'காபி', hi: 'कॉफी' },
+    'Milk': { ta: 'பால்', hi: 'दूध' },
+    'Juice': { ta: 'ஜூஸ்', hi: 'जूस' },
+    'Water': { ta: 'தண்ணீர்', hi: 'पानी' },
+    'Rose Milk': { ta: 'ரோஸ் மில்க்', hi: 'रोज मिल्क' },
+    'Badam Milk': { ta: 'பாதாம் பால்', hi: 'बादाम दूध' },
+    'Chai': { ta: 'டீ', hi: 'चाय' },
+    'Pav Bhaji': { ta: 'பாவ் பாஜி', hi: 'पाव भाजी' },
+    'Pani Puri': { ta: 'பாணி பூரி', hi: 'पानी पूरी' },
+    'Bhel Puri': { ta: 'பெல் பூரி', hi: 'भेल पूरी' },
+    'Chat': { ta: 'சாட்', hi: 'चाट' },
+    'Chilli': { ta: 'சில்லி', hi: 'चिली' },
+    'Manchurian': { ta: 'மஞ்சூரியன்', hi: 'मंचूरियन' },
+    'Soup': { ta: 'சூப்', hi: 'सूप' },
+    'Ice Cream': { ta: 'ஐஸ் கிரீம்', hi: 'आइसक्रीम' },
+    
+    // Common Shop Suffixes
+    'Shop': { ta: 'கடை', hi: 'दुकान' },
+    'Stall': { ta: 'கடை', hi: 'स्टॉल' },
+    'Hotel': { ta: 'ஹோட்டல்', hi: 'होटल' },
+    'Mess': { ta: 'மெஸ்', hi: 'मेस' },
+    'Tiffin Centre': { ta: 'டிஃபின் சென்டர்', hi: 'टिफिन सेंटर' },
+    'Snacks': { ta: 'சிற்றுண்டி', hi: 'नाश्ता' },
+    'Others': { ta: 'மற்றவை', hi: 'अन्य' },
+    
+    // Tough words for API (Manual Phonetics)
+    'Puffs': { ta: 'பஃப்ஸ்', hi: 'पफ्स' },
+    'Egg Puffs': { ta: 'முட்டை பஃப்ஸ்', hi: 'एग पफ्स' },
+    'Veg Puffs': { ta: 'வெஜ் பஃப்ஸ்', hi: 'वेज पफ्स' },
+    'Chicken Puffs': { ta: 'சிக்கன் பஃப்ஸ்', hi: 'चिकन पफ्स' },
+    'Sandwich': { ta: 'சாண்ட்விச்', hi: 'सैंडविच' },
+    'Momos': { ta: 'மோமோஸ்', hi: 'मोमोज' },
+    'Burger': { ta: 'பர்கர்', hi: 'बर्गर' },
+    'Pizza': { ta: 'பிட்சா', hi: 'पिज्जा' },
+    'Pasta': { ta: 'பாஸ்தா', hi: 'पास्ता' },
+    'Milkshake': { ta: 'மில்க் ஷேக்', hi: 'मिल्कशेक' },
+    'Brownie': { ta: 'பிரவுனி', hi: 'ब्राउनी' },
+    'Roll': { ta: 'ரோல்', hi: 'रोल' },
+    'Spring Roll': { ta: 'ஸ்பிரிங் ரோல்', hi: 'स्प्रिंग रोल' },
+    'Cutlet': { ta: 'கட்லெட்', hi: 'कटलेट' },
+    'Noodles': { ta: 'நூடுல்ஸ்', hi: 'नूडल्स' },
+    'Maggi': { ta: 'மேகி', hi: 'मैगी' },
+    'Pasta': { ta: 'பாஸ்தா', hi: 'पास्ता' },
+    'Mojito': { ta: 'மொகித்தோ', hi: 'मोजितो' },
+    'Shake': { ta: 'ஷேக்', hi: 'शेक' },
+    
+    // Common Shop Suffixes
+    'Sweets': { ta: 'ஸ்வீட்ஸ்', hi: 'स्वीட்ஸ்' },
+    'Cool Bar': { ta: 'கூல் பார்', hi: 'कूल बार' }
+};
+
+// Helper: translate dynamic content (shop names, menu items)
+function td(text) {
+    if (!text || currentLanguage === 'en') return text;
+    let translated = text;
+    // Iterate through dictionary and replace keywords
+    for (const [enKey, translations] of Object.entries(dynamicTranslations)) {
+        if (translations[currentLanguage]) {
+            const regex = new RegExp(`\\b${enKey}\\b`, 'gi');
+            translated = translated.replace(regex, translations[currentLanguage]);
+        }
+    }
+    return translated;
+}
+
+
 // Helper: get district display name in current language
 function getDistrictName(district) {
     if (currentLanguage === 'ta') return districtNamesTa[district] || district;
@@ -732,6 +821,10 @@ async function loadStalls() {
     try {
         const res = await fetch('/api/stalls');
         stalls = await res.json();
+        // Automatically translate all data if not English
+        if (currentLanguage !== 'en') {
+            await translateAllStalls();
+        }
     } catch (e) {
         console.error('Could not load stalls:', e);
         stalls = [];
@@ -861,7 +954,8 @@ const translations = {
         shopDeleted: 'Your shop has been permanently deleted.',
         deleting: 'Deleting...',
         ok: 'OK',
-        cancel: 'Cancel'
+        cancel: 'Cancel',
+        soldOut: 'Sold Out'
     },
     ta: {
         appName: 'ஸ்ட்ரீட்பைட்',
@@ -980,7 +1074,8 @@ const translations = {
         shopDeleted: 'உங்கள் கடை நிரந்தரமாக நீக்கப்பட்டது.',
         deleting: 'நீக்கப்படுகிறது...',
         ok: 'சரி',
-        cancel: 'ரத்து'
+        cancel: 'ரத்து',
+        soldOut: 'முடிந்துவிட்டது'
     },
     hi: {
         appName: 'स्ट्रीटबाइट',
@@ -1099,19 +1194,20 @@ const translations = {
         shopDeleted: 'आपकी दुकान स्थायी रूप से हटा दी गई है।',
         deleting: 'हटाया जा रहा है...',
         ok: 'ठीक है',
-        cancel: 'रद्द करें'
+        cancel: 'रद्द करें',
+        soldOut: 'खत्म हो गया'
     }
 };
 
 // Category SVG Icons (inline, 20x20, stroke-based)
 const categorySVGs = {
-    'Fast Food': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 11h.01"/><path d="M11 15h.01"/><path d="M16 16h.01"/><path d="m2 16 20 6-6-20A20 20 0 0 0 2 16"/><path d="M5.71 17.11a17.04 17.04 0 0 1 11.4-11.4"/></svg>',
-    'Biryani': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>',
-    'Parotta & Meals': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>',
-    'Grilled & Non-Veg': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
-    'Juice': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>',
-    'Sweet & Beverages': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 11 4.08 10.35a1 1 0 0 0 1.84 0L17 11"/><path d="M17 7A5 5 0 0 0 7 7"/><path d="M17 7H7"/></svg>',
-    'Snacks': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a2 2 0 0 0 0-4 2 2 0 0 0-4 0 2 2 0 0 0-4 0 2 2 0 0 0-4 0 2 2 0 0 0 0 4"/><path d="M10 22 9 8"/><path d="m14 22 1-14"/></svg>',
+    'Fast Food': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 11h.01"/><path d="M11 15h.01"/><path d="M16 16h.01"/><path d="m2 16 20 6-6-20A20 20 0 0 0 2 16"/><path d="M5.71 17.11a17.04 17.04 0 0 1 11.4-11.4"/></svg>', /* Pizza style */
+    'Biryani': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10Z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M12 12c2.209 0 4-1.791 4-4s-1.791-4-4-4-4 1.791-4 4 1.791 4 4 4Z"/></svg>', /* Rice Bowl style */
+    'Parotta & Meals': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 12s-2-2-2-5 2-5 2-5 2 2 2 5-2 5-2 5Z"/><path d="M12 12s2 2 2 5-2 5-2 5-2-2-2-5 2-5 2-5Z"/></svg>', /* Plate style */
+    'Grilled & Non-Veg': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>', /* Flame style */
+    'Juice': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 8Z"/><path d="M14 2 9 8"/></svg>',
+    'Sweet & Beverages': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21H4V12l8-7 8 7v9Z"/><path d="M12 5v7"/><path d="M4 12h16"/></svg>',
+    'Snacks': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M18 12h.01"/><path d="M15 16h.01"/><path d="M11 15h.01"/><path d="M8 12h.01"/><path d="M11 9h.01"/></svg>', /* Cookie style */
     'Others': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>'
 };
 
@@ -1157,6 +1253,232 @@ function buildCategoryTabsHTML(selectedCategory) {
     ];
     return categories.map(([key, val]) => getCategoryTabHTML(key, val, selectedCategory)).join('\n                ');
 }
+
+// Total Conversion Translation System (Google API Fallback)
+const stallTranslationCache = {};
+
+async function getTranslation(text, targetLang) {
+    if (!text || targetLang === 'en') return text;
+    const cacheKey = `${targetLang}:${text}`;
+    if (stallTranslationCache[cacheKey]) return stallTranslationCache[cacheKey];
+
+    // Try manual dictionary first for common terms
+    let translated = text;
+    let found = false;
+    for (const [enKey, translations] of Object.entries(dynamicTranslations)) {
+        if (translations[targetLang]) {
+            const regex = new RegExp(`\\b${enKey}\\b`, 'gi');
+            if (regex.test(translated)) {
+                translated = translated.replace(regex, translations[targetLang]);
+                found = true;
+            }
+        }
+    }
+    if (found && translated !== text) return translated;
+
+    try {
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data && data[0] && data[0][0] && data[0][0][0]) {
+            const result = data[0][0][0];
+            stallTranslationCache[cacheKey] = result;
+            return result;
+        }
+    } catch (e) {
+        console.warn("API Translation failed, using original:", text);
+    }
+    return text;
+}
+
+async function getTransliteration(text, targetLang) {
+    if (!text || targetLang === 'en') return text;
+    const cacheKey = `translit:${targetLang}:${text}`;
+    if (stallTranslationCache[cacheKey]) return stallTranslationCache[cacheKey];
+
+    // 0. Check Manual Map first (dynamicTranslations)
+    if (dynamicTranslations[text] && dynamicTranslations[text][targetLang]) {
+        return dynamicTranslations[text][targetLang];
+    }
+    // Also check case-insensitive for single words
+    const lowerText = text.toLowerCase();
+    for (let key in dynamicTranslations) {
+        if (key.toLowerCase() === lowerText && dynamicTranslations[key][targetLang]) {
+            return dynamicTranslations[key][targetLang];
+        }
+    }
+
+    const itcMap = { 'ta': 'ta-t-i0-und', 'hi': 'hi-t-i0-und' };
+    const itc = itcMap[targetLang];
+    
+    if (itc) {
+        try {
+            // 1. Try transliterating the full string first for better contextual flow
+            // But first, check if it contains any manually mapped words
+            let processedText = text;
+            for (let [key, trans] of Object.entries(dynamicTranslations)) {
+                if (trans[targetLang]) {
+                    const regex = new RegExp(`\\b${key}\\b`, 'gi');
+                    processedText = processedText.replace(regex, trans[targetLang]);
+                }
+            }
+            
+            // If the whole thing was already manual or partially replaced, only transliterate the remaining English parts
+            if (processedText !== text && !/[a-zA-Z]/.test(processedText)) {
+                stallTranslationCache[cacheKey] = processedText;
+                return processedText;
+            }
+
+            const url = `https://inputtools.google.com/request?text=${encodeURIComponent(processedText)}&itc=${itc}&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=test`;
+            const res = await fetch(url);
+            const data = await res.json();
+            
+            if (data && data[0] === 'SUCCESS' && data[1] && data[1][0]) {
+                // The API can return a single string or multiple parts
+                let result = '';
+                for (let part of data[1]) {
+                    if (part[1] && part[1][0]) result += part[1][0] + ' ';
+                }
+                result = result.trim();
+                
+                if (result && result !== text) {
+                    stallTranslationCache[cacheKey] = result;
+                    return result;
+                }
+            }
+            
+            // 2. Fallback: Transliterate word by word if the full string didn't work well
+            const words = text.split(/\s+/);
+            if (words.length > 1) {
+                const transliterated = await Promise.all(words.map(async (word) => {
+                    const wUrl = `https://inputtools.google.com/request?text=${encodeURIComponent(word)}&itc=${itc}&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=test`;
+                    const wRes = await fetch(wUrl);
+                    const wData = await wRes.json();
+                    if (wData && wData[0] === 'SUCCESS' && wData[1] && wData[1][0] && wData[1][0][1] && wData[1][0][1][0]) {
+                        return wData[1][0][1][0];
+                    }
+                    return word;
+                }));
+                const wordResult = transliterated.join(' ');
+                if (wordResult !== text) {
+                    stallTranslationCache[cacheKey] = wordResult;
+                    return wordResult;
+                }
+            }
+        } catch (e) {
+            console.warn("Transliteration failed:", e);
+        }
+    }
+    return await getTranslation(text, targetLang);
+}
+
+async function translateSingleStall(stall, lang) {
+    if (lang === 'en') return;
+    
+    // 1. Check if database already has the transliteration
+    const dbName = lang === 'ta' ? stall.nameTa : stall.nameHi;
+    if (dbName) {
+        stall.name_localized = dbName;
+    } else {
+        stall.name_localized = await getTransliteration(stall.name, lang);
+    }
+    
+    // Translate area and address (meaning-based) — usually from fixed list or Google Translate
+    stall.area_localized = await getTranslation(stall.area, lang);
+    stall.address_localized = await getTranslation(stall.address, lang);
+    
+    if (stall.menu) {
+        for (let item of stall.menu) {
+            const dbItemName = lang === 'ta' ? item.itemNameTa : item.itemNameHi;
+            if (dbItemName) {
+                item.itemName_localized = dbItemName;
+            } else {
+                item.itemName_localized = await getTransliteration(item.itemName, lang);
+            }
+        }
+    }
+    if (stall.reviews) {
+        for (let rev of stall.reviews) {
+            rev.comment_localized = await getTranslation(rev.comment, lang);
+        }
+    }
+}
+
+async function translateAllStalls() {
+    if (currentLanguage === 'en' || stalls.length === 0) return;
+    const lang = currentLanguage;
+    
+    const promises = stalls.map(stall => translateSingleStall(stall, lang));
+    if (vendorShop) promises.push(translateSingleStall(vendorShop, lang));
+    
+    await Promise.all(promises);
+}
+
+// Helper: translate dynamic content (shop names, menu items)
+function td(text, obj = null) {
+    if (!text || currentLanguage === 'en') return text;
+    
+    // If it's a menu item object
+    if (obj) {
+        const dbItemName = currentLanguage === 'ta' ? obj.itemNameTa : obj.itemNameHi;
+        if (dbItemName && text === obj.itemName) return dbItemName;
+        if (obj.itemName_localized && text === obj.itemName) return obj.itemName_localized;
+    }
+
+    // If it's a stall or review object
+    if (obj) {
+        const dbName = currentLanguage === 'ta' ? obj.nameTa : obj.nameHi;
+        if (dbName && text === obj.name) return dbName;
+        
+        if (obj.name_localized && text === obj.name) return obj.name_localized;
+        if (obj.area_localized && text === obj.area) return obj.area_localized;
+        if (obj.address_localized && text === obj.address) return obj.address_localized;
+        if (obj.comment_localized && text === obj.comment) return obj.comment_localized;
+    }
+
+    let translated = text;
+    for (const [enKey, translations] of Object.entries(dynamicTranslations)) {
+        if (translations[currentLanguage]) {
+            const regex = new RegExp(`\\b${enKey}\\b`, 'gi');
+            translated = translated.replace(regex, translations[currentLanguage]);
+        }
+    }
+    return translated;
+}
+
+// Load saved language preference
+function loadLanguagePreference() {
+    const savedLang = localStorage.getItem('streetbite_lang');
+    if (savedLang && translations[savedLang]) {
+        currentLanguage = savedLang;
+        updateHeaderLanguageSelector();
+    }
+}
+
+// Change language and re-render everything
+async function changeLanguage(lang) {
+    if (lang === currentLanguage) return;
+    currentLanguage = lang;
+    localStorage.setItem('streetbite_lang', lang);
+    
+    showLoading(true);
+    await translateAllStalls();
+    showLoading(false);
+    
+    // Destroy existing Add Shop modal so it re-renders with the new language
+    const modal = document.getElementById('add-shop-modal');
+    if (modal) modal.remove();
+
+    // Re-render current state
+    if (currentPage === 'home') renderHomePage();
+    else if (currentPage === 'search') renderSearchPage();
+    else if (currentPage === 'profile') renderProfilePage();
+    else if (currentPage === 'detail' && currentStallId) showShopDetail(currentStallId);
+    
+    updateHeaderLanguageSelector();
+    updateNavigationLabels();
+}
+window.changeLanguage = changeLanguage;
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
@@ -1370,11 +1692,11 @@ function renderShopGrid() {
     grid.innerHTML = filtered.map(stall => `
         <div class="shop-card" data-id="${stall.id}">
             <div class="shop-card-header">
-                <span class="shop-name">${stall.name}</span>
-                <span class="shop-emoji">${stall.emoji || categoryEmojis[stall.category] || ''}</span>
+                <span class="shop-name">${td(stall.name, stall)}</span>
+                <span class="shop-category-icon">${categorySVGs[stall.category] || ''}</span>
             </div>
             <span class="shop-category">${getCategoryName(stall.category)}</span>
-            <div class="shop-area"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${getAreaName(stall.area)}</div>
+            <div class="shop-area"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${td(stall.area, stall)}</div>
             <div>
                 <span class="shop-status ${stall.status}">${stall.status === 'open' ? '✓ ' + t('open') : '✕ ' + t('closed')}</span>
                 <span class="shop-rating"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#fbbf24;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> ${(stall.rating || 0).toFixed(1)} (${stall.totalReviews || 0})</span>
@@ -1453,11 +1775,14 @@ function renderShopDetailPage(stall) {
         <div class="page shop-detail-page">
             <div class="page-header">
                 <button class="back-btn" onclick="navigateTo('home')">←</button>
-                <h2>${stall.name}</h2>
+                <h2>${td(stall.name, stall)}</h2>
             </div>
 
             <div class="detail-header">
-                <div class="detail-name">${stall.emoji || categoryEmojis[stall.category] || ''} ${stall.name}</div>
+                <div class="detail-name-row">
+                    <span class="detail-icon">${categorySVGs[stall.category] || ''}</span>
+                    <span class="detail-name-text">${td(stall.name, stall)}</span>
+                </div>
                 <div class="detail-category">${getCategoryName(stall.category)}</div>
 
                 <div class="status-banner ${stall.status}">
@@ -1469,7 +1794,7 @@ function renderShopDetailPage(stall) {
                 <div class="detail-info">
                     <div class="info-row">
                         <span class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
-                        <span>${stall.address || getAreaName(stall.area)}</span>
+                        <span>${td(stall.address || stall.area, stall)}</span>
                     </div>
                     ${stall.contact ? `
                     <div class="info-row">
@@ -1496,9 +1821,10 @@ function renderShopDetailPage(stall) {
                     return `
                     <div class="menu-item ${!itemAvailable ? 'menu-item-unavailable' : ''}">
                         <div class="menu-item-info">
-                            <div class="menu-item-name">${item.itemName}</div>
+                            <div class="menu-item-name">${td(item.itemName, item)}</div>
                             <div class="menu-item-price">₹${item.price}</div>
                         </div>
+                        ${!itemAvailable ? `<div class="sold-out-badge">${t('soldOut')}</div>` : ''}
                     </div>
                 `}).join('')}
             </div>
@@ -1508,10 +1834,10 @@ function renderShopDetailPage(stall) {
                 ${stall.reviews.length > 0 ? stall.reviews.map(review => `
                     <div class="review-card">
                         <div class="review-header">
-                            <div class="review-stars">${''.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</div>
+                            <div class="review-stars">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</div>
                             <span class="review-date">${review.date}</span>
                         </div>
-                        <div class="review-comment">${review.comment}</div>
+                        <div class="review-comment">${td(review.comment, review)}</div>
                     </div>
                 `).join('') : `<div class="empty-state"><p>${t('noReviews')}</p></div>`}
             </div>
@@ -1862,8 +2188,8 @@ function renderProfilePage() {
                 </div>
 
                 <div class="vendor-dashboard">
-                    <h3>${vendorShop.emoji || categoryEmojis[vendorShop.category]} ${vendorShop.name}</h3>
-                    <p style="color: #666; margin-bottom: 20px;">${getAreaName(vendorShop.area)}</p>
+                    <h3 class="dashboard-shop-name">${categorySVGs[vendorShop.category] || ''} ${td(vendorShop.name, vendorShop)}</h3>
+                    <p style="color: #666; margin-bottom: 20px;">${td(vendorShop.area, vendorShop)}</p>
                     <p style="font-size: 0.85rem; color: #888; margin-bottom: 15px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${openTime12} - ${closeTime12}</p>
 
                     <div class="toggle-section-large">
@@ -1886,7 +2212,7 @@ function renderProfilePage() {
                         ${vendorShop.menu.map((item, index) => `
                             <div class="menu-item">
                                 <div class="menu-item-info">
-                                    <div class="menu-item-name">${item.itemName}</div>
+                                    <div class="menu-item-name">${td(item.itemName, item)}</div>
                                     <div class="menu-item-price">₹${item.price}</div>
                                 </div>
                                 <button class="availability-toggle ${item.available ? 'available' : 'unavailable'}" data-index="${index}">${item.available ? 'ON' : 'OFF'}</button>
@@ -1970,7 +2296,7 @@ function renderProfilePage() {
                     });
                     vendorShop.menu[index].available = newAvailable;
                     renderProfilePage();
-                    showToast(`${vendorShop.menu[index].itemName} is now ${newAvailable ? 'available' : 'unavailable'}`, 'success');
+                    showToast(`${td(vendorShop.menu[index].itemName, vendorShop.menu[index])} is now ${newAvailable ? t('available') : t('unavailable')}`, 'success');
                 } catch (e) { showToast('Update failed', 'error'); }
             });
         });
@@ -2012,11 +2338,11 @@ function renderProfilePage() {
         const showCustomConfirm = (msg, onOk) => {
             const overlay = document.createElement('div');
             overlay.className = 'location-overlay active';
-            overlay.style.display = 'flex'; overlay.style.alignItems = 'center'; overlay.style.justifyContent = 'center';
+            overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:2000; opacity:1; pointer-events:auto;';
             overlay.innerHTML = `
-                <div class="location-sheet active" style="position:relative; width:90%; max-width:400px; padding:30px; border-radius:24px; transform:none;">
-                    <h3 class="section-title" style="margin-top:0; color:#dc2626;">${t('dangerZone')}</h3>
-                    <p style="margin-bottom:24px; line-height:1.6; color:#444;">${msg}</p>
+                <div style="background:white; width:90%; max-width:380px; padding:30px; border-radius:28px; box-shadow:0 20px 50px rgba(0,0,0,0.3); transform:translateY(0); animation:modalSlideUp 0.3s ease-out;">
+                    <h3 class="section-title" style="margin-top:0; color:#dc2626; justify-content:center;">${t('dangerZone')}</h3>
+                    <p style="margin-bottom:24px; line-height:1.6; color:#444; text-align:center;">${msg.replace(/\n/g, '<br>')}</p>
                     <div style="display:flex; gap:12px;">
                         <button class="submit-btn" style="background:#eee; color:#333; margin:0; flex:1;" id="modal-cancel">${t('cancel')}</button>
                         <button class="submit-btn" style="background:#dc2626; margin:0; flex:1;" id="modal-ok">${t('ok')}</button>
@@ -2032,12 +2358,12 @@ function renderProfilePage() {
         const showCustomPrompt = (msg, onOk) => {
             const overlay = document.createElement('div');
             overlay.className = 'location-overlay active';
-            overlay.style.display = 'flex'; overlay.style.alignItems = 'center'; overlay.style.justifyContent = 'center';
+            overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:2000; opacity:1; pointer-events:auto;';
             overlay.innerHTML = `
-                <div class="location-sheet active" style="position:relative; width:90%; max-width:400px; padding:30px; border-radius:24px; transform:none;">
-                    <h3 class="section-title" style="margin-top:0; color:#dc2626;">${t('confirmPassword')}</h3>
-                    <p style="margin-bottom:16px; line-height:1.6; color:#444;">${msg}</p>
-                    <input type="password" id="modal-pwd" class="search-input" style="margin-bottom:20px;" placeholder="${t('passwordPlaceholder')}">
+                <div style="background:white; width:90%; max-width:380px; padding:30px; border-radius:28px; box-shadow:0 20px 50px rgba(0,0,0,0.3); transform:translateY(0); animation:modalSlideUp 0.3s ease-out;">
+                    <h3 class="section-title" style="margin-top:0; color:#dc2626; justify-content:center;">${t('confirmPassword')}</h3>
+                    <p style="margin-bottom:16px; line-height:1.6; color:#444; text-align:center;">${msg}</p>
+                    <input type="password" id="modal-pwd" class="search-input" style="margin-bottom:20px; text-align:center;" placeholder="${t('passwordPlaceholder')}">
                     <div style="display:flex; gap:12px;">
                         <button class="submit-btn" style="background:#eee; color:#333; margin:0; flex:1;" id="modal-cancel">${t('cancel')}</button>
                         <button class="submit-btn" style="background:#dc2626; margin:0; flex:1;" id="modal-ok">${t('ok')}</button>
@@ -2110,7 +2436,7 @@ function renderProfilePage() {
                 <div class="page vendor-login-page" style="display:flex;align-items:center;justify-content:center;min-height:60vh;">
                     <div style="text-align:center;">
                         <div class="spinner" style="margin:0 auto 16px;"></div>
-                        <p style="color:#888;">Logging in…</p>
+                        <p style="color:#888;">${t('loggingIn')}</p>
                     </div>
                 </div>
             `;
@@ -2122,7 +2448,11 @@ function renderProfilePage() {
                         vendorShop = shop;
                         // Re-attach contact from localStorage so delete/actions work
                         if (savedContact) vendorShop.contact = savedContact;
-                        renderProfilePage();
+                        
+                        // Ensure it is transliterated for the dashboard
+                        translateSingleStall(vendorShop, currentLanguage).then(() => {
+                            renderProfilePage();
+                        });
                     } else {
                         // Saved ID no longer valid — show login form
                         localStorage.removeItem('vendorShopId');
@@ -2217,8 +2547,12 @@ function renderProfilePage() {
                     localStorage.setItem('vendorShopId', vendorShop.id);
                     localStorage.setItem('vendorContact', contact);
                     localStorage.setItem('vendorPassword', password);
+                    
+                    // Ensure it is transliterated for the dashboard
+                    await translateSingleStall(vendorShop, currentLanguage);
+                    
                     renderProfilePage();
-                    showToast(`${t('welcomeVendor')}, ${vendorShop.name}!`, 'success');
+                    showToast(`${t('welcomeVendor')}, ${td(vendorShop.name, vendorShop)}!`, 'success');
                 } else {
                     showToast(data.error || t('invalidCredentials'), 'error');
                     loginBtn.disabled = false;
@@ -2277,32 +2611,9 @@ function initPasswordToggles(container) {
 }
 window.initPasswordToggles = initPasswordToggles;
 
-// Change language
-function changeLanguage(lang) {
-    currentLanguage = lang;
-    localStorage.setItem('preferredLanguage', lang);
-    updateHeaderLanguageSelector();
-    updateNavigationLabels();
-    
-    // Destroy existing Add Shop modal so it re-renders with the new language
-    const modal = document.getElementById('add-shop-modal');
-    if (modal) modal.remove();
-
-    // Re-render current page
-    navigateTo(currentPage);
-}
-
-// Make navigateTo and changeLanguage available globally
+// Make navigateTo available globally
 window.navigateTo = navigateTo;
-window.changeLanguage = changeLanguage;
 
-// Load saved language preference
-function loadLanguagePreference() {
-    const savedLang = localStorage.getItem('preferredLanguage');
-    if (savedLang && translations[savedLang]) {
-        currentLanguage = savedLang;
-    }
-}
 
 // ===== Location Picker Functions =====
 

@@ -108,7 +108,8 @@ class Database:
             )
         ''')
         try:
-            cursor.execute('ALTER TABLE stalls ADD COLUMN password_hash TEXT')
+            cursor.execute('ALTER TABLE stalls ADD COLUMN name_ta TEXT')
+            cursor.execute('ALTER TABLE stalls ADD COLUMN name_hi TEXT')
         except Exception:
             pass
         cursor.execute('''
@@ -116,6 +117,8 @@ class Database:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 stall_id INTEGER NOT NULL,
                 item_name TEXT NOT NULL,
+                item_name_ta TEXT,
+                item_name_hi TEXT,
                 price INTEGER NOT NULL,
                 available BOOLEAN DEFAULT TRUE,
                 FOREIGN KEY (stall_id) REFERENCES stalls(id) ON DELETE CASCADE
@@ -167,11 +170,21 @@ class Database:
             EXCEPTION WHEN duplicate_column THEN NULL;
             END $$;
         ''')
+        # Add localized columns if upgrading from old schema
+        cursor.execute('''
+            DO $$ BEGIN
+                ALTER TABLE stalls ADD COLUMN name_ta TEXT;
+                ALTER TABLE stalls ADD COLUMN name_hi TEXT;
+            EXCEPTION WHEN duplicate_column THEN NULL;
+            END $$;
+        ''')
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS menu_items (
                 id SERIAL PRIMARY KEY,
                 stall_id INTEGER NOT NULL REFERENCES stalls(id) ON DELETE CASCADE,
                 item_name TEXT NOT NULL,
+                item_name_ta TEXT,
+                item_name_hi TEXT,
                 price INTEGER NOT NULL,
                 available BOOLEAN DEFAULT TRUE
             )
@@ -322,13 +335,15 @@ class Database:
         ret = 'RETURNING id' if self.is_postgresql else ''
         with self._cursor() as cursor:
             cursor.execute(f'''
-                INSERT INTO stalls (name, category, emoji, area, address, contact,
+                INSERT INTO stalls (name, name_ta, name_hi, category, emoji, area, address, contact,
                                    password_hash, open_time, close_time, status,
                                    rating, total_reviews, today_discount)
-                VALUES ({self._ph(13)})
+                VALUES ({self._ph(15)})
                 {ret}
             ''', (
                 stall_data['name'],
+                stall_data.get('name_ta'),
+                stall_data.get('name_hi'),
                 stall_data['category'],
                 stall_data.get('emoji'),
                 stall_data['area'],
@@ -351,9 +366,10 @@ class Database:
             # Add menu items
             for item in stall_data.get('menu', []):
                 cursor.execute(f'''
-                    INSERT INTO menu_items (stall_id, item_name, price, available)
-                    VALUES ({self._ph(4)})
-                ''', (stall_id, item['itemName'], item['price'], item.get('available', True)))
+                    INSERT INTO menu_items (stall_id, item_name, item_name_ta, item_name_hi, price, available)
+                    VALUES ({self._ph(6)})
+                ''', (stall_id, item['itemName'], item.get('itemName_ta'), item.get('itemName_hi'), 
+                      item['price'], item.get('available', True)))
 
             return self.get_stall_by_id(stall_id)
 
@@ -420,9 +436,10 @@ class Database:
         ph = '%s' if self.is_postgresql else '?'
         with self._cursor() as cursor:
             cursor.execute(f'''
-                INSERT INTO menu_items (stall_id, item_name, price, available)
-                VALUES ({self._ph(4)})
-            ''', (stall_id, item_data['itemName'], item_data['price'],
+                INSERT INTO menu_items (stall_id, item_name, item_name_ta, item_name_hi, price, available)
+                VALUES ({self._ph(6)})
+            ''', (stall_id, item_data['itemName'], item_data.get('itemName_ta'), 
+                  item_data.get('itemName_hi'), item_data['price'],
                   item_data.get('available', True)))
             return self.get_stall_by_id(stall_id)
 
@@ -434,9 +451,10 @@ class Database:
 
             for item in menu_data:
                 cursor.execute(f'''
-                    INSERT INTO menu_items (stall_id, item_name, price, available)
-                    VALUES ({self._ph(4)})
-                ''', (stall_id, item['itemName'], item['price'], item.get('available', True)))
+                    INSERT INTO menu_items (stall_id, item_name, item_name_ta, item_name_hi, price, available)
+                    VALUES ({self._ph(6)})
+                ''', (stall_id, item['itemName'], item.get('itemName_ta'), 
+                      item.get('itemName_hi'), item['price'], item.get('available', True)))
 
             return self.get_stall_by_id(stall_id)
 
@@ -494,6 +512,10 @@ class Database:
             'created_at': 'createdAt',
             'updated_at': 'updatedAt',
             'password_hash': 'passwordHash',
+            'name_ta': 'nameTa',
+            'name_hi': 'nameHi',
+            'item_name_ta': 'itemNameTa',
+            'item_name_hi': 'itemNameHi',
         }
         for old_key, new_key in mapping.items():
             if old_key in result:
