@@ -69,15 +69,18 @@ def signup_stall():
     stall_data['emoji'] = emoji_map.get(stall_data.get('category', ''), '🍽️')
     stall_data['status'] = 'closed'
     
-    # Auto-transliterate shop name
-    stall_data['name_ta'] = transliterate(stall_data['name'], 'ta')
-    stall_data['name_hi'] = transliterate(stall_data['name'], 'hi')
-    
-    # Auto-transliterate menu items
-    if 'menu' in stall_data:
-        for item in stall_data['menu']:
-            item['itemName_ta'] = transliterate(item['itemName'], 'ta')
-            item['itemName_hi'] = transliterate(item['itemName'], 'hi')
+    # Safe transliteration
+    try:
+        stall_data['name_ta'] = transliterate(stall_data['name'], 'ta')
+        stall_data['name_hi'] = transliterate(stall_data['name'], 'hi')
+        
+        if 'menu' in stall_data:
+            for item in stall_data['menu']:
+                item['itemName_ta'] = transliterate(item.get('itemName', ''), 'ta')
+                item['itemName_hi'] = transliterate(item.get('itemName', ''), 'hi')
+    except Exception as e:
+        print(f"[Signup] Transliteration failed (non-critical): {e}")
+        # Continue anyway, localized names will just be empty or original text
 
     try:
         new_stall = db.signup_stall(stall_data)

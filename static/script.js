@@ -2194,14 +2194,19 @@ function renderAddShopPage() {
                 })
             });
             
-            let data;
-            const contentType = res.headers.get("content-type");
-            if (contentType && contentType.indexOf("application/json") !== -1) {
-                data = await res.json();
-            } else {
-                const text = await res.text();
-                console.error('[AddShop] Non-JSON response:', text);
-                throw new Error('Server returned an unexpected response');
+            let data = {};
+            try {
+                const contentType = res.headers.get("content-type");
+                if (contentType && contentType.includes("application/json")) {
+                    data = await res.json();
+                } else {
+                    const text = await res.text();
+                    console.error('[AddShop] Raw response:', text);
+                    data = { error: 'Server error: ' + (text.substring(0, 100)) };
+                }
+            } catch (jsonErr) {
+                console.error('[AddShop] JSON parse error:', jsonErr);
+                data = { error: 'Could not parse server response' };
             }
 
             if (!res.ok) {
