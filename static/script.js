@@ -13,6 +13,7 @@ const API_BASE = (() => {
     const h = window.location.hostname;
     if (h === 'localhost' || h === '127.0.0.1' || h.endsWith('.onrender.com')) return '';
     return 'https://streetbite.onrender.com';
+    updateHeaderLocationBar();
 })();
 
 // Location state — district is remembered for display only; area is NOT persisted
@@ -32,7 +33,7 @@ const tamilNaduDistricts = {
     'Cuddalore': ['Cuddalore','Chidambaram','Virudhachalam','Panruti','Kattumannarkoil','Kurinjipadi','Bhuvanagiri'],
     'Dharmapuri': ['Dharmapuri','Palacode','Pennagaram','Harur','Nallampalli','Karimangalam'],
     'Dindigul': ['Dindigul','Palani','Oddanchatram','Natham','Kodaikanal','Vedasandur','Nilakottai','Batlagundu'],
-    'Erode': ['Erode','Bhavani','Gobichettipalayam','Sathyamangalam','Perundurai','Kangayam','Anthiyur','Nambiyur'],
+    'Erode': ['Erode','Bhavani','Gobichettipalayam','Sathyamangalam','Perundurai','Anthiyur','Nambiyur'],
     'Kallakurichi': ['Kallakurichi','Ulundurpet','Sankarapuram','Chinnasalem','Tirukoilur','Rishivandiyam'],
     'Kancheepuram': ['Kancheepuram','Sriperumbudur','Uthiramerur','Walajabad','Kundrathur'],
     'Kanniyakumari': ['Nagercoil','Kanyakumari','Marthandam','Colachel','Padmanabhapuram','Thuckalay','Kuzhithurai'],
@@ -61,7 +62,8 @@ const tamilNaduDistricts = {
     'Tiruvarur': ['Tiruvarur','Mannargudi','Nannilam','Thiruthuraipoondi','Needamangalam','Valangaiman','Kodavasal'],
     'Vellore': ['Vellore Town','Katpadi','Gudiyatham','Pernambut','Anaicut','KV Kuppam','Kaniyambadi'],
     'Viluppuram': ['Viluppuram','Tindivanam','Gingee','Kallakurichi','Ulundurpettai','Thiruvennainallur','Vanur','Marakkanam'],
-    'Virudhunagar': ['Virudhunagar','Sivakasi','Srivilliputhur','Rajapalayam','Aruppukkottai','Sattur','Tiruchuli','Watrap']
+    'Virudhunagar': ['Virudhunagar','Sivakasi','Srivilliputhur','Rajapalayam','Aruppukkottai','Sattur','Tiruchuli','Watrap'],
+    'Tiruppur': ['Tiruppur Town','Avinashi','Palladam','Dharapuram','Kangayam','Udumalaipettai','Vellakoil','Madathukulam']
 };
 
 // District names in Tamil
@@ -78,7 +80,7 @@ const districtNamesTa = {
     'Thoothukudi':'தூத்துக்குடி','Tiruchirappalli':'திருச்சிராப்பள்ளி',
     'Tirunelveli':'திருநெல்வேலி','Tirupattur':'திருப்பத்தூர்','Tiruvallur':'திருவள்ளூர்',
     'Tiruvannamalai':'திருவண்ணாமலை','Tiruvarur':'திருவாரூர்','Vellore':'வேலூர்',
-    'Viluppuram':'விழுப்புரம்','Virudhunagar':'விருதுநகர்'
+    'Viluppuram':'விழுப்புரம்','Virudhunagar':'விருதுநகர்','Tiruppur':'திருப்பூர்'
 };
 
 // District names in Hindi
@@ -95,7 +97,7 @@ const districtNamesHi = {
     'Thoothukudi':'थूथुकुडी','Tiruchirappalli':'तिरुचिरापल्ली',
     'Tirunelveli':'तिरुनेलवेली','Tirupattur':'तिरुपत्तूर','Tiruvallur':'तिरुवल्लूर',
     'Tiruvannamalai':'तिरुवन्नामलई','Tiruvarur':'तिरुवारूर','Vellore':'वेल्लोर',
-    'Viluppuram':'विल्लुपुरम','Virudhunagar':'विरुधुनगर'
+    'Viluppuram':'विल्लुपुरम','Virudhunagar':'विरुधुनगर','Tiruppur':'तिरुपुर'
 };
 
 // Dynamic Translation for User Content (Shop Names, Menu Items)
@@ -483,7 +485,15 @@ const areaNamesLocalized = {
         'Kodambakkam':'கோடம்பாக்கம்',
         'Manamadurai':'மானாமதுரை',
         'Triplicane':'டிரிப்ளிகேன்',
-        'Peraiyur':'பேரையூர்'
+        'Peraiyur':'பேரையூர்',
+        'Tiruppur Town':'திருப்பூர் டவுன்',
+        'Avinashi':'அவினாசி',
+        'Palladam':'பல்லடம்',
+        'Dharapuram':'தாராபுரம்',
+        'Kangayam':'காங்கயம்',
+        'Udumalaipettai':'உடுமலைப்பேட்டை',
+        'Vellakoil':'வெள்ளகோவில்',
+        'Madathukulam':'மடத்துக்குளம்'
     },
     hi: {
         'Kallikudi':'कल्लीकुडी',
@@ -771,7 +781,15 @@ const areaNamesLocalized = {
         'Kodambakkam':'कोडमबक्कम',
         'Manamadurai':'मनमदुरै',
         'Triplicane':'त्रिपलीकेन',
-        'Peraiyur':'पेराइयुर'
+        'Peraiyur':'पेराइयुर',
+        'Tiruppur Town':'तिरुपुर टाउन',
+        'Avinashi':'अविनाशी',
+        'Palladam':'पल्लडम',
+        'Dharapuram':'धारापुरम',
+        'Kangayam':'कांगयम',
+        'Udumalaipettai':'उदुमलाईपेट्टई',
+        'Vellakoil':'वेल्लाकोइल',
+        'Madathukulam':'मदथुकुलम'
     }
 };
 
@@ -1476,7 +1494,43 @@ async function changeLanguage(lang) {
     else if (currentPage === 'detail' && currentStallId) showShopDetail(currentStallId);
     
     updateHeaderLanguageSelector();
+    updateHeaderLocationBar();
     updateNavigationLabels();
+}
+
+// Populate header location dropdowns
+function updateHeaderLocationBar() {
+    const distSelect = document.getElementById('header-district-select');
+    const areaSelect = document.getElementById('header-area-select');
+    if (!distSelect || !areaSelect) return;
+
+    distSelect.innerHTML = `<option value="">${t('district')}</option>` + 
+        Object.keys(tamilNaduDistricts).sort().map(d => `
+            <option value="${d}" ${selectedDistrict === d ? 'selected' : ''}>${getDistrictName(d)}</option>
+        `).join('');
+
+    areaSelect.innerHTML = `<option value="All Areas">${t('allAreas')}</option>` + 
+        (tamilNaduDistricts[selectedDistrict] || []).sort().map(a => `
+            <option value="${a}" ${selectedArea === a ? 'selected' : ''}>${getAreaName(a)}</option>
+        `).join('');
+    
+    // Attach event listeners
+    distSelect.onchange = (e) => {
+        selectedDistrict = e.target.value;
+        selectedArea = 'All Areas';
+        localStorage.setItem('streetbite_district', selectedDistrict);
+        localStorage.setItem('streetbite_area', 'All Areas');
+        updateHeaderLocationBar();
+        if (currentPage === 'home') renderHomePage();
+        else if (currentPage === 'search') renderSearchPage();
+    };
+    
+    areaSelect.onchange = (e) => {
+        selectedArea = e.target.value;
+        localStorage.setItem('streetbite_area', selectedArea);
+        if (currentPage === 'home') renderHomePage();
+        else if (currentPage === 'search') renderSearchPage();
+    };
 }
 window.changeLanguage = changeLanguage;
 
@@ -1610,8 +1664,7 @@ function renderHomePage() {
             <div class="select-location-prompt">
                 <div class="prompt-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
                 <h3 class="prompt-title">Select Your Location</h3>
-                <p class="prompt-desc">Tap the location button above to pick your district and area — we'll show you all street food shops near you!</p>
-                <button class="prompt-btn" onclick="openLocationPicker()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Select Location</button>
+                <p class="prompt-desc">Use the District and Area dropdowns in the header to find street food shops near you!</p>
             </div>
             `}
         </div>
@@ -1649,10 +1702,14 @@ function renderShopGrid() {
                    areaLower.includes(shopArea);
         });
     } else if (selectedDistrict) {
-        // Only district selected — show all shops from any area in that district
-        const districtAreas = tamilNaduDistricts[selectedDistrict] || [];
-        if (districtAreas.length > 0) {
-            filtered = filtered.filter(s => {
+        // Show all shops in the selected district
+        filtered = filtered.filter(s => {
+            // Priority 1: Match by explicit district field (for newer/updated shops)
+            if (s.district === selectedDistrict) return true;
+
+            // Priority 2: Match by area mapping (fallback for older/legacy shops)
+            const districtAreas = tamilNaduDistricts[selectedDistrict] || [];
+            if (districtAreas.length > 0) {
                 const shopArea = (s.area || '').toLowerCase();
                 const shopAddr = (s.address || '').toLowerCase();
                 return districtAreas.some(area => {
@@ -1660,8 +1717,9 @@ function renderShopGrid() {
                     return shopArea.includes(areaLower) || shopAddr.includes(areaLower) ||
                            areaLower.includes(shopArea);
                 });
-            });
-        }
+            }
+            return false;
+        });
     }
 
     // Filter by category
@@ -2122,11 +2180,11 @@ function renderAddShopPage() {
         submitBtn.textContent = t('registering');
 
         try {
-            const res = await fetch('/api/stalls/signup', {
+                const res = await fetch('/api/stalls/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    name, category, area,
+                    name, category, area, district: shopDistrict,
                     address: address || `${area}, ${shopDistrict}, Tamil Nadu`,
                     contact, password,
                     open_time: openTime,
@@ -2833,5 +2891,18 @@ window.openLocationPicker = openLocationPicker;
 window.closeLocationPicker = closeLocationPicker;
 window.selectDistrictItem = selectDistrictItem;
 window.selectAreaItem = selectAreaItem;
-window.goBackToDistricts = goBackToDistricts;
+window.goBackToDistricts = goBackToDistricts;// Home page dropdown handlers
+function onHomeDistrictChange(district) {
+    selectedDistrict = district;
+    selectedArea = 'All Areas';
+    localStorage.setItem('streetbite_district', district);
+    localStorage.setItem('streetbite_area', 'All Areas');
+    renderHomePage();
+}
+
+function onHomeAreaChange(area) {
+    selectedArea = area;
+    localStorage.setItem('streetbite_area', area);
+    renderHomePage();
+}
 window.filterLocationList = filterLocationList;

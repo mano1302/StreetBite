@@ -55,20 +55,24 @@
                 StreetBite
             </h1>
             <div class="header-actions">
-                <button class="location-btn" id="location-btn" onclick="openLocationPicker()" aria-label="Select location">
-                    <span class="location-btn-icon" aria-hidden="true">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                            <circle cx="12" cy="10" r="3"/>
-                        </svg>
+            <div class="header-location-bar">
+                <div class="location-dropdown-container">
+                    <select id="header-district-select" class="location-dropdown" aria-label="Select District">
+                        <option value="">District</option>
+                    </select>
+                    <span class="location-dropdown-icon">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                     </span>
-                    <span class="location-btn-text" id="location-btn-text">Select Location</span>
-                    <span class="location-btn-arrow" aria-hidden="true">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="6 9 12 15 18 9"/>
-                        </svg>
+                </div>
+                <div class="location-dropdown-container">
+                    <select id="header-area-select" class="location-dropdown" aria-label="Select Area">
+                        <option value="">Area</option>
+                    </select>
+                    <span class="location-dropdown-icon">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                     </span>
-                </button>
+                </div>
+            </div>
                 <select class="language-selector" id="header-language-select" onchange="changeLanguage(this.value)" aria-label="Select language">
                     <option value="en">EN</option>
                     <option value="ta">தமிழ்</option>

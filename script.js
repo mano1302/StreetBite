@@ -32,7 +32,7 @@ const tamilNaduDistricts = {
     'Cuddalore': ['Cuddalore','Chidambaram','Virudhachalam','Panruti','Kattumannarkoil','Kurinjipadi','Bhuvanagiri'],
     'Dharmapuri': ['Dharmapuri','Palacode','Pennagaram','Harur','Nallampalli','Karimangalam'],
     'Dindigul': ['Dindigul','Palani','Oddanchatram','Natham','Kodaikanal','Vedasandur','Nilakottai','Batlagundu'],
-    'Erode': ['Erode','Bhavani','Gobichettipalayam','Sathyamangalam','Perundurai','Kangayam','Anthiyur','Nambiyur'],
+    'Erode': ['Erode','Bhavani','Gobichettipalayam','Sathyamangalam','Perundurai','Anthiyur','Nambiyur'],
     'Kallakurichi': ['Kallakurichi','Ulundurpet','Sankarapuram','Chinnasalem','Tirukoilur','Rishivandiyam'],
     'Kancheepuram': ['Kancheepuram','Sriperumbudur','Uthiramerur','Walajabad','Kundrathur'],
     'Kanniyakumari': ['Nagercoil','Kanyakumari','Marthandam','Colachel','Padmanabhapuram','Thuckalay','Kuzhithurai'],
@@ -61,7 +61,8 @@ const tamilNaduDistricts = {
     'Tiruvarur': ['Tiruvarur','Mannargudi','Nannilam','Thiruthuraipoondi','Needamangalam','Valangaiman','Kodavasal'],
     'Vellore': ['Vellore Town','Katpadi','Gudiyatham','Pernambut','Anaicut','KV Kuppam','Kaniyambadi'],
     'Viluppuram': ['Viluppuram','Tindivanam','Gingee','Kallakurichi','Ulundurpettai','Thiruvennainallur','Vanur','Marakkanam'],
-    'Virudhunagar': ['Virudhunagar','Sivakasi','Srivilliputhur','Rajapalayam','Aruppukkottai','Sattur','Tiruchuli','Watrap']
+    'Virudhunagar': ['Virudhunagar','Sivakasi','Srivilliputhur','Rajapalayam','Aruppukkottai','Sattur','Tiruchuli','Watrap'],
+    'Tiruppur': ['Tiruppur Town','Avinashi','Palladam','Dharapuram','Kangayam','Udumalaipettai','Vellakoil','Madathukulam']
 };
 
 // District names in Tamil
@@ -78,7 +79,7 @@ const districtNamesTa = {
     'Thoothukudi':'தூத்துக்குடி','Tiruchirappalli':'திருச்சிராப்பள்ளி',
     'Tirunelveli':'திருநெல்வேலி','Tirupattur':'திருப்பத்தூர்','Tiruvallur':'திருவள்ளூர்',
     'Tiruvannamalai':'திருவண்ணாமலை','Tiruvarur':'திருவாரூர்','Vellore':'வேலூர்',
-    'Viluppuram':'விழுப்புரம்','Virudhunagar':'விருதுநகர்'
+    'Viluppuram':'விழுப்புரம்','Virudhunagar':'விருதுநகர்','Tiruppur':'திருப்பூர்'
 };
 
 // District names in Hindi
@@ -95,7 +96,7 @@ const districtNamesHi = {
     'Thoothukudi':'थूथुकुडी','Tiruchirappalli':'तिरुचिरापल्ली',
     'Tirunelveli':'तिरुनेलवेली','Tirupattur':'तिरुपत्तूर','Tiruvallur':'तिरुवल्लूर',
     'Tiruvannamalai':'तिरुवन्नामलई','Tiruvarur':'तिरुवारूर','Vellore':'वेल्लोर',
-    'Viluppuram':'विल्लुपुरम','Virudhunagar':'विरुधुनगर'
+    'Viluppuram':'विल्लुपुरम','Virudhunagar':'विरुधुनगर','Tiruppur':'तिरुपुर'
 };
 
 // Dynamic Translation for User Content (Shop Names, Menu Items)
@@ -185,10 +186,22 @@ const dynamicTranslations = {
 };
 
 // Helper: translate dynamic content (shop names, menu items)
-function td(text) {
+function td(text, obj = null) {
     if (!text || currentLanguage === 'en') return text;
+
+    // 1. Check for backend-provided transliterations if available
+    if (obj) {
+        if (currentLanguage === 'ta') {
+            const taVal = obj.nameTa || obj.itemNameTa || obj.areaTa || obj.commentTa;
+            if (taVal) return taVal;
+        } else if (currentLanguage === 'hi') {
+            const hiVal = obj.nameHi || obj.itemNameHi || obj.areaHi || obj.commentHi;
+            if (hiVal) return hiVal;
+        }
+    }
+
     let translated = text;
-    // Iterate through dictionary and replace keywords
+    // 2. Fallback to dictionary
     for (const [enKey, translations] of Object.entries(dynamicTranslations)) {
         if (translations[currentLanguage]) {
             const regex = new RegExp(`\\b${enKey}\\b`, 'gi');
@@ -495,7 +508,15 @@ const areaNamesLocalized = {
         'Kodambakkam':'கோடம்பாக்கம்',
         'Manamadurai':'மானாமதுரை',
         'Triplicane':'டிரிப்ளிகேன்',
-        'Peraiyur':'பேரையூர்'
+        'Peraiyur':'பேரையூர்',
+        'Tiruppur Town':'திருப்பூர் டவுன்',
+        'Avinashi':'அவினாசி',
+        'Palladam':'பல்லடம்',
+        'Dharapuram':'தாராபுரம்',
+        'Kangayam':'காங்கயம்',
+        'Udumalaipettai':'உடுமலைப்பேட்டை',
+        'Vellakoil':'வெள்ளகோவில்',
+        'Madathukulam':'மடத்துக்குளம்'
     },
     hi: {
         'Kallikudi':'कल्लीकुडी',
@@ -783,7 +804,15 @@ const areaNamesLocalized = {
         'Kodambakkam':'कोडमबक्कम',
         'Manamadurai':'मनमदुरै',
         'Triplicane':'त्रिपलीकेन',
-        'Peraiyur':'पेराइयुर'
+        'Peraiyur':'पेराइयुर',
+        'Tiruppur Town':'तिरुपुर टाउन',
+        'Avinashi':'अविनाशी',
+        'Palladam':'पल्लडम',
+        'Dharapuram':'धारापुरम',
+        'Kangayam':'कांगयम',
+        'Udumalaipettai':'उदुमलाईपेट्टई',
+        'Vellakoil':'वेल्लाकोइल',
+        'Madathukulam':'मदथुकुलम'
     }
 };
 
@@ -2667,7 +2696,19 @@ function renderDistrictList() {
     searchInput.value = '';
 
     const districts = Object.keys(tamilNaduDistricts);
-    list.innerHTML = districts.map(district => `
+    
+    // Create dropdown for quick selection as requested by user
+    const dropdownHTML = `
+        <div class="location-dropdown-container">
+            <select class="location-select-dropdown" onchange="selectDistrictItem(this.value)">
+                <option value="">${t('selectDistrict')}</option>
+                ${districts.map(d => `<option value="${d}" ${selectedDistrict === d ? 'selected' : ''}>${getDistrictName(d)}</option>`).join('')}
+            </select>
+        </div>
+        <div class="location-divider"><span>OR SELECT FROM LIST</span></div>
+    `;
+
+    list.innerHTML = dropdownHTML + districts.map(district => `
         <div class="location-item ${selectedDistrict === district ? 'selected' : ''}" onclick="selectDistrictItem('${district}')">
             <div class="location-item-left">
                 <span class="location-item-emoji"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></span>
@@ -2704,8 +2745,20 @@ function renderAreaList(district) {
 
     const areas = tamilNaduDistricts[district] || [];
 
-    // Add "All Areas" option first
-    let itemsHTML = `
+    // Create dropdown for quick area selection
+    const dropdownHTML = `
+        <div class="location-dropdown-container">
+            <select class="location-select-dropdown" onchange="selectAreaItem(this.value)">
+                <option value="">${t('selectArea')}</option>
+                <option value="All Areas" ${selectedArea === 'All Areas' ? 'selected' : ''}>${t('allAreas')}</option>
+                ${areas.map(a => `<option value="${a}" ${selectedArea === a ? 'selected' : ''}>${getAreaName(a)}</option>`).join('')}
+            </select>
+        </div>
+        <div class="location-divider"><span>OR SELECT FROM LIST</span></div>
+    `;
+
+    // Add "All Areas" option first in list
+    let itemsHTML = dropdownHTML + `
         <div class="location-item ${selectedArea === 'All Areas' || !selectedArea ? 'selected' : ''}" onclick="selectAreaItem('All Areas')">
             <div class="location-item-left">
                 <span class="location-item-emoji"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></span>

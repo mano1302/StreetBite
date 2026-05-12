@@ -103,6 +103,7 @@ class Database:
                 rating REAL DEFAULT 0,
                 total_reviews INTEGER DEFAULT 0,
                 today_discount TEXT,
+                district TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -159,6 +160,7 @@ class Database:
                 rating REAL DEFAULT 0,
                 total_reviews INTEGER DEFAULT 0,
                 today_discount TEXT,
+                district TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -335,10 +337,10 @@ class Database:
         ret = 'RETURNING id' if self.is_postgresql else ''
         with self._cursor() as cursor:
             cursor.execute(f'''
-                INSERT INTO stalls (name, name_ta, name_hi, category, emoji, area, address, contact,
+                INSERT INTO stalls (name, name_ta, name_hi, category, emoji, area, district, address, contact,
                                    password_hash, open_time, close_time, status,
                                    rating, total_reviews, today_discount)
-                VALUES ({self._ph(15)})
+                VALUES ({self._ph(16)})
                 {ret}
             ''', (
                 stall_data['name'],
@@ -347,6 +349,7 @@ class Database:
                 stall_data['category'],
                 stall_data.get('emoji'),
                 stall_data['area'],
+                stall_data.get('district'),
                 stall_data.get('address'),
                 stall_data['contact'],
                 stall_data.get('password_hash'),

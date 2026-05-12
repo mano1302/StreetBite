@@ -55,7 +55,7 @@ def add_stall():
 def signup_stall():
     """Public registration: creates a new shop with hashed password."""
     stall_data = request.json
-    required = ['name', 'category', 'area', 'contact', 'password']
+    required = ['name', 'category', 'district', 'area', 'contact', 'password']
     for field in required:
         if not stall_data.get(field):
             return jsonify({'error': f'{field} is required'}), 400

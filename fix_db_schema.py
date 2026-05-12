@@ -9,6 +9,7 @@ def add_columns():
                 DO $$ BEGIN
                     ALTER TABLE stalls ADD COLUMN name_ta TEXT;
                     ALTER TABLE stalls ADD COLUMN name_hi TEXT;
+                    ALTER TABLE stalls ADD COLUMN district TEXT;
                 EXCEPTION WHEN duplicate_column THEN NULL;
                 END $$;
             ''')
@@ -21,7 +22,7 @@ def add_columns():
             ''')
         else:
             print("SQLite detected.")
-            cols_stalls = ["name_ta", "name_hi"]
+            cols_stalls = ["name_ta", "name_hi", "district"]
             for col in cols_stalls:
                 try:
                     cursor.execute(f"ALTER TABLE stalls ADD COLUMN {col} TEXT")
