@@ -8,7 +8,7 @@ DYNAMIC_TRANSLATIONS = {
     'Vada': { 'ta': 'வடை', 'hi': 'वड़ा' },
     'Samosa': { 'ta': 'சமோசா', 'hi': 'समोसा' },
     'Biryani': { 'ta': 'பிரியாணி', 'hi': 'बिरयानी' },
-    'Parotta': { 'ta': 'பரோட்டா', 'hi': 'परोठा' },
+    'Parotta': { 'ta': 'பரோட்டா', 'hi': 'பரோட்டா' },
     'Noodles': { 'ta': 'நூடுல்ஸ்', 'hi': 'नूडल्स' },
     'Fried Rice': { 'ta': 'ப்ரைடு ரைஸ்', 'hi': 'फ्राइड राइस' },
     'Omelette': { 'ta': 'ஆம்லெட்', 'hi': 'आमलेट' },
@@ -47,7 +47,7 @@ DYNAMIC_TRANSLATIONS = {
     'Sundal': { 'ta': 'சுண்டல்', 'hi': 'सुंडल' },
     'Bajji': { 'ta': 'பஜ்ஜி', 'hi': 'बज्जी' },
     'Bonda': { 'ta': 'போண்டா', 'hi': 'बोंடா' },
-    'Aththo': { 'ta': 'அத்தோ', 'hi': 'अत्थो' },
+    'Aththo': { 'ta': 'அத்தோ', 'hi': 'अत्தோ' },
     'Bejo': { 'ta': 'பெஜோ', 'hi': 'बेजो' },
     'Mohinga': { 'ta': 'மோகிங்கா', 'hi': 'मोहिंंगा' },
     'Kalakki': { 'ta': 'கலக்கி', 'hi': 'कलक्की' },
@@ -65,7 +65,7 @@ DYNAMIC_TRANSLATIONS = {
     'Nellai': { 'ta': 'நெல்லை', 'hi': 'नेल्लई' },
     'Madurai': { 'ta': 'மதுரை', 'hi': 'मदुरई' },
     'Chennai': { 'ta': 'சென்னை', 'hi': 'चेन्नई' },
-    'Madras': { 'ta': 'மெட்ராஸ்', 'hi': 'मद्रास' },
+    'Madras': { 'ta': 'மெட்ராஸ்', 'hi': 'மெட்ராஸ்' },
     'Bombay': { 'ta': 'பாம்பே', 'hi': 'बॉम्बे' },
     'Chettinadu': { 'ta': 'செட்டிநாடு', 'hi': 'चेट्टीनाडु' },
     'Karaikudi': { 'ta': 'காரைக்குடி', 'hi': 'काराइकुडी' },
@@ -135,14 +135,14 @@ DYNAMIC_TRANSLATIONS = {
     'Hot': { 'ta': 'ஹாட்', 'hi': 'हॉट' },
     'King': { 'ta': 'கிங்', 'hi': 'किंग' },
     'Queen': { 'ta': 'குவீன்', 'hi': 'क्वीन' },
-    'Master': { 'ta': 'மாஸ்டர்', 'hi': 'मास्टर' },
+    'Master': { 'ta': 'மாஸ்டர்', 'hi': 'மாஸ்டர்' },
     'Kitchen': { 'ta': 'கிச்சன்', 'hi': 'किचन' },
     'House': { 'ta': 'ஹவுஸ்', 'hi': 'हाउस' },
     'World': { 'ta': 'வேர்ல்ட்', 'hi': 'वर्ल्ड' },
     'Zone': { 'ta': 'ஜோன்', 'hi': 'जोन' },
     'Land': { 'ta': 'லேண்ட்', 'hi': 'लैंड' },
     'Hub': { 'ta': 'ஹப்', 'hi': 'हब' },
-    'Spot': { 'ta': 'ஸ்பாட்', 'hi': 'स्पॉट' }
+    'Spot': { 'ta': 'ஸ்பாட்', 'hi': 'ஸ்பாட்' }
 }
 
 def call_google_api(text, itc):
@@ -178,6 +178,9 @@ def call_google_api(text, itc):
         print(f"API Error: {e}")
     return text
 
+# Cache for transliterations to speed up repeated calls
+_trans_cache = {}
+
 def transliterate(text, target_lang):
     """
     Robust transliteration that splits text into parts to ensure 
@@ -185,6 +188,10 @@ def transliterate(text, target_lang):
     """
     if not text or target_lang == 'en':
         return text
+
+    cache_key = f"{text}_{target_lang}"
+    if cache_key in _trans_cache:
+        return _trans_cache[cache_key]
 
     # 1. Manual keyword mapping first (Longest phrases first)
     processed_text = text
@@ -217,15 +224,17 @@ def transliterate(text, target_lang):
                 final_segments.append(call_google_api(seg, itc))
             else:
                 final_segments.append(seg)
-        processed_text = "".join(final_segments)
+        result = "".join(final_segments)
     else:
         # Fallback: just restore placeholders
         for ph, val in placeholders.items():
             processed_text = processed_text.replace(f" {ph} ", val)
+        result = processed_text
 
     # Final cleanup of multiple spaces
-    processed_text = re.sub(r'\s+', ' ', processed_text)
-    return processed_text.strip()
+    result = re.sub(r'\s+', ' ', result).strip()
+    _trans_cache[cache_key] = result
+    return result
 
 def get_localized_data(text):
     """Returns a dict with ta and hi transliterations."""

@@ -1,4 +1,13 @@
 // State
+// Global error handler for debugging
+window.onerror = function(msg, url, line, col, error) {
+    console.error('[Global Error]', msg, 'at', url, ':', line);
+    if (typeof showToast === 'function') {
+        showToast('Application Error: ' + msg, 'error');
+    }
+    return false;
+};
+
 let stalls = [];
 let currentPage = 'home';
 let selectedCategory = 'All';
@@ -2144,97 +2153,105 @@ function renderAddShopPage() {
     });
 
     // Submit shop — POST to /api/stalls/signup
-    modal.querySelector('#submit-shop').addEventListener('click', async () => {
-        console.log('[AddShop] Submit button clicked — form render fires once per click');
-        const name = modal.querySelector('#shop-name').value.trim();
-        const category = modal.querySelector('#shop-category').value;
-        const shopDistrict = modal.querySelector('#shop-district').value;
-        const area = modal.querySelector('#shop-area').value;
-        const address = modal.querySelector('#shop-address').value.trim();
-        const contact = modal.querySelector('#shop-contact').value.trim();
-        const discount = modal.querySelector('#shop-discount').value.trim();
-        const openTime = modal.querySelector('#open-time').value;
-        const closeTime = modal.querySelector('#close-time').value;
-        const password = modal.querySelector('#shop-password').value;
-        const confirmPassword = modal.querySelector('#shop-password-confirm').value;
+    const submitBtn = modal.querySelector('#submit-shop');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', async () => {
+            console.log('[AddShop] Submit button clicked');
+            const name = modal.querySelector('#shop-name').value.trim();
+            const category = modal.querySelector('#shop-category').value;
+            const shopDistrict = modal.querySelector('#shop-district').value;
+            const area = modal.querySelector('#shop-area').value;
+            const address = modal.querySelector('#shop-address').value.trim();
+            const contact = modal.querySelector('#shop-contact').value.trim();
+            const discount = modal.querySelector('#shop-discount').value.trim();
+            const openTime = modal.querySelector('#open-time').value;
+            const closeTime = modal.querySelector('#close-time').value;
+            const password = modal.querySelector('#shop-password').value;
+            const confirmPassword = modal.querySelector('#shop-password-confirm').value;
 
-        if (!name || !category || !shopDistrict || !area || !contact) {
-            showToast(t('fillRequired'), 'error');
-            return;
-        }
-        if (!password || password.length < 4) {
-            showToast(t('passwordTooShort'), 'error');
-            return;
-        }
-        if (password !== confirmPassword) {
-            showToast(t('passwordsDoNotMatch'), 'error');
-            return;
-        }
-        if (menuItems.length === 0) {
-            showToast(t('addMenuItemError'), 'error');
-            return;
-        }
+            console.log('[AddShop] Validation check...', { name, category, shopDistrict, area, contact });
 
-        const submitBtn = modal.querySelector('#submit-shop');
-        submitBtn.disabled = true;
-        submitBtn.textContent = t('registering');
-
-        try {
-            const res = await fetch('/api/stalls/signup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name, category, area, district: shopDistrict,
-                    address: address || `${area}, ${shopDistrict}, Tamil Nadu`,
-                    contact, password,
-                    open_time: openTime,
-                    close_time: closeTime,
-                    today_discount: discount || null,
-                    menu: menuItems
-                })
-            });
-            
-            let data = {};
-            try {
-                const contentType = res.headers.get("content-type");
-                if (contentType && contentType.includes("application/json")) {
-                    data = await res.json();
-                } else {
-                    const text = await res.text();
-                    console.error('[AddShop] Raw response:', text);
-                    data = { error: 'Server error: ' + (text.substring(0, 100)) };
-                }
-            } catch (jsonErr) {
-                console.error('[AddShop] JSON parse error:', jsonErr);
-                data = { error: 'Could not parse server response' };
+            if (!name || !category || !shopDistrict || !area || !contact) {
+                showToast(t('fillRequired'), 'error');
+                return;
             }
-
-            if (!res.ok) {
-                showToast(data.error || t('registrationFailed'), 'error');
-                submitBtn.disabled = false;
-                submitBtn.textContent = t('listMyShop');
+            if (!password || password.length < 4) {
+                showToast(t('passwordTooShort'), 'error');
+                return;
+            }
+            if (password !== confirmPassword) {
+                showToast(t('passwordsDoNotMatch'), 'error');
+                return;
+            }
+            if (menuItems.length === 0) {
+                showToast(t('addMenuItemError'), 'error');
                 return;
             }
 
-            // Success
-            modal.remove();
-            showToast(t('shopRegistered'), 'success');
-            await reloadStalls();
-            
-            // Go to home and mark Home nav active
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            const homeNav = document.querySelector('.nav-item[data-page="home"]');
-            if (homeNav) homeNav.classList.add('active');
-            currentPage = 'home';
-            renderHomePage();
-            
-        } catch (e) {
-            console.error('[AddShop] Submission error:', e);
-            showToast(e.message || t('networkError'), 'error');
-            submitBtn.disabled = false;
-            submitBtn.textContent = t('listMyShop');
-        }
-    });
+            submitBtn.disabled = true;
+            submitBtn.textContent = t('registering');
+
+            try {
+                console.log('[AddShop] Sending fetch request...');
+                const res = await fetch('/api/stalls/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name, category, area, district: shopDistrict,
+                        address: address || `${area}, ${shopDistrict}, Tamil Nadu`,
+                        contact, password,
+                        open_time: openTime,
+                        close_time: closeTime,
+                        today_discount: discount || null,
+                        menu: menuItems
+                    })
+                });
+                
+                let data = {};
+                try {
+                    const contentType = res.headers.get("content-type");
+                    if (contentType && contentType.includes("application/json")) {
+                        data = await res.json();
+                    } else {
+                        const text = await res.text();
+                        console.error('[AddShop] Raw response:', text);
+                        data = { error: 'Server error: ' + (text.substring(0, 100)) };
+                    }
+                } catch (jsonErr) {
+                    console.error('[AddShop] JSON parse error:', jsonErr);
+                    data = { error: 'Could not parse server response' };
+                }
+
+                if (!res.ok) {
+                    showToast(data.error || t('registrationFailed'), 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = t('listMyShop');
+                    return;
+                }
+
+                // Success
+                console.log('[AddShop] Registration success!');
+                modal.remove();
+                showToast(t('shopRegistered'), 'success');
+                await reloadStalls();
+                
+                // Go to home and mark Home nav active
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                const homeNav = document.querySelector('.nav-item[data-page="home"]');
+                if (homeNav) homeNav.classList.add('active');
+                currentPage = 'home';
+                renderHomePage();
+                
+            } catch (e) {
+                console.error('[AddShop] Submission error:', e);
+                showToast(e.message || t('networkError'), 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = t('listMyShop');
+            }
+        });
+    } else {
+        console.error('[AddShop] Submit button not found in modal!');
+    }
 }
 
 // Close add shop modal if open (called when navigating away is fine — modal persists)
