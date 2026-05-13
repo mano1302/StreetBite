@@ -4,9 +4,13 @@ import os
 
 from database import db
 from transliteration_service import transliterate
+from concurrent.futures import ThreadPoolExecutor
 
 app = Flask(__name__, static_folder='static')
 CORS(app)  # Enable CORS for API requests
+
+# For fast parallel transliteration during signup
+executor = ThreadPoolExecutor(max_workers=10)
 
 @app.route('/')
 def index():
@@ -69,18 +73,35 @@ def signup_stall():
     stall_data['emoji'] = emoji_map.get(stall_data.get('category', ''), '🍽️')
     stall_data['status'] = 'closed'
     
-    # Safe transliteration
+    # Safe transliteration (Optimized with Parallel Execution)
     try:
-        stall_data['name_ta'] = transliterate(stall_data['name'], 'ta')
-        stall_data['name_hi'] = transliterate(stall_data['name'], 'hi')
+        def do_trans(text, lang):
+            return transliterate(text, lang)
+
+        # Basic stall data tasks
+        tasks = [
+            ('name_ta', executor.submit(do_trans, stall_data['name'], 'ta')),
+            ('name_hi', executor.submit(do_trans, stall_data['name'], 'hi')),
+        ]
         
+        # Menu item tasks
+        menu_tasks = []
         if 'menu' in stall_data:
-            for item in stall_data['menu']:
-                item['itemName_ta'] = transliterate(item.get('itemName', ''), 'ta')
-                item['itemName_hi'] = transliterate(item.get('itemName', ''), 'hi')
+            for i, item in enumerate(stall_data['menu']):
+                t_ta = executor.submit(do_trans, item.get('itemName', ''), 'ta')
+                t_hi = executor.submit(do_trans, item.get('itemName', ''), 'hi')
+                menu_tasks.append((i, t_ta, t_hi))
+
+        # Collect results
+        for key, future in tasks:
+            stall_data[key] = future.result()
+            
+        for i, f_ta, f_hi in menu_tasks:
+            stall_data['menu'][i]['itemName_ta'] = f_ta.result()
+            stall_data['menu'][i]['itemName_hi'] = f_hi.result()
+            
     except Exception as e:
         print(f"[Signup] Transliteration failed (non-critical): {e}")
-        # Continue anyway, localized names will just be empty or original text
 
     try:
         new_stall = db.signup_stall(stall_data)
@@ -153,19 +174,27 @@ def add_menu_item_post(stall_id):
     stall = db.add_menu_item(stall_id, item_data)
     return jsonify(stall)
 
-@app.route('/api/stalls/<int:stall_id>/menu-item', methods=['POST', 'PUT'])
+@app.route('/api/stalls/<int:stall_id>/menu-item', methods=['POST', 'PUT', 'DELETE'])
 def menu_item_handler(stall_id):
-    """POST: add menu item. PUT: toggle availability by item_index in body."""
+    """POST: add menu item. PUT: toggle availability. DELETE: remove item by item_index."""
     item_data = request.json
     if request.method == 'PUT':
-        # Toggle availability: body = {item_index, available}
-        item_index = item_data.get('item_index')
+        # Toggle availability: body = {item_id, available}
+        item_id = item_data.get('item_id')
         available = item_data.get('available')
-        if item_index is None or available is None:
-            return jsonify({'error': 'item_index and available are required'}), 400
-        stall = db.update_menu_item_availability(stall_id, item_index, available)
+        if item_id is None or available is None:
+            return jsonify({'error': 'item_id and available are required'}), 400
+        stall = db.update_menu_item_availability(stall_id, item_id, available)
+        return jsonify(stall)
+    elif request.method == 'DELETE':
+        # Remove item: body = {item_id}
+        item_id = item_data.get('item_id')
+        if item_id is None:
+            return jsonify({'error': 'item_id is required'}), 400
+        stall = db.delete_menu_item(stall_id, item_id)
         return jsonify(stall)
     else:
+        # POST: Add new item
         if 'itemName' not in item_data or 'price' not in item_data:
             return jsonify({'error': 'Item name and price are required'}), 400
         stall = db.add_menu_item(stall_id, item_data)

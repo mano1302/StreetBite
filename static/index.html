@@ -56,24 +56,15 @@
             </h1>
             <div class="header-actions">
             <div class="header-location-bar">
-                <div class="location-dropdown-container">
-                    <select id="header-district-select" class="location-dropdown" aria-label="Select District">
-                        <option value="">District</option>
-                    </select>
-                    <span class="location-dropdown-icon">
+                <div class="custom-select-container" id="header-location-custom">
+                    <div class="custom-select-trigger" id="location-trigger">
+                        <span id="location-trigger-text">Select Location</span>
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                    </span>
-                </div>
-                <div class="location-dropdown-container">
-                    <select id="header-area-select" class="location-dropdown" aria-label="Select Area">
-                        <option value="">Area</option>
-                    </select>
-                    <span class="location-dropdown-icon">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                    </span>
+                    </div>
+                    <div class="custom-select-options" id="location-options"></div>
                 </div>
             </div>
-                <select class="language-selector" id="header-language-select" onchange="changeLanguage(this.value)" aria-label="Select language">
+                <select class="language-selector header-select" id="header-language-select" onchange="changeLanguage(this.value)" aria-label="Select language">
                     <option value="en">EN</option>
                     <option value="ta">தமிழ்</option>
                     <option value="hi">हिंदी</option>

@@ -419,23 +419,13 @@ class Database:
             ''', (discount, stall_id))
             return self.get_stall_by_id(stall_id)
 
-    def update_menu_item_availability(self, stall_id, item_index, available):
-        """Update a menu item's availability."""
+    def update_menu_item_availability(self, stall_id, item_id, available):
+        """Toggle availability of a menu item by its unique ID."""
         ph = '%s' if self.is_postgresql else '?'
         with self._cursor() as cursor:
-            cursor.execute(
-                f'SELECT id FROM menu_items WHERE stall_id = {ph} ORDER BY id',
-                (stall_id,)
-            )
-            items = cursor.fetchall()
-
-            if item_index < len(items):
-                item_row = items[item_index]
-                item_id = item_row['id'] if isinstance(item_row, dict) else item_row[0]
-                cursor.execute(f'''
-                    UPDATE menu_items SET available = {ph} WHERE id = {ph}
-                ''', (available, item_id))
-
+            cursor.execute(f'''
+                UPDATE menu_items SET available = {ph} WHERE id = {ph} AND stall_id = {ph}
+            ''', (available, item_id, stall_id))
             return self.get_stall_by_id(stall_id)
 
     def add_menu_item(self, stall_id, item_data):
@@ -448,6 +438,16 @@ class Database:
             ''', (stall_id, item_data['itemName'], item_data.get('itemName_ta'), 
                   item_data.get('itemName_hi'), item_data['price'],
                   item_data.get('available', True)))
+            return self.get_stall_by_id(stall_id)
+
+    def delete_menu_item(self, stall_id, item_id):
+        """Delete a menu item by its unique ID."""
+        ph = '%s' if self.is_postgresql else '?'
+        with self._cursor() as cursor:
+            cursor.execute(
+                f'DELETE FROM menu_items WHERE id = {ph} AND stall_id = {ph}',
+                (item_id, stall_id)
+            )
             return self.get_stall_by_id(stall_id)
 
     def update_menu(self, stall_id, menu_data):

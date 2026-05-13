@@ -77,15 +77,37 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 480px;
+    max-width: 550px; /* Increased to prevent clipping of long names */
     margin: 0 auto;
-    gap: 10px;
+    gap: 12px;
 }
 
 .header-actions {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-shrink: 0;
+}
+
+/* Unified Header Select Styles */
+.header-select {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0 30px 0 12px; /* Changed to use height/line-height for centering */
+    border-radius: 12px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    appearance: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    backdrop-filter: blur(10px);
+    height: 42px; /* Standardized height */
+    outline: none;
+    line-height: 42px;
 }
 
 .header h1 {
@@ -123,110 +145,165 @@ body {
     }
 }
 
+.header-select:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+}
+
+.header-select option {
+    background: white;
+    color: #333;
+    font-weight: 500;
+    padding: 10px;
+}
+
 /* Header Location Bar */
 .header-location-bar {
     display: flex;
     gap: 6px;
-    margin-top: 2px;
-    width: 100%;
-    max-width: 480px;
-}
-
-.location-dropdown-container {
-    flex: 1;
-    position: relative;
-    display: flex;
     align-items: center;
 }
 
-.location-dropdown {
-    width: 100%;
+.location-dropdown-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.location-dropdown-container.hidden {
+    display: none;
+}
+
+/* Custom Select Component */
+.custom-select-container {
+    position: relative;
+    min-width: 140px;
+    width: auto;
+    height: 42px; /* Increased for better visibility of tall scripts */
+    z-index: 100;
+}
+
+.custom-select-trigger {
     background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
     color: white;
-    padding: 6px 24px 6px 8px;
-    border-radius: 10px;
-    font-size: 0.72rem;
+    padding: 0 14px;
+    border-radius: 12px;
+    font-size: 0.88rem;
     font-weight: 600;
     cursor: pointer;
-    appearance: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    height: 100%;
+    backdrop-filter: blur(10px);
     transition: all 0.2s ease;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    backdrop-filter: blur(5px);
+    user-select: none;
+    line-height: normal; /* Ensure vertical centering */
 }
 
-.location-dropdown:hover {
+.custom-select-trigger:hover {
     background: rgba(255, 255, 255, 0.25);
     border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
 }
 
-.location-dropdown option {
-    background: white;
-    color: #333;
-    font-weight: 500;
+.custom-select-trigger span {
+    white-space: nowrap;
+    overflow: visible; /* Prevent clipping */
+    text-overflow: clip;
 }
 
-.location-dropdown-icon {
+.custom-select-options {
     position: absolute;
-    right: 8px;
-    pointer-events: none;
-    color: white;
-    opacity: 0.8;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 100%;
+    width: max-content;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    padding: 8px;
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 350px;
+    overflow-y: auto;
+    z-index: 1000;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    animation: dropdownFadeIn 0.2s ease-out;
 }
 
-.location-btn {
-    display: none; /* Hide old button */
+@keyframes dropdownFadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.location-btn-icon {
+.custom-select-options.active {
+    display: flex;
+}
+
+.custom-option {
+    padding: 10px 16px;
+    border-radius: 10px;
+    color: #333;
     font-size: 0.9rem;
-    flex-shrink: 0;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    display: block; /* Linear and decent */
+    text-align: left;
+    white-space: nowrap;
+    line-height: 1.4;
 }
 
-.location-btn-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100px;
+.custom-option:hover {
+    background: #fdf2f2;
+    color: #f97316;
 }
 
-.location-btn-arrow {
-    font-size: 0.6rem;
-    opacity: 0.8;
-    flex-shrink: 0;
-    transition: transform 0.3s ease;
+.custom-option.selected {
+    background: #fff7ed;
+    color: #f97316;
+    font-weight: 700;
 }
 
-.location-btn.active .location-btn-arrow {
-    transform: rotate(180deg);
+.custom-option.back-option {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 6px;
+    color: #dc2626;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.custom-option.back-option:hover {
+    background: #fef2f2;
 }
 
 .language-selector {
-    background: rgba(255, 255, 255, 0.25);
-    border: 2px solid rgba(255, 255, 255, 0.4);
+    /* Kept as native for now but styled to match trigger */
+    min-width: 100px;
+    width: auto;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
     color: white;
-    padding: 8px 12px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    cursor: pointer;
-    outline: none;
+    padding: 0 14px;
+    border-radius: 12px;
+    font-size: 0.88rem;
     font-weight: 600;
-    transition: all 0.3s ease;
+    cursor: pointer;
+    appearance: none;
+    height: 42px;
     backdrop-filter: blur(10px);
+    outline: none;
+    line-height: normal;
 }
 
-.language-selector:hover {
-    background: rgba(255, 255, 255, 0.35);
-    border-color: rgba(255, 255, 255, 0.6);
-    transform: scale(1.05);
-}
-
-.language-selector option {
-    background: #f97316;
-    color: white;
-    font-weight: 500;
-}
 
 /* ===== Location Picker Bottom Sheet ===== */
 .location-overlay {
@@ -2091,7 +2168,7 @@ body {
         font-size: 0.9rem;
     }
     .add-shop-modal-body {
-        padding: 0 0 80px 0;
+        padding: 0 0 30px 0;
     }
     .detail-name {
         font-size: 1.2rem;
@@ -2192,7 +2269,7 @@ body {
         flex-direction: row;
         width: 100%;
         max-width: 1200px;
-        height: 90vh;
+        height: auto; /* Changed to auto to fit content */
         max-height: 90vh;
         border-radius: 20px;
         overflow: hidden;
@@ -2287,7 +2364,7 @@ body {
     .add-shop-modal-body {
         flex: 1;
         overflow-y: auto;
-        padding: 0 0 40px 0;
+        padding: 0 0 30px 0;
     }
     .nav-item {
         padding: 8px 36px;
@@ -2416,7 +2493,7 @@ body {
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 0 0 100px 0;
+    padding: 0 0 30px 0; /* Restored safe padding for button visibility */
     -webkit-overflow-scrolling: touch;
     width: 100%;
     box-sizing: border-box;
@@ -2424,7 +2501,7 @@ body {
 
 /* Form section inner — provide horizontal padding, remove inner box styling */
 .add-shop-modal-body .form-section {
-    margin: 16px;
+    margin: 16px 16px 0 16px; /* Removed bottom margin */
     background: transparent;
     padding: 0;
     box-shadow: none;
@@ -2459,16 +2536,64 @@ body {
     padding: 4px;
     line-height: 1;
     -webkit-tap-highlight-color: transparent;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
     z-index: 2;
     user-select: none;
     -webkit-user-select: none;
+    display: none; /* Hidden by default — shown when typing via JS */
+}
+
+/* Hide default browser password reveal icons (Edge, Safari, etc) */
+input::-ms-reveal,
+input::-ms-clear {
+    display: none !important;
+}
+
+input::-webkit-contacts-auto-fill-button,
+input::-webkit-credentials-auto-fill-button {
+    visibility: hidden;
+    display: none !important;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
 }
 
 .eye-toggle-btn:hover,
 .eye-toggle-btn:focus {
     color: #FF6B35;
     outline: none;
+}
+
+/* Remove Item Button Styling */
+.remove-item-btn {
+    background: #fff5f5;
+    color: #ef4444;
+    border: 1px solid #fee2e2;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0;
+}
+
+.remove-item-btn:hover {
+    background: #ef4444;
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.remove-item-btn:active {
+    transform: scale(0.95);
+}
+
+.remove-item-btn svg {
+    width: 16px;
+    height: 16px;
 }
 
 /* Select Location Prompt — shown when no area selected */
@@ -2559,42 +2684,126 @@ body {
 
 /* Extra scroll room so last selects aren't at viewport bottom */
 .add-shop-modal-body .form-section {
-    padding-bottom: 200px;
+    padding-bottom: 0; /* Removed extra space */
 }
 
 /* Select element base improvements */
 .form-group select {
-    appearance: auto;
-    -webkit-appearance: auto;
-    position: relative;
-    z-index: 2;
+    appearance: revert !important;
+    -webkit-appearance: revert !important;
     cursor: pointer;
     background-color: #fff;
+    position: relative;
+    z-index: 10; 
+    pointer-events: auto !important;
+    padding-right: 32px !important;
 }
 
-/* Ensure form sections don't clip dropdown */
-.form-section {
-    overflow: visible !important;
+/* Animation & Toast for Menu Updates */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* ========================================
-   Shop Card SVG Category Icon
-   ======================================== */
-.shop-emoji {
-    display: inline-flex;
+.new-item { 
+    animation: fadeIn 0.3s ease; 
+}
+
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #4CAF50;
+  color: white;
+  padding: 10px 24px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 9999;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  animation: fadeIn 0.3s ease;
+}
+
+.toast.error { 
+    background: #F44336; 
+}
+
+.error-msg {
+    color: #F44336;
+    font-size: 0.8rem;
+    margin-top: 4px;
+    animation: fadeIn 0.2s ease;
+}
+
+/* Form-specific Custom Select (to prevent native dropup) */
+.form-custom-select-container {
+    position: relative;
+    width: 100%;
+}
+
+.form-custom-select-trigger {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    background: #fff;
+    cursor: pointer;
+    display: flex;
     align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    background: linear-gradient(135deg, #fff5f0, #fef3c7);
-    border-radius: 10px;
-    color: #f97316;
-    flex-shrink: 0;
+    justify-content: space-between;
+    transition: border-color 0.3s;
+    user-select: none;
 }
 
-.shop-emoji svg {
-    width: 20px;
-    height: 20px;
+.form-custom-select-trigger:hover {
+    border-color: #ddd;
+}
+
+.form-custom-select-trigger.active {
+    border-color: #f97316;
+}
+
+.form-custom-select-options {
+    position: absolute;
+    top: 100%; /* Always open DOWN */
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 2px solid #f97316;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    display: none;
+    flex-direction: column;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.form-custom-select-options.active {
+    display: flex;
+}
+
+.form-custom-option {
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.form-custom-option:hover {
+    background: #fff7ed;
+    color: #f97316;
+}
+
+.form-custom-option.selected {
+    background: #fff7ed;
+    color: #f97316;
+    font-weight: 600;
 }
 
 /* Detail page icon */

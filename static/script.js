@@ -184,10 +184,17 @@ const dynamicTranslations = {
 };
 
 // Helper: translate dynamic content (shop names, menu items)
-function td(text) {
-    if (!text || currentLanguage === 'en') return text;
+// Helper: translate dynamic content (shop names, menu items)
+function td(text, obj = {}) {
+    if (!text) return '';
+    if (currentLanguage === 'en') return text;
+
+    // 1. Check for specific transliterations in the object itself
+    if (currentLanguage === 'ta' && (obj.itemNameTa || obj.nameTa)) return obj.itemNameTa || obj.nameTa;
+    if (currentLanguage === 'hi' && (obj.itemNameHi || obj.nameHi)) return obj.itemNameHi || obj.nameHi;
+    
+    // 2. Fallback to dictionary-based keyword replacement
     let translated = text;
-    // Iterate through dictionary and replace keywords
     for (const [enKey, translations] of Object.entries(dynamicTranslations)) {
         if (translations[currentLanguage]) {
             const regex = new RegExp(`\\b${enKey}\\b`, 'gi');
@@ -195,6 +202,15 @@ function td(text) {
         }
     }
     return translated;
+}
+
+// Translate a single stall's properties (useful for new items/updates)
+async function translateSingleStall(stall, lang) {
+    if (!stall || lang === 'en') return stall;
+    
+    // In this app, the backend already provides transliterations in itemNameTa/itemNameHi etc.
+    // This function can be a placeholder or used to ensure everything is mapped.
+    return stall;
 }
 
 
@@ -1507,40 +1523,96 @@ async function changeLanguage(lang) {
     updateNavigationLabels();
 }
 
-// Populate header location dropdowns
+// Populate header location dropdowns (Unified Single Box)
+// Populate header location dropdowns (Unified Custom Attractive Box - Clean Version)
 function updateHeaderLocationBar() {
-    const distSelect = document.getElementById('header-district-select');
-    const areaSelect = document.getElementById('header-area-select');
-    if (!distSelect || !areaSelect) return;
+    const trigger = document.getElementById('location-trigger');
+    const triggerText = document.getElementById('location-trigger-text');
+    const optionsContainer = document.getElementById('location-options');
+    if (!trigger || !optionsContainer) return;
 
-    distSelect.innerHTML = `<option value="">${t('district')}</option>` + 
-        Object.keys(tamilNaduDistricts).sort().map(d => `
-            <option value="${d}" ${selectedDistrict === d ? 'selected' : ''}>${getDistrictName(d)}</option>
-        `).join('');
+    // Update Trigger Text
+    if (selectedArea && selectedArea !== 'All Areas') {
+        triggerText.textContent = getAreaName(selectedArea);
+    } else if (selectedDistrict) {
+        triggerText.textContent = getDistrictName(selectedDistrict);
+    } else {
+        triggerText.textContent = t('district');
+    }
 
-    areaSelect.innerHTML = `<option value="All Areas">${t('allAreas')}</option>` + 
-        (tamilNaduDistricts[selectedDistrict] || []).sort().map(a => `
-            <option value="${a}" ${selectedArea === a ? 'selected' : ''}>${getAreaName(a)}</option>
+    // Build Options HTML
+    let optionsHTML = '';
+    if (!selectedDistrict) {
+        // Step 1: District Selection
+        optionsHTML = Object.keys(tamilNaduDistricts).sort().map(d => `
+            <div class="custom-option" onclick="handleLocationSelection('dist:${d}')">
+                ${getDistrictName(d)}
+            </div>
         `).join('');
+    } else {
+        // Step 2: Area Selection within the SAME box
+        const areas = tamilNaduDistricts[selectedDistrict] || [];
+        const districtName = getDistrictName(selectedDistrict);
+        
+        optionsHTML = `
+            <div class="custom-option back-option" onclick="handleLocationSelection('back')">
+                ✕ ${districtName}
+            </div>
+            <div class="custom-option ${(!selectedArea || selectedArea === 'All Areas') ? 'selected' : ''}" onclick="handleLocationSelection('area:All Areas')">
+                ${t('allAreas')}
+            </div>
+        ` + areas.sort().map(a => `
+            <div class="custom-option ${selectedArea === a ? 'selected' : ''}" onclick="handleLocationSelection('area:${a}')">
+                ${getAreaName(a)}
+            </div>
+        `).join('');
+    }
     
-    // Attach event listeners
-    distSelect.onchange = (e) => {
-        selectedDistrict = e.target.value;
+    optionsContainer.innerHTML = optionsHTML;
+
+    // Toggle Dropdown
+    trigger.onclick = (e) => {
+        e.stopPropagation();
+        optionsContainer.classList.toggle('active');
+    };
+}
+
+// Global handler for location selection
+window.handleLocationSelection = function(val) {
+    const optionsContainer = document.getElementById('location-options');
+    if (val === 'back') {
+        selectedDistrict = null;
+        selectedArea = null;
+        localStorage.removeItem('streetbite_district');
+        localStorage.removeItem('streetbite_area');
+    } else if (val.startsWith('dist:')) {
+        selectedDistrict = val.replace('dist:', '');
         selectedArea = 'All Areas';
         localStorage.setItem('streetbite_district', selectedDistrict);
         localStorage.setItem('streetbite_area', 'All Areas');
-        updateHeaderLocationBar();
-        if (currentPage === 'home') renderHomePage();
-        else if (currentPage === 'search') renderSearchPage();
-    };
-    
-    areaSelect.onchange = (e) => {
-        selectedArea = e.target.value;
+    } else if (val.startsWith('area:')) {
+        selectedArea = val.replace('area:', '');
         localStorage.setItem('streetbite_area', selectedArea);
-        if (currentPage === 'home') renderHomePage();
-        else if (currentPage === 'search') renderSearchPage();
-    };
-}
+    }
+    
+    updateHeaderLocationBar();
+    if (currentPage === 'home') renderHomePage();
+    else if (currentPage === 'search') renderSearchPage();
+    
+    // Keep open if picking district to show areas, else close
+    if (!val.startsWith('dist:')) {
+        if (optionsContainer) optionsContainer.classList.remove('active');
+    } else {
+        // Stay active to show areas immediately
+        if (optionsContainer) optionsContainer.classList.add('active');
+    }
+};
+
+// Close dropdown when clicking outside
+document.addEventListener('click', () => {
+    const optionsContainer = document.getElementById('location-options');
+    if (optionsContainer) optionsContainer.classList.remove('active');
+});
 window.changeLanguage = changeLanguage;
 
 // Initialize app
@@ -1548,6 +1620,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadLanguagePreference();
     setupNavigation();
     updateLocationButtonText();
+    updateHeaderLocationBar();
     initializeData();
 });
 
@@ -2023,16 +2096,23 @@ function renderAddShopPage() {
                         <div class="form-row">
                             <div class="form-group">
                                 <label>${t('district')} *</label>
-                                <select id="shop-district">
-                                    <option value="">${t('selectDistrict')}</option>
-                                    ${Object.keys(tamilNaduDistricts).map(d => `<option value="${d}">${getDistrictName(d)}</option>`).join('')}
-                                </select>
+                                <div class="form-custom-select-container" id="signup-district-custom">
+                                    <div class="form-custom-select-trigger" id="signup-district-trigger">
+                                        <span id="signup-district-text">${t('selectDistrict')}</span>
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+                                    </div>
+                                    <div class="form-custom-select-options" id="signup-district-options"></div>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label>${t('areaLocation')} *</label>
-                                <select id="shop-area">
-                                    <option value="">${t('selectArea')}</option>
-                                </select>
+                                <div class="form-custom-select-container" id="signup-area-custom">
+                                    <div class="form-custom-select-trigger" id="signup-area-trigger">
+                                        <span id="signup-area-text">${t('selectArea')}</span>
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+                                    </div>
+                                    <div class="form-custom-select-options" id="signup-area-options"></div>
+                                </div>
                             </div>
                         </div>
 
@@ -2054,12 +2134,22 @@ function renderAddShopPage() {
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> ${t('password')} *</label>
-                                <input type="text" id="shop-password" placeholder="${t('passwordPlaceholder')}" autocomplete="new-password">
+                                <label>${t('password')} *</label>
+                                <div class="password-wrapper">
+                                    <input type="password" id="shop-password" placeholder="${t('passwordPlaceholder')}" autocomplete="new-password">
+                                    <button class="eye-toggle-btn" type="button" tabindex="-1">
+                                        <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                    </button>
+                                </div>
                             </div>
                             <div class="form-group">
-                                <label><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> ${t('confirmPassword')} *</label>
-                                <input type="text" id="shop-password-confirm" placeholder="${t('confirmPasswordPlaceholder')}" autocomplete="new-password">
+                                <label>${t('confirmPassword')} *</label>
+                                <div class="password-wrapper">
+                                    <input type="password" id="shop-password-confirm" placeholder="${t('confirmPasswordPlaceholder')}" autocomplete="new-password">
+                                    <button class="eye-toggle-btn" type="button" tabindex="-1">
+                                        <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -2084,7 +2174,7 @@ function renderAddShopPage() {
                             <div class="added-menu-list" id="added-menu-list"></div>
                         </div>
 
-                        <button class="submit-btn" id="submit-shop" style="margin-top: 20px;">${t('listMyShop')}</button>
+                        <button class="submit-btn" id="submit-shop" style="margin-top: 20px; margin-bottom: 20px;">${t('listMyShop')}</button>
                     </div>
                 </div>
             </div>
@@ -2113,16 +2203,105 @@ function renderAddShopPage() {
     }
 
     renderMenuList();
+    setupPasswordToggles(modal);
 
-    // District → Area dropdown wiring
-    const shopDistrictSelect = modal.querySelector('#shop-district');
-    const shopAreaSelect = modal.querySelector('#shop-area');
-    shopDistrictSelect.addEventListener('change', () => {
-        const district = shopDistrictSelect.value;
-        const areas = tamilNaduDistricts[district] || [];
-        shopAreaSelect.innerHTML = `<option value="">${t('selectArea')}</option>` +
-            areas.map(a => `<option value="${a}">${getAreaName(a)}</option>`).join('');
+    // Custom Dropdown Logic for Signup (District & Area)
+    let signupSelectedDistrict = '';
+    let signupSelectedArea = '';
+
+    const districtTrigger = modal.querySelector('#signup-district-trigger');
+    const districtOptions = modal.querySelector('#signup-district-options');
+    const districtText = modal.querySelector('#signup-district-text');
+    
+    const areaTrigger = modal.querySelector('#signup-area-trigger');
+    const areaOptions = modal.querySelector('#signup-area-options');
+    const areaText = modal.querySelector('#signup-area-text');
+
+    // Populate District Options
+    function renderSignupDistrictOptions() {
+        districtOptions.innerHTML = Object.keys(tamilNaduDistricts).sort().map(d => `
+            <div class="form-custom-option" data-value="${d}">${getDistrictName(d)}</div>
+        `).join('');
+
+        districtOptions.querySelectorAll('.form-custom-option').forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                e.stopPropagation();
+                signupSelectedDistrict = opt.dataset.value;
+                districtText.textContent = getDistrictName(signupSelectedDistrict);
+                districtOptions.classList.remove('active');
+                districtTrigger.classList.remove('active');
+                
+                // Reset and populate Area
+                signupSelectedArea = '';
+                areaText.textContent = t('selectArea');
+                renderSignupAreaOptions();
+            });
+        });
+    }
+
+    function renderSignupAreaOptions() {
+        if (!signupSelectedDistrict) {
+            areaOptions.innerHTML = `<div class="form-custom-option disabled" style="color:#999;cursor:default;">${t('selectDistrictFirst')}</div>`;
+            return;
+        }
+        const areas = tamilNaduDistricts[signupSelectedDistrict] || [];
+        areaOptions.innerHTML = areas.sort().map(a => `
+            <div class="form-custom-option" data-value="${a}">${getAreaName(a)}</div>
+        `).join('');
+
+        areaOptions.querySelectorAll('.form-custom-option').forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                e.stopPropagation();
+                signupSelectedArea = opt.dataset.value;
+                areaText.textContent = getAreaName(signupSelectedArea);
+                areaOptions.classList.remove('active');
+                areaTrigger.classList.remove('active');
+            });
+        });
+    }
+
+    districtTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isActive = districtOptions.classList.contains('active');
+        // Close others
+        areaOptions.classList.remove('active');
+        areaTrigger.classList.remove('active');
+        
+        if (isActive) {
+            districtOptions.classList.remove('active');
+            districtTrigger.classList.remove('active');
+        } else {
+            districtOptions.classList.add('active');
+            districtTrigger.classList.add('active');
+        }
     });
+
+    areaTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isActive = areaOptions.classList.contains('active');
+        // Close others
+        districtOptions.classList.remove('active');
+        districtTrigger.classList.remove('active');
+
+        if (isActive) {
+            areaOptions.classList.remove('active');
+            areaTrigger.classList.remove('active');
+        } else {
+            areaOptions.classList.add('active');
+            areaTrigger.classList.add('active');
+        }
+    });
+
+    // Close on outside click
+    modal.addEventListener('click', () => {
+        districtOptions.classList.remove('active');
+        districtTrigger.classList.remove('active');
+        areaOptions.classList.remove('active');
+        areaTrigger.classList.remove('active');
+    });
+
+    renderSignupDistrictOptions();
+    renderSignupAreaOptions();
 
     // ✕ Close — hide modal (keep DOM intact so form data is preserved)
     // If user opens "Add Your Shop" again, data will still be there.
@@ -2159,8 +2338,8 @@ function renderAddShopPage() {
             console.log('[AddShop] Submit button clicked');
             const name = modal.querySelector('#shop-name').value.trim();
             const category = modal.querySelector('#shop-category').value;
-            const shopDistrict = modal.querySelector('#shop-district').value;
-            const area = modal.querySelector('#shop-area').value;
+            const district = signupSelectedDistrict;
+            const area = signupSelectedArea;
             const address = modal.querySelector('#shop-address').value.trim();
             const contact = modal.querySelector('#shop-contact').value.trim();
             const discount = modal.querySelector('#shop-discount').value.trim();
@@ -2169,9 +2348,9 @@ function renderAddShopPage() {
             const password = modal.querySelector('#shop-password').value;
             const confirmPassword = modal.querySelector('#shop-password-confirm').value;
 
-            console.log('[AddShop] Validation check...', { name, category, shopDistrict, area, contact });
+            console.log('[AddShop] Validation check...', { name, category, district, area, contact });
 
-            if (!name || !category || !shopDistrict || !area || !contact) {
+            if (!name || !category || !district || !area || !contact) {
                 showToast(t('fillRequired'), 'error');
                 return;
             }
@@ -2197,8 +2376,8 @@ function renderAddShopPage() {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        name, category, area, district: shopDistrict,
-                        address: address || `${area}, ${shopDistrict}, Tamil Nadu`,
+                        name, category, area, district,
+                        address: address || `${area}, ${district}, Tamil Nadu`,
                         contact, password,
                         open_time: openTime,
                         close_time: closeTime,
@@ -2233,7 +2412,7 @@ function renderAddShopPage() {
                 console.log('[AddShop] Registration success!');
                 modal.remove();
                 showToast(t('shopRegistered'), 'success');
-                await reloadStalls();
+                await loadStalls();
                 
                 // Go to home and mark Home nav active
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -2303,16 +2482,8 @@ function renderProfilePage() {
                     </div>
 
                     <h3 class="section-title" style="margin-top: 20px;">${t('menuAvailability')}</h3>
-                    <div class="menu-list">
-                        ${vendorShop.menu.map((item, index) => `
-                            <div class="menu-item">
-                                <div class="menu-item-info">
-                                    <div class="menu-item-name">${td(item.itemName, item)}</div>
-                                    <div class="menu-item-price">₹${item.price}</div>
-                                </div>
-                                <button class="availability-toggle ${item.available ? 'available' : 'unavailable'}" data-index="${index}">${item.available ? 'ON' : 'OFF'}</button>
-                            </div>
-                        `).join('')}
+                    <div class="menu-list" id="vendor-menu-list">
+                        <!-- Menu items rendered here -->
                     </div>
 
                     <!-- Add New Menu Item Section -->
@@ -2378,23 +2549,68 @@ function renderProfilePage() {
         updateDiscountBtn.addEventListener('click', updateDiscount);
         discountInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') updateDiscount(); });
 
-        // Menu availability toggles — API call
-        app.querySelectorAll('.availability-toggle').forEach(toggle => {
-            toggle.addEventListener('click', async () => {
-                const index = parseInt(toggle.dataset.index);
-                const newAvailable = !vendorShop.menu[index].available;
-                try {
-                    await fetch(`/api/stalls/${vendorShop.id}/menu-item`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ item_index: index, available: newAvailable })
-                    });
-                    vendorShop.menu[index].available = newAvailable;
-                    renderProfilePage();
-                    showToast(`${td(vendorShop.menu[index].itemName, vendorShop.menu[index])} is now ${newAvailable ? t('available') : t('unavailable')}`, 'success');
-                } catch (e) { showToast('Update failed', 'error'); }
+        // Sub-function to render ONLY the menu list
+        function renderVendorMenuList() {
+            const listContainer = app.querySelector('#vendor-menu-list');
+            if (!listContainer) return;
+
+            listContainer.innerHTML = vendorShop.menu.map((item, index) => `
+                <div class="menu-item" data-id="${item.id}">
+                    <div class="menu-item-info">
+                        <div class="menu-item-name">${td(item.itemName, item)}</div>
+                        <div class="menu-item-price">₹${item.price}</div>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <button class="availability-toggle ${item.available ? 'available' : 'unavailable'}" data-id="${item.id}">${item.available ? 'ON' : 'OFF'}</button>
+                        <button class="remove-item-btn" data-id="${item.id}" title="${t('removeItem')}">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Re-attach listeners for these buttons
+            listContainer.querySelectorAll('.availability-toggle').forEach(toggle => {
+                toggle.addEventListener('click', async () => {
+                    const itemId = parseInt(toggle.dataset.id);
+                    const item = vendorShop.menu.find(m => m.id === itemId);
+                    if (!item) return;
+                    const newAvailable = !item.available;
+                    try {
+                        const res = await fetch(`/api/stalls/${vendorShop.id}/menu-item`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ item_id: itemId, available: newAvailable })
+                        });
+                        const updated = await res.json();
+                        vendorShop = updated;
+                        renderVendorMenuList();
+                        showToast(`${td(item.itemName, item)} is now ${newAvailable ? t('available') : t('unavailable')}`, 'success');
+                        loadStalls();
+                    } catch (e) { showToast('Update failed', 'error'); }
+                });
             });
-        });
+
+            listContainer.querySelectorAll('.remove-item-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const itemId = parseInt(btn.dataset.id);
+                    try {
+                        const res = await fetch(`/api/stalls/${vendorShop.id}/menu-item`, {
+                            method: 'DELETE',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ item_id: itemId })
+                        });
+                        const updated = await res.json();
+                        vendorShop = updated;
+                        renderVendorMenuList();
+                        showToast('Item removed', 'success');
+                        loadStalls();
+                    } catch (e) { showToast('Failed to remove item', 'error'); }
+                });
+            });
+        }
+
+        renderVendorMenuList();
 
         // Logout
         app.querySelector('#logout-btn').addEventListener('click', () => {
@@ -2404,29 +2620,99 @@ function renderProfilePage() {
             showToast('Logged out', 'success');
         });
 
-        // Add new menu item — API call
-        app.querySelector('#add-new-item-btn').addEventListener('click', async () => {
-            const itemName = app.querySelector('#new-item-name').value.trim();
-            const price = parseInt(app.querySelector('#new-item-price').value);
-
-            if (!itemName || isNaN(price) || price <= 0) {
-                showToast('Please enter item name and price', 'error');
-                return;
+        // Add new menu item — Fixed implementation following 9-step requirement
+        const addNewItemBtn = app.querySelector('#add-new-item-btn');
+        addNewItemBtn.addEventListener('click', async () => {
+            const nameInput = app.querySelector('#new-item-name');
+            const priceInput = app.querySelector('#new-item-price');
+            const itemName = nameInput.value.trim();
+            const price = parseInt(priceInput.value);
+            
+            // Step 2: Validate item name and price
+            app.querySelectorAll('.error-msg').forEach(el => el.remove());
+            let hasError = false;
+            
+            if (!itemName) {
+                const err = document.createElement('div');
+                err.className = 'error-msg';
+                err.textContent = 'Item name is required';
+                nameInput.parentNode.appendChild(err);
+                hasError = true;
             }
+            if (isNaN(price) || price <= 0) {
+                const err = document.createElement('div');
+                err.className = 'error-msg';
+                err.textContent = 'Please enter a valid price';
+                priceInput.parentNode.appendChild(err);
+                hasError = true;
+            }
+            if (hasError) return;
+
+            addNewItemBtn.disabled = true;
+            addNewItemBtn.textContent = 'Adding...';
+
             try {
+                // Step 3: Send POST request to backend
                 const res = await fetch(`/api/stalls/${vendorShop.id}/menu`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ itemName, price, available: true })
                 });
+                
+                if (!res.ok) throw new Error('API Error');
+                
                 const updated = await res.json();
-                vendorShop.menu = updated.menu || vendorShop.menu;
-                vendorShop.menu.push({ itemName, price, available: true });
-                app.querySelector('#new-item-name').value = '';
-                app.querySelector('#new-item-price').value = '';
-                renderProfilePage();
-                showToast('New item added! <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>', 'success');
-            } catch (e) { showToast('Failed to add item', 'error'); }
+                vendorShop = updated;
+
+                // Step 5: Directly add to screen with animation (Optimistic/Direct DOM)
+                const listContainer = app.querySelector('#vendor-menu-list');
+                const newItem = vendorShop.menu[vendorShop.menu.length - 1];
+                
+                const itemEl = document.createElement('div');
+                itemEl.className = 'menu-item new-item'; // Step 6: Smooth fade-in
+                itemEl.dataset.id = newItem.id;
+                itemEl.innerHTML = `
+                    <div class="menu-item-info">
+                        <div class="menu-item-name">${td(newItem.itemName, newItem)}</div>
+                        <div class="menu-item-price">₹${newItem.price}</div>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <button class="availability-toggle available" data-id="${newItem.id}">ON</button>
+                        <button class="remove-item-btn" data-id="${newItem.id}" title="${t('removeItem')}">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                        </button>
+                    </div>
+                `;
+                listContainer.appendChild(itemEl);
+                
+                // Re-attach listeners just for this new element or refresh list logic
+                // For simplicity and correctness, we refresh the list after a tiny delay
+                // but the element is already there instantly.
+                setTimeout(() => renderVendorMenuList(), 1000); 
+
+                // Step 7: Clear inputs
+                nameInput.value = '';
+                priceInput.value = '';
+                
+                // Step 8: Show green toast
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.textContent = 'Item added successfully';
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 2000);
+
+                loadStalls(); // Background sync
+            } catch (e) { 
+                // Step 9: Show red error toast, don't clear inputs
+                const toast = document.createElement('div');
+                toast.className = 'toast error';
+                toast.textContent = 'Failed to add item. Please try again';
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            } finally {
+                addNewItemBtn.disabled = false;
+                addNewItemBtn.textContent = t('addItemToMenu');
+            }
         });
 
         // Custom translation-friendly Confirm
@@ -2458,7 +2744,12 @@ function renderProfilePage() {
                 <div style="background:white; width:90%; max-width:380px; padding:30px; border-radius:28px; box-shadow:0 20px 50px rgba(0,0,0,0.3); transform:translateY(0); animation:modalSlideUp 0.3s ease-out;">
                     <h3 class="section-title" style="margin-top:0; color:#dc2626; justify-content:center;">${t('confirmPassword')}</h3>
                     <p style="margin-bottom:16px; line-height:1.6; color:#444; text-align:center;">${msg}</p>
-                    <input type="password" id="modal-pwd" class="search-input" style="margin-bottom:20px; text-align:center;" placeholder="${t('passwordPlaceholder')}">
+                    <div class="password-wrapper" style="margin-bottom:20px;">
+                        <input type="password" id="modal-pwd" class="search-input" style="text-align:center;" placeholder="${t('passwordPlaceholder')}">
+                        <button class="eye-toggle-btn" type="button" tabindex="-1">
+                            <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                        </button>
+                    </div>
                     <div style="display:flex; gap:12px;">
                         <button class="submit-btn" style="background:#eee; color:#333; margin:0; flex:1;" id="modal-cancel">${t('cancel')}</button>
                         <button class="submit-btn" style="background:#dc2626; margin:0; flex:1;" id="modal-ok">${t('ok')}</button>
@@ -2504,7 +2795,7 @@ function renderProfilePage() {
                     localStorage.removeItem('vendorShopId');
                     localStorage.removeItem('vendorContact');
                     localStorage.removeItem('vendorPassword');
-                    await reloadStalls();
+                    await loadStalls();
                     renderProfilePage();
                     showToast(t('shopDeleted'), 'success');
                 } else {
@@ -2571,9 +2862,9 @@ function renderProfilePage() {
                     <div class="form-group">
                         <label>${t('language')}</label>
                         <select id="language-select" onchange="changeLanguage(this.value)">
-                            <option value="en" ${currentLanguage === 'en' ? 'selected' : ''}>🇬🇧 ${t('english')}</option>
-                            <option value="ta" ${currentLanguage === 'ta' ? 'selected' : ''}>🇮🇳 ${t('tamil')}</option>
-                            <option value="hi" ${currentLanguage === 'hi' ? 'selected' : ''}>🇮🇳 ${t('hindi')}</option>
+                            <option value="en" ${currentLanguage === 'en' ? 'selected' : ''}>${t('english')}</option>
+                            <option value="ta" ${currentLanguage === 'ta' ? 'selected' : ''}>${t('tamil')}</option>
+                            <option value="hi" ${currentLanguage === 'hi' ? 'selected' : ''}>${t('hindi')}</option>
                         </select>
                     </div>
 
@@ -2584,8 +2875,13 @@ function renderProfilePage() {
                         </div>
 
                         <div class="form-group">
-                            <label><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> ${t('password')}</label>
-                            <input type="text" id="vendor-password" placeholder="${t('vendorPasswordPlaceholder')}" autocomplete="current-password">
+                            <label>${t('password')}</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="vendor-password" placeholder="${t('vendorPasswordPlaceholder')}" autocomplete="current-password">
+                                <button class="eye-toggle-btn" type="button" tabindex="-1">
+                                    <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                </button>
+                            </div>
                         </div>
 
                         <button class="submit-btn" id="vendor-login-btn">${t('login')}</button>
@@ -2600,6 +2896,8 @@ function renderProfilePage() {
                 </div>
             </div>
         `;
+
+        setupPasswordToggles(app);
 
         // "Add Your Shop" button
         app.querySelector('#add-shop-from-profile').addEventListener('click', () => {
@@ -2771,9 +3069,9 @@ function renderDistrictList() {
     list.innerHTML = districts.map(district => `
         <div class="location-item ${selectedDistrict === district ? 'selected' : ''}" onclick="selectDistrictItem('${district}')">
             <div class="location-item-left">
-                <span class="location-item-emoji"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></span>
                 <div>
                     <div class="location-item-name">${getDistrictName(district)}</div>
+                    ${currentLanguage !== 'en' ? `<div class="location-item-sub">${district}</div>` : ''}
                 </div>
             </div>
             <span class="location-item-arrow">→</span>
@@ -2787,6 +3085,7 @@ function selectDistrictItem(district) {
     selectedArea = null;
     localStorage.removeItem('streetbite_area');
 
+    updateHeaderLocationBar();
     locationStep = 'area';
     renderAreaList(district);
 }
@@ -2809,7 +3108,6 @@ function renderAreaList(district) {
     let itemsHTML = `
         <div class="location-item ${selectedArea === 'All Areas' || !selectedArea ? 'selected' : ''}" onclick="selectAreaItem('All Areas')">
             <div class="location-item-left">
-                <span class="location-item-emoji"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></span>
                 <span class="location-item-name">${t('allAreas')}</span>
             </div>
             <span class="location-item-arrow">✓</span>
@@ -2819,9 +3117,9 @@ function renderAreaList(district) {
     itemsHTML += areas.map(area => `
         <div class="location-item ${selectedArea === area ? 'selected' : ''}" onclick="selectAreaItem('${area.replace(/'/g, "\\'")}')">
             <div class="location-item-left">
-                <span class="location-item-emoji"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
                 <div>
                     <div class="location-item-name">${getAreaName(area)}</div>
+                    ${currentLanguage !== 'en' && getAreaName(area) !== area ? `<div class="location-item-sub">${area}</div>` : ''}
                 </div>
             </div>
             <span class="location-item-arrow">${selectedArea === area ? '✓' : '→'}</span>
@@ -2837,6 +3135,7 @@ function selectAreaItem(area) {
 
     closeLocationPicker();
     updateLocationButtonText();
+    updateHeaderLocationBar();
 
     // Re-render current page with location filter
     if (currentPage === 'home') {
@@ -2869,7 +3168,6 @@ function filterLocationList() {
         list.innerHTML = districts.map(district => `
             <div class="location-item ${selectedDistrict === district ? 'selected' : ''}" onclick="selectDistrictItem('${district}')">
                 <div class="location-item-left">
-                    <span class="location-item-emoji"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></span>
                     <div>
                         <div class="location-item-name">${getDistrictName(district)}</div>
                         ${currentLanguage !== 'en' ? `<div class="location-item-sub">${district}</div>` : ''}
@@ -2894,7 +3192,6 @@ function filterLocationList() {
             itemsHTML += `
                 <div class="location-item ${selectedArea === 'All Areas' || !selectedArea ? 'selected' : ''}" onclick="selectAreaItem('All Areas')">
                     <div class="location-item-left">
-                        <span class="location-item-emoji"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></span>
                         <span class="location-item-name">${t('allAreas')}</span>
                     </div>
                     <span class="location-item-arrow">✓</span>
@@ -2905,7 +3202,6 @@ function filterLocationList() {
         itemsHTML += areas.map(area => `
             <div class="location-item ${selectedArea === area ? 'selected' : ''}" onclick="selectAreaItem('${area.replace(/'/g, "\\'")}')">
                 <div class="location-item-left">
-                    <span class="location-item-emoji"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
                     <div>
                         <div class="location-item-name">${getAreaName(area)}</div>
                         ${currentLanguage !== 'en' && getAreaName(area) !== area ? `<div class="location-item-sub">${area}</div>` : ''}
@@ -2923,23 +3219,53 @@ function filterLocationList() {
     }
 }
 
+// Password Visibility Toggle Logic
+function setupPasswordToggles(container) {
+    const wrappers = container.querySelectorAll('.password-wrapper');
+    wrappers.forEach(wrapper => {
+        const input = wrapper.querySelector('input');
+        const btn = wrapper.querySelector('.eye-toggle-btn');
+        if (!input || !btn) return;
+
+        // Use the standard 'eye' icon as the toggler
+        const eyeIconHTML = `
+            <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+        `;
+        btn.innerHTML = eyeIconHTML;
+
+        // Only show button if input is not empty
+        input.addEventListener('input', () => {
+            if (input.value.length > 0) {
+                btn.style.display = 'block';
+            } else {
+                btn.style.display = 'none';
+            }
+        });
+
+        // Initial check for pre-filled values
+        if (input.value.length > 0) {
+            btn.style.display = 'block';
+        }
+
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            
+            // Note: Keeping the same icon for both states as per previous "one icon" request.
+        });
+    });
+}
+
 // Expose location functions globally
 window.openLocationPicker = openLocationPicker;
 window.closeLocationPicker = closeLocationPicker;
 window.selectDistrictItem = selectDistrictItem;
 window.selectAreaItem = selectAreaItem;
-window.goBackToDistricts = goBackToDistricts;// Home page dropdown handlers
-function onHomeDistrictChange(district) {
-    selectedDistrict = district;
-    selectedArea = 'All Areas';
-    localStorage.setItem('streetbite_district', district);
-    localStorage.setItem('streetbite_area', 'All Areas');
-    renderHomePage();
-}
-
-function onHomeAreaChange(area) {
-    selectedArea = area;
-    localStorage.setItem('streetbite_area', area);
-    renderHomePage();
-}
+window.filterLocationList = filterLocationList;
 window.filterLocationList = filterLocationList;
