@@ -1,13 +1,24 @@
 from flask import Flask, send_from_directory, jsonify, request
 from flask_cors import CORS
 import os
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 from database import db
 from transliteration_service import transliterate
 from concurrent.futures import ThreadPoolExecutor
 
 app = Flask(__name__, static_folder='static')
-CORS(app)  # Enable CORS for API requests
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"]
+)
+CORS(app, origins=[
+    "https://streetbite-1.onrender.com",
+    "http://localhost:5000",
+    "http://127.0.0.1:5000"
+])
 
 # For fast parallel transliteration during signup
 executor = ThreadPoolExecutor(max_workers=10)
@@ -130,6 +141,11 @@ def add_review(stall_id):
 def update_status(stall_id):
     """Update stall open/closed status."""
     status_data = request.json
+    contact = status_data.get('contact')
+    password = status_data.get('password')
+
+    if not db.vendor_login(stall_id, contact, password):
+        return jsonify({'error': 'Authentication failed'}), 401
 
     if 'status' not in status_data:
         return jsonify({'error': 'Status is required'}), 400
@@ -141,6 +157,11 @@ def update_status(stall_id):
 def update_discount(stall_id):
     """Update stall's today discount."""
     discount_data = request.json
+    contact = discount_data.get('contact')
+    password = discount_data.get('password')
+
+    if not db.vendor_login(stall_id, contact, password):
+        return jsonify({'error': 'Authentication failed'}), 401
 
     discount = discount_data.get('discount')
     stall = db.update_stall_discount(stall_id, discount, public=False)
@@ -150,6 +171,12 @@ def update_discount(stall_id):
 def update_menu(stall_id):
     """Update entire menu for a stall."""
     menu_data = request.json
+    contact = menu_data.get('contact')
+    password = menu_data.get('password')
+
+    if not db.vendor_login(stall_id, contact, password):
+        return jsonify({'error': 'Authentication failed'}), 401
+
     if 'menu' not in menu_data:
         return jsonify({'error': 'Menu data is required'}), 400
 
@@ -178,6 +205,12 @@ def add_menu_item_post(stall_id):
 def menu_item_handler(stall_id):
     """POST: add menu item. PUT: toggle availability. DELETE: remove item by item_index."""
     item_data = request.json
+    contact = item_data.get('contact')
+    password = item_data.get('password')
+
+    if not db.vendor_login(stall_id, contact, password):
+        return jsonify({'error': 'Authentication failed'}), 401
+
     if request.method == 'PUT':
         # Toggle availability: body = {item_id, available}
         item_id = item_data.get('item_id')
@@ -204,6 +237,7 @@ def menu_item_handler(stall_id):
         return jsonify(stall)
 
 @app.route('/api/stalls/<int:stall_id>/vendor-login', methods=['POST'])
+@limiter.limit("5 per minute")
 def vendor_login(stall_id):
     """Verify vendor login credentials (contact + password)."""
     login_data = request.json
@@ -233,6 +267,7 @@ def delete_stall(stall_id):
     return jsonify({'success': False, 'error': message}), 401
 
 @app.route('/api/vendor-login', methods=['POST'])
+@limiter.limit("5 per minute")
 def vendor_login_by_contact():
     """Vendor login using mobile number + password only (no shop ID required)."""
     login_data = request.json

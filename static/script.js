@@ -2674,7 +2674,11 @@ function renderProfilePage() {
                     const res = await fetch(`/api/stalls/${vendorShop.id}/status`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ status: newStatus })
+                        body: JSON.stringify({ 
+                            status: newStatus,
+                            contact: localStorage.getItem('vendorContact'),
+                            password: vendorShop._sessionPwd || ''
+                        })
                     });
                     const data = await res.json();
                     vendorShop.status = newStatus;
@@ -2702,7 +2706,11 @@ function renderProfilePage() {
                 await fetch(`/api/stalls/${vendorShop.id}/discount`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ discount: discount || null })
+                    body: JSON.stringify({ 
+                        discount: discount || null,
+                        contact: localStorage.getItem('vendorContact'),
+                        password: vendorShop._sessionPwd || ''
+                    })
                 });
                 vendorShop.todayDiscount = discount || null;
                 showToast(t('offerUpdated'), 'success');
@@ -2743,7 +2751,12 @@ function renderProfilePage() {
                         const res = await fetch(`/api/stalls/${vendorShop.id}/menu-item`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ item_id: itemId, available: newAvailable })
+                            body: JSON.stringify({ 
+                                item_id: itemId, 
+                                available: newAvailable,
+                                contact: localStorage.getItem('vendorContact'),
+                                password: vendorShop._sessionPwd || ''
+                            })
                         });
                         const updated = await res.json();
                         vendorShop = updated;
@@ -2819,7 +2832,11 @@ function renderProfilePage() {
                 const res = await fetch(`/api/stalls/${vendorShop.id}/menu-item`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ itemName, price, available: true })
+                    body: JSON.stringify({ 
+                        itemName, price, available: true,
+                        contact: localStorage.getItem('vendorContact'),
+                        password: vendorShop._sessionPwd || ''
+                    })
                 });
                 
                 if (!res.ok) throw new Error('API Error');
@@ -3026,6 +3043,13 @@ function renderProfilePage() {
     } else {
         // Login form — check for persistent login via API
         const savedShopId = localStorage.getItem('vendorShopId');
+        const loginTime = localStorage.getItem('vendorLoginTime');
+        const sevenDays = 7 * 24 * 60 * 60 * 1000;
+        if (loginTime && Date.now() - loginTime > sevenDays) {
+            localStorage.removeItem('vendorShopId');
+            localStorage.removeItem('vendorContact');
+            localStorage.removeItem('vendorLoginTime');
+        }
         const savedContact = localStorage.getItem('vendorContact');
         const savedPassword = localStorage.getItem('vendorPassword');
 
@@ -3149,8 +3173,10 @@ function renderProfilePage() {
                 const data = await res.json();
                 if (res.ok && data.success) {
                     vendorShop = data.stall;
+                    vendorShop._sessionPwd = password;
                     vendorShop.contact = contact; // keep contact in memory for delete/actions
                     localStorage.setItem('vendorShopId', vendorShop.id);
+                    localStorage.setItem('vendorLoginTime', Date.now());
                     localStorage.setItem('vendorContact', contact);
                     
                     // Ensure it is transliterated for the dashboard
