@@ -963,6 +963,8 @@ const translations = {
         toggleOpen: 'Open',
         toggleClosed: 'Closed',
         selectLocation: 'Select Location',
+        selectYourLocation: 'Select Your Location',
+        selectLocationDesc: 'Use the District and Area dropdowns in the header to find street food shops near you!',
         selectDistrict: 'Select Your District',
         selectArea: 'Select Area in',
         changeLocation: 'Change',
@@ -1106,6 +1108,8 @@ const translations = {
         toggleOpen: 'திறந்திருக்கிறது',
         toggleClosed: 'மூடியிருக்கிறது',
         selectLocation: 'இடம் தேர்வு',
+        selectYourLocation: 'உங்கள் இடத்தைத் தேர்ந்தெடுக்கவும்',
+        selectLocationDesc: 'உங்களுக்கு அருகிலுள்ள தெரு உணவுக் கடைகளைக் கண்டறிய ஹெடரில் உள்ள மாவட்டம் மற்றும் பகுதி தேர்வுகளைப் பயன்படுத்தவும்!',
         selectDistrict: 'மாவட்டம் தேர்வு',
         selectArea: 'பகுதி தேர்வு -',
         changeLocation: 'மாற்று',
@@ -1249,6 +1253,8 @@ const translations = {
         toggleOpen: 'खुला है',
         toggleClosed: 'बंद है',
         selectLocation: 'स्थान चुनें',
+        selectYourLocation: 'अपना स्थान चुनें',
+        selectLocationDesc: 'अपने आस-पास की स्ट्रीट फूड दुकानों को खोजने के लिए हेडर में जिला और क्षेत्र ड्रॉपडाउन का उपयोग करें!',
         selectDistrict: 'अपना जिला चुनें',
         selectArea: 'क्षेत्र चुनें -',
         changeLocation: 'बदलें',
@@ -1610,7 +1616,7 @@ function updateHeaderLocationBar() {
     } else if (selectedDistrict) {
         triggerText.textContent = getDistrictName(selectedDistrict);
     } else {
-        triggerText.textContent = t('district');
+        triggerText.textContent = t('selectLocation');
     }
 
     // Build Options HTML
@@ -1818,8 +1824,8 @@ function renderHomePage() {
             ` : `
             <div class="select-location-prompt">
                 <div class="prompt-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
-                <h3 class="prompt-title">Select Your Location</h3>
-                <p class="prompt-desc">Use the District and Area dropdowns in the header to find street food shops near you!</p>
+                <h3 class="prompt-title">${t('selectYourLocation')}</h3>
+                <p class="prompt-desc">${t('selectLocationDesc')}</p>
             </div>
             `}
         </div>
