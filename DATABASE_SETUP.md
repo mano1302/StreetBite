@@ -19,7 +19,7 @@ pip install -r requirements.txt
 python init_db.py
 ```
 
-This creates `stalls.db` and imports your existing data from `data/stalls.json`.
+This creates `streetbite_clean.db` and imports your existing data from `data/stalls.json`.
 
 ### Step 3: Run the App
 
@@ -96,7 +96,7 @@ street-food-tracker/
 ├── database.py         # Database abstraction layer
 ├── init_db.py          # Database initialization script
 ├── requirements.txt    # Python dependencies
-├── stalls.db           # SQLite database (created automatically)
+├── streetbite_clean.db           # SQLite database (created automatically)
 ├── data/
 │   └── stalls.json     # Original JSON data (backup)
 └── static/
@@ -131,7 +131,7 @@ street-food-tracker/
 
 ### Database locked error (SQLite)
 - Close any other processes using the database
-- Delete `stalls.db` and re-run `python init_db.py`
+- Delete `streetbite_clean.db` and re-run `python init_db.py`
 
 ## Why SQLite → PostgreSQL?
 

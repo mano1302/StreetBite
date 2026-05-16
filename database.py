@@ -29,7 +29,7 @@ class Database:
         self.is_postgresql = bool(self.db_url) and PSYCOPG2_AVAILABLE
         # SQLite fallback: use local directory
         data_dir = os.path.dirname(__file__)
-        self.sqlite_path = os.path.join(data_dir, 'stalls.db')
+        self.sqlite_path = os.path.join(data_dir, 'streetbite_clean.db')
         self._init_db()
 
     # ------------------------------------------------------------------
