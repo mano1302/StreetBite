@@ -99,7 +99,7 @@ class Database:
                 password_hash TEXT,
                 open_time TEXT,
                 close_time TEXT,
-                status TEXT DEFAULT 'closed',
+                status TEXT DEFAULT 'auto',
                 rating REAL DEFAULT 0,
                 total_reviews INTEGER DEFAULT 0,
                 today_discount TEXT,
@@ -168,7 +168,7 @@ class Database:
                 password_hash TEXT,
                 open_time TEXT,
                 close_time TEXT,
-                status TEXT DEFAULT 'closed',
+                status TEXT DEFAULT 'auto',
                 rating REAL DEFAULT 0,
                 total_reviews INTEGER DEFAULT 0,
                 today_discount TEXT,
@@ -391,7 +391,7 @@ class Database:
                 stall_data.get('password_hash'),
                 stall_data.get('open_time', stall_data.get('openTime', '09:00')),
                 stall_data.get('close_time', stall_data.get('closeTime', '22:00')),
-                stall_data.get('status', 'closed'),
+                stall_data.get('status', 'auto'),
                 0,
                 0,
                 stall_data.get('today_discount', stall_data.get('todayDiscount'))
@@ -599,7 +599,7 @@ class Database:
                 'contact': stall['contact'],
                 'open_time': stall.get('openTime', '09:00'),
                 'close_time': stall.get('closeTime', '22:00'),
-                'status': stall.get('status', 'closed'),
+                'status': stall.get('status', 'auto'),
                 'today_discount': stall.get('todayDiscount'),
                 'menu': stall.get('menu', [])
             })

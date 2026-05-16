@@ -856,6 +856,7 @@ async function initializeData() {
         // Only re-render grid if user is on home or search — don't interrupt other pages
         if (currentPage === 'home') renderHomePage();
         else if (currentPage === 'search') renderShopGrid();
+        else if (currentPage === 'profile') renderProfilePage();
     }, 30000);
 }
 
@@ -1023,7 +1024,15 @@ const translations = {
         deleting: 'Deleting...',
         ok: 'OK',
         cancel: 'Cancel',
-        soldOut: 'Sold Out'
+        soldOut: 'Sold Out',
+        statusAuto: 'Auto',
+        statusOpen: 'Open',
+        statusClosed: 'Closed',
+        statusLeave: 'On Leave',
+        shopOnLeave: 'Shop is on Leave',
+        shopNowAuto: 'Status set to Auto',
+        shopNowLeave: 'Status set to On Leave',
+        onLeave: 'On Leave'
     },
     ta: {
         appName: 'ஸ்ட்ரீட்பைட்',
@@ -1168,7 +1177,15 @@ const translations = {
         deleting: 'நீக்கப்படுகிறது...',
         ok: 'சரி',
         cancel: 'ரத்து',
-        soldOut: 'முடிந்துவிட்டது'
+        soldOut: 'முடிந்துவிட்டது',
+        statusAuto: 'தானியங்கி',
+        statusOpen: 'திறந்திருக்கிறது',
+        statusClosed: 'மூடியிருக்கிறது',
+        statusLeave: 'விடுமுறையில்',
+        shopOnLeave: 'கடை விடுமுறையில் உள்ளது',
+        shopNowAuto: 'நிலை தானியங்கிக்கு மாற்றப்பட்டது',
+        shopNowLeave: 'நிலை விடுமுறைக்கு மாற்றப்பட்டது',
+        onLeave: 'விடுமுறையில்'
     },
     hi: {
         appName: 'स्ट्रीटबाइट',
@@ -1313,7 +1330,15 @@ const translations = {
         deleting: 'हटाया जा रहा है...',
         ok: 'ठीक है',
         cancel: 'रद्द करें',
-        soldOut: 'खत्म हो गया'
+        soldOut: 'खत्म हो गया',
+        statusAuto: 'ऑटो',
+        statusOpen: 'खुला है',
+        statusClosed: 'बंद है',
+        statusLeave: 'छुट्टी पर',
+        shopOnLeave: 'दुकान छुट्टी पर है',
+        shopNowAuto: 'स्थिति ऑटो पर सेट है',
+        shopNowLeave: 'स्थिति छुट्टी पर सेट है',
+        onLeave: 'छुट्टी पर'
     }
 };
 
@@ -1346,6 +1371,48 @@ function formatTime12Hour(time24) {
 // Get translation
 function t(key) {
     return translations[currentLanguage][key] || translations['en'][key] || key;
+}
+
+// Check if shop is currently open based on status mode and timing
+function isShopOpen(stall) {
+    if (!stall) return false;
+    if (stall.status === 'open') return true;
+    if (stall.status === 'closed' || stall.status === 'leave') return false;
+    
+    // Auto mode: check timing
+    if (stall.status === 'auto' || !stall.status) {
+        const now = new Date();
+        const currentH = now.getHours();
+        const currentM = now.getMinutes();
+        const currentTime = currentH * 60 + currentM;
+
+        const [openH, openM] = (stall.openTime || '09:00').split(':').map(Number);
+        const [closeH, closeM] = (stall.closeTime || '22:00').split(':').map(Number);
+        
+        const openTime = openH * 60 + openM;
+        const closeTime = closeH * 60 + closeM;
+
+        if (closeTime > openTime) {
+            return currentTime >= openTime && currentTime < closeTime;
+        } else {
+            // Overnights
+            return currentTime >= openTime || currentTime < closeTime;
+        }
+    }
+    return false;
+}
+
+// Get status label and color class
+function getShopStatusInfo(stall) {
+    const open = isShopOpen(stall);
+    if (stall.status === 'leave') {
+        return { label: t('onLeave'), class: 'leave', icon: '✕ ' };
+    }
+    return {
+        label: open ? t('open') : t('closed'),
+        class: open ? 'open' : 'closed',
+        icon: open ? '✓ ' : '✕ '
+    };
 }
 
 // Helper: render a category tab button with SVG icon
@@ -1917,7 +1984,7 @@ function renderShopGrid() {
             <span class="shop-category">${getCategoryName(stall.category)}</span>
             <div class="shop-area"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${td(stall.area, stall)}</div>
             <div>
-                <span class="shop-status ${stall.status}">${stall.status === 'open' ? '✓ ' + t('open') : '✕ ' + t('closed')}</span>
+                <span class="shop-status ${getShopStatusInfo(stall).class}">${getShopStatusInfo(stall).icon}${getShopStatusInfo(stall).label}</span>
                 <span class="shop-rating"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#fbbf24;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> ${(stall.rating || 0).toFixed(1)} (${stall.totalReviews || 0})</span>
             </div>
             ${stall.todayDiscount ? `<div class="shop-discount"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#22c55e;"><polyline points="20 6 9 17 4 12"/></svg> ${td(stall.todayDiscount, stall)}</div>` : ''}
@@ -2004,9 +2071,9 @@ function renderShopDetailPage(stall) {
                 </div>
                 <div class="detail-category">${getCategoryName(stall.category)}</div>
 
-                <div class="status-banner ${stall.status}">
+                <div class="status-banner ${getShopStatusInfo(stall).class}">
                     <span class="status-dot"></span>
-                    <span>${isOpen ? t('openNow') : t('closed')}</span>
+                    <span>${getShopStatusInfo(stall).label}</span>
                     <span>• ${openTime12} - ${closeTime12}</span>
                 </div>
 
@@ -2036,7 +2103,7 @@ function renderShopDetailPage(stall) {
             <h3 class="section-title">${t('menu')}</h3>
             <div class="menu-list">
                 ${stall.menu.map(item => {
-                    const itemAvailable = isOpen ? item.available : false;
+                    const itemAvailable = isShopOpen(stall) ? item.available : false;
                     return `
                     <div class="menu-item ${!itemAvailable ? 'menu-item-unavailable' : ''}">
                         <div class="menu-item-info">
@@ -2545,15 +2612,29 @@ function renderProfilePage() {
                     <p style="color: #666; margin-bottom: 20px;">${td(vendorShop.area, vendorShop)}</p>
                     <p style="font-size: 0.85rem; color: #888; margin-bottom: 15px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${openTime12} - ${closeTime12}</p>
 
-                    <div class="status-control-card ${vendorShop.status}">
+                    <div class="status-control-card">
                         <div class="status-label-group">
                             <h4 class="status-main-label">${t('shopStatus')}</h4>
-                            <p class="status-sub-label">${isOpen ? t('yourShopIsCurrentlyOpen') : t('yourShopIsCurrentlyClosed')}</p>
+                            <span class="status-sub-label">${getShopStatusInfo(vendorShop).label}</span>
                         </div>
-                        <button class="status-toggle-pill ${vendorShop.status}" id="status-toggle">
-                            <span class="status-indicator"></span>
-                            <span class="status-toggle-text">${isOpen ? t('open') : t('closed')}</span>
-                        </button>
+                        <div class="status-modes">
+                            <button class="mode-btn ${vendorShop.status === 'auto' ? 'active' : ''}" data-mode="auto">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span>${t('statusAuto')}</span>
+                            </button>
+                            <button class="mode-btn ${vendorShop.status === 'open' ? 'active' : ''}" data-mode="open">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                <span>${t('statusOpen')}</span>
+                            </button>
+                            <button class="mode-btn ${vendorShop.status === 'closed' ? 'active' : ''}" data-mode="closed">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                                <span>${t('statusClosed')}</span>
+                            </button>
+                            <button class="mode-btn ${vendorShop.status === 'leave' ? 'active' : ''}" data-mode="leave">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 2v4M8 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>
+                                <span>${t('statusLeave')}</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -2593,21 +2674,32 @@ function renderProfilePage() {
             </div>
         `;
 
-        // Status toggle — API call
-        app.querySelector('#status-toggle').addEventListener('click', async () => {
-            const newStatus = vendorShop.status === 'open' ? 'closed' : 'open';
-            try {
-                const res = await fetch(`/api/stalls/${vendorShop.id}/status`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: newStatus })
-                });
-                const data = await res.json();
-                vendorShop.status = newStatus;
-                await reloadStalls();
-                renderProfilePage();
-                showToast(newStatus === 'open' ? t('shopNowOpen') : t('shopNowClosed'), 'success');
-            } catch (e) { showToast(t('updateFailed'), 'error'); }
+        // Status mode selection — API call
+        app.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const newStatus = btn.dataset.mode;
+                if (vendorShop.status === newStatus) return;
+
+                try {
+                    const res = await fetch(`/api/stalls/${vendorShop.id}/status`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: newStatus })
+                    });
+                    const data = await res.json();
+                    vendorShop.status = newStatus;
+                    await reloadStalls();
+                    renderProfilePage();
+                    
+                    let toastMsg = t('updateFailed');
+                    if (newStatus === 'auto') toastMsg = t('shopNowAuto');
+                    else if (newStatus === 'open') toastMsg = t('shopNowOpen');
+                    else if (newStatus === 'closed') toastMsg = t('shopNowClosed');
+                    else if (newStatus === 'leave') toastMsg = t('shopNowLeave');
+                    
+                    showToast(toastMsg, 'success');
+                } catch (e) { showToast(t('updateFailed'), 'error'); }
+            });
         });
 
         // Discount update — API call

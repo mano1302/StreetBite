@@ -39,7 +39,7 @@ def add_stall():
     """Add a new stall (admin/internal use). For public registration use /api/stalls/signup."""
     stall_data = request.json
     if 'status' not in stall_data:
-        stall_data['status'] = 'closed'
+        stall_data['status'] = 'auto'
     if 'openTime' not in stall_data:
         stall_data['openTime'] = '09:00'
     if 'closeTime' not in stall_data:
@@ -71,7 +71,7 @@ def signup_stall():
         'Snacks': '🍿', 'Others': '🍽️'
     }
     stall_data['emoji'] = emoji_map.get(stall_data.get('category', ''), '🍽️')
-    stall_data['status'] = 'closed'
+    stall_data['status'] = 'auto'
     
     # Safe transliteration (Optimized with Parallel Execution)
     try:
