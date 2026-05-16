@@ -1329,9 +1329,11 @@ body {
 
 
 .availability-toggle {
-    width: 50px;
-    height: 28px;
-    border-radius: 14px;
+    min-width: 56px;
+    width: auto;
+    padding: 0 10px;
+    height: 30px;
+    border-radius: 15px;
     border: none;
     cursor: pointer;
     transition: all 0.3s;
@@ -1341,6 +1343,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    white-space: nowrap;
 }
 
 .availability-toggle.available {
@@ -1786,44 +1789,113 @@ body {
     box-shadow: 0 2px 8px rgba(114, 28, 36, 0.2);
 }
 
-/* Simple and attractive toggle button */
-.toggle-switch-large {
-    position: relative;
-    width: 180px;
-    height: 54px;
-    border-radius: 27px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* Modern Status Control Card */
+.status-control-card {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin: 0 auto;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 2px solid #f1f5f9;
+    transition: all 0.3s ease;
+}
+
+.status-control-card.open {
+    border-color: rgba(40, 167, 69, 0.2);
+    background: linear-gradient(to right, #ffffff, #f0fff4);
+}
+
+.status-control-card.closed {
+    border-color: rgba(239, 68, 68, 0.2);
+    background: linear-gradient(to right, #ffffff, #fff5f5);
+}
+
+.status-label-group {
+    flex: 1;
+}
+
+.status-main-label {
+    font-size: 1.1rem;
     font-weight: 700;
-    font-size: 1rem;
-    letter-spacing: 0.5px;
+    color: #1e293b;
+    margin-bottom: 4px;
 }
 
-.toggle-switch-large.open {
-    background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.35);
+.status-sub-label {
+    font-size: 0.85rem;
+    color: #64748b;
+    line-height: 1.4;
 }
 
-.toggle-switch-large.open:hover {
+.status-toggle-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 22px;
+    border-radius: 50px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 0.9rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    white-space: nowrap;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    position: relative;
+}
+
+.status-toggle-pill.open {
+    background: #f0fdf4;
+    color: #166534;
+    border-color: #bbf7d0;
+}
+
+.status-toggle-pill.open .status-indicator {
+    background: #22c55e;
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+    animation: statusPulse 2s infinite;
+}
+
+.status-toggle-pill.closed {
+    background: #fef2f2;
+    color: #991b1b;
+    border-color: #fecaca;
+}
+
+.status-toggle-pill.closed .status-indicator {
+    background: #ef4444;
+}
+
+@keyframes statusPulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.status-toggle-pill:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.45);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
-.toggle-switch-large.closed {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: white;
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.35);
+.status-toggle-pill:active {
+    transform: scale(0.95);
 }
 
-.toggle-switch-large.closed:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.45);
+@media (max-width: 480px) {
+    .status-control-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 16px;
+    }
 }
 
 /* Hide old elements */

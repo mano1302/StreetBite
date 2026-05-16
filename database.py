@@ -378,7 +378,7 @@ class Database:
                 ''', (stall_id, item['itemName'], item.get('itemName_ta'), item.get('itemName_hi'), 
                       item['price'], item.get('available', True)))
 
-            return self.get_stall_by_id(stall_id)
+        return self.get_stall_by_id(stall_id)
 
     def add_review(self, stall_id, review_data):
         """Add a review to a stall."""
@@ -397,7 +397,7 @@ class Database:
                 WHERE id = {ph}
             ''', (stall_id, stall_id, stall_id))
 
-            return self.get_stall_by_id(stall_id)
+        return self.get_stall_by_id(stall_id)
 
     def update_stall_status(self, stall_id, status):
         """Update stall open/closed status."""
@@ -407,7 +407,7 @@ class Database:
                 UPDATE stalls SET status = {ph}, updated_at = CURRENT_TIMESTAMP
                 WHERE id = {ph}
             ''', (status, stall_id))
-            return self.get_stall_by_id(stall_id)
+        return self.get_stall_by_id(stall_id)
 
     def update_stall_discount(self, stall_id, discount):
         """Update stall's today discount."""
@@ -417,7 +417,7 @@ class Database:
                 UPDATE stalls SET today_discount = {ph}, updated_at = CURRENT_TIMESTAMP
                 WHERE id = {ph}
             ''', (discount, stall_id))
-            return self.get_stall_by_id(stall_id)
+        return self.get_stall_by_id(stall_id)
 
     def update_menu_item_availability(self, stall_id, item_id, available):
         """Toggle availability of a menu item by its unique ID."""
@@ -426,7 +426,7 @@ class Database:
             cursor.execute(f'''
                 UPDATE menu_items SET available = {ph} WHERE id = {ph} AND stall_id = {ph}
             ''', (available, item_id, stall_id))
-            return self.get_stall_by_id(stall_id)
+        return self.get_stall_by_id(stall_id)
 
     def add_menu_item(self, stall_id, item_data):
         """Add a new menu item to a stall."""
@@ -438,7 +438,7 @@ class Database:
             ''', (stall_id, item_data['itemName'], item_data.get('itemName_ta'), 
                   item_data.get('itemName_hi'), item_data['price'],
                   item_data.get('available', True)))
-            return self.get_stall_by_id(stall_id)
+        return self.get_stall_by_id(stall_id)
 
     def delete_menu_item(self, stall_id, item_id):
         """Delete a menu item by its unique ID."""
@@ -448,7 +448,7 @@ class Database:
                 f'DELETE FROM menu_items WHERE id = {ph} AND stall_id = {ph}',
                 (item_id, stall_id)
             )
-            return self.get_stall_by_id(stall_id)
+        return self.get_stall_by_id(stall_id)
 
     def update_menu(self, stall_id, menu_data):
         """Update entire menu for a stall."""
@@ -463,7 +463,7 @@ class Database:
                 ''', (stall_id, item['itemName'], item.get('itemName_ta'), 
                       item.get('itemName_hi'), item['price'], item.get('available', True)))
 
-            return self.get_stall_by_id(stall_id)
+        return self.get_stall_by_id(stall_id)
 
     def delete_stall(self, stall_id, contact, password):
         """Permanently delete a stall after verifying credentials."""

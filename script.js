@@ -889,6 +889,8 @@ const translations = {
         open: 'Open',
         closed: 'Closed',
         openNow: 'Open Now',
+        yourShopIsCurrentlyOpen: 'Your shop is currently accepting orders',
+        yourShopIsCurrentlyClosed: 'Your shop is currently closed to customers',
         shopStatus: 'Shop Status',
         currentStatus: 'Current',
         menu: 'Menu',
@@ -936,6 +938,9 @@ const translations = {
         hindi: 'हिंदी',
         available: 'Available',
         unavailable: 'Unavailable',
+        on: 'ON',
+        off: 'OFF',
+        itemNowStatus: '{item} is now {status}',
         rating: 'Rating',
         tapToCall: 'Tap to call',
         noShopsFound: 'No shops found',
@@ -986,12 +991,30 @@ const translations = {
         registering: 'Registering...',
         fillRequired: 'Please fill all required fields',
         addMenuItemError: 'Please add at least one menu item',
+        itemAdded: 'Item added successfully',
+        itemRemoved: 'Item removed',
+        failedToRemoveItem: 'Failed to remove item',
+        updateFailed: 'Update failed',
+        offerUpdated: 'Offer updated!',
+        loggedOut: 'Logged out',
+        deletionFailed: 'Deletion failed. Check your password.',
+        shopNotFound: 'Shop not found',
+        pleaseSelectRating: 'Please select a rating and write a review',
+        reviewSubmitted: 'Review submitted!',
+        couldNotSubmitReview: 'Could not submit review',
+        shopNowOpen: 'Shop is now Open',
+        shopNowClosed: 'Shop is now Closed',
+        adding: 'Adding...',
         dangerZone: 'Danger Zone',
         deleteShop: 'Delete My Shop',
         deleteShopDesc: 'This will permanently delete your shop and all its data. This action cannot be undone.',
-        deleteConfirmTitle: 'Are you sure you want to permanently delete "{name}"?',
-        deleteConfirmDesc: 'This will remove your shop, menu, and all reviews. This CANNOT be undone.',
-        enterPasswordConfirm: 'Enter your shop password to confirm deletion:',
+        authRequiredTitle: 'Authentication Required',
+        authRequiredDesc: 'Please enter your registered mobile number and password to delete your shop.',
+        confirmMobileNumber: 'Confirm Mobile Number',
+        confirmPassword: 'Confirm Password',
+        mobileNumberPlaceholder: 'Enter your 10-digit mobile number',
+        deleteConfirmTitle: 'Delete {name}?',
+        deleteConfirmDesc: 'Are you absolutely sure? This action cannot be undone and all your shop data will be lost forever.',
         shopDeleted: 'Your shop has been permanently deleted.',
         deleting: 'Deleting...',
         ok: 'OK',
@@ -1009,6 +1032,8 @@ const translations = {
         open: 'திறந்திருக்கிறது',
         closed: 'மூடியிருக்கிறது',
         openNow: 'இப்போது திறந்திருக்கிறது',
+        yourShopIsCurrentlyOpen: 'உங்கள் கடை தற்போது ஆர்டர்களை ஏற்றுக்கொள்கிறது',
+        yourShopIsCurrentlyClosed: 'உங்கள் கடை தற்போது வாடிக்கையாளர்களுக்கு மூடப்பட்டுள்ளது',
         shopStatus: 'கடை நிலை',
         currentStatus: 'தற்போதைய நிலை',
         menu: 'உணவுப் பட்டியல்',
@@ -1056,6 +1081,9 @@ const translations = {
         hindi: 'இந்தி',
         available: 'கிடைக்கிறது',
         unavailable: 'கிடைக்காது',
+        on: 'ஆன்',
+        off: 'ஆஃப்',
+        itemNowStatus: '{item} இப்போது {status}',
         rating: 'மதிப்பீடு',
         tapToCall: 'அழைக்க தொடுக',
         noShopsFound: 'கடைகள் ஏதும் கிடைக்கவில்லை',
@@ -1106,12 +1134,30 @@ const translations = {
         registering: 'பதிவு செய்யப்படுகிறது...',
         fillRequired: 'அனைத்து கட்டாய புலங்களையும் நிரப்பவும்',
         addMenuItemError: 'குறைந்தது ஒரு உணவையாவது சேர்க்கவும்',
+        itemAdded: 'பொருள் வெற்றிகரமாக சேர்க்கப்பட்டது',
+        itemRemoved: 'பொருள் நீக்கப்பட்டது',
+        failedToRemoveItem: 'பொருளை நீக்க முடியவில்லை',
+        updateFailed: 'புதுப்பிப்பு தோல்வி',
+        offerUpdated: 'சலுகை புதுப்பிக்கப்பட்டது!',
+        loggedOut: 'வெளியேறப்பட்டது',
+        deletionFailed: 'நீக்கம் தோல்வி. உங்கள் கடவுச்சொல்லை சரிபார்க்கவும்.',
+        shopNotFound: 'கடை காணப்படவில்லை',
+        pleaseSelectRating: 'தயவுசெய்து மதிப்பை தேர்வு செய்து மதிப்பாய்வு எழுதவும்',
+        reviewSubmitted: 'மதிப்பாய்வு சமர்ப்பிக்கப்பட்டது!',
+        couldNotSubmitReview: 'மதிப்பாய்வை சமர்ப்பிக்க முடியவில்லை',
+        shopNowOpen: 'கடை இப்போது திறக்கப்பட்டுள்ளது',
+        shopNowClosed: 'கடை இப்போது மூடப்பட்டுள்ளது',
+        adding: 'சேர்க்கப்படுகிறது...',
         dangerZone: 'ஆபத்தான பகுதி',
         deleteShop: 'என் கடையை நீக்கு',
-        deleteShopDesc: 'இது உங்கள் கடையையும் அதன் அனைத்து தரவுகளையும் நிரந்தரமாக நீக்கிவிடும். இந்த செயலை மாற்ற முடியாது.',
-        deleteConfirmTitle: '"{name}" கடையை நிரந்தரமாக நீக்க விரும்புகிறீர்களா?',
-        deleteConfirmDesc: 'இது உங்கள் கடை, உணவுப் பட்டியல் மற்றும் அனைத்து மதிப்புரைகளையும் நீக்கிவிடும். இதை மாற்ற முடியாது.',
-        enterPasswordConfirm: 'நீக்குவதை உறுதிப்படுத்த உங்கள் கடையின் கடவுச்சொல்லை உள்ளிடவும்:',
+        deleteShopDesc: 'இது உங்கள் கடையையும் அதன் அனைத்து தரவுகளையும் நிரந்தரமாக நீக்கிவிடும். இந்தச் செயலைத் தவிர்க்க முடியாது.',
+        authRequiredTitle: 'அங்கீகாரம் தேவை',
+        authRequiredDesc: 'உங்கள் கடையை நீக்க உங்கள் பதிவு செய்யப்பட்ட மொபைல் எண் மற்றும் கடவுச்சொல்லை உள்ளிடவும்.',
+        confirmMobileNumber: 'மொபைல் எண்ணை உறுதிப்படுத்தவும்',
+        confirmPassword: 'கடவுச்சொல்லை உறுதிப்படுத்தவும்',
+        mobileNumberPlaceholder: 'உங்கள் 10 இலக்க மொபைல் எண்ணை உள்ளிடவும்',
+        deleteConfirmTitle: '{name} நீக்கவா?',
+        deleteConfirmDesc: 'நிச்சயமாக நீக்க வேண்டுமா? இந்தச் செயலைத் தவிர்க்க முடியாது மற்றும் உங்கள் கடையின் அனைத்து தரவுகளும் நிரந்தரமாக இழக்கப்படும்.',
         shopDeleted: 'உங்கள் கடை நிரந்தரமாக நீக்கப்பட்டது.',
         deleting: 'நீக்கப்படுகிறது...',
         ok: 'சரி',
@@ -1129,6 +1175,8 @@ const translations = {
         open: 'खुला है',
         closed: 'बंद है',
         openNow: 'अभी खुला है',
+        yourShopIsCurrentlyOpen: 'आपकी दुकान वर्तमान में ऑर्डर स्वीकार कर रही है',
+        yourShopIsCurrentlyClosed: 'आपकी दुकान वर्तमान में ग्राहकों के लिए बंद है',
         shopStatus: 'दुकान की स्थिति',
         currentStatus: 'वर्तमान स्थिति',
         menu: 'मेनू',
@@ -1176,6 +1224,9 @@ const translations = {
         hindi: 'हिंदी',
         available: 'उपलब्ध',
         unavailable: 'अनुपलब्ध',
+        on: 'चालू',
+        off: 'बंद',
+        itemNowStatus: '{item} अब {status} है',
         rating: 'रेटिंग',
         tapToCall: 'कॉल करने के लिए टैप करें',
         noShopsFound: 'कोई दुकान नहीं मिली',
@@ -1226,12 +1277,30 @@ const translations = {
         registering: 'पंजीकरण हो रहा है...',
         fillRequired: 'कृपया सभी आवश्यक फ़ील्ड भरें',
         addMenuItemError: 'कृपया कम से कम एक मेनू आइटम जोड़ें',
+        itemAdded: 'आइटम सफलतापूर्वक जोड़ा गया',
+        itemRemoved: 'आइटम हटा दिया गया',
+        failedToRemoveItem: 'आइटम हटाने में विफल',
+        updateFailed: 'अपडेट विफल',
+        offerUpdated: 'ऑफर अपडेट किया गया!',
+        loggedOut: 'लॉग आउट किया गया',
+        deletionFailed: 'हटाने में विफल। अपना पासवर्ड जांचें।',
+        shopNotFound: 'दुकान नहीं मिली',
+        pleaseSelectRating: 'कृपया एक रेटिंग चुनें और एक समीक्षा लिखें',
+        reviewSubmitted: 'समीक्षा प्रस्तुत की गई!',
+        couldNotSubmitReview: 'समीक्षा प्रस्तुत नहीं की जा सकी',
+        shopNowOpen: 'दुकान अब खुली है',
+        shopNowClosed: 'दुकान अब बंद है',
+        adding: 'जोड़ा जा रहा है...',
         dangerZone: 'खतरा क्षेत्र',
         deleteShop: 'मेरी दुकान हटाएँ',
         deleteShopDesc: 'यह आपकी दुकान और उसके सभी डेटा को स्थायी रूप से हटा देगा। यह क्रिया वापस नहीं ली जा सकती।',
-        deleteConfirmTitle: 'क्या आप वाकई "{name}" को स्थायी रूप से हटाना चाहते हैं?',
-        deleteConfirmDesc: 'यह आपकी दुकान, मेनू और सभी समीक्षाओं को हटा देगा। इसे वापस नहीं लिया जा सकता।',
-        enterPasswordConfirm: 'हटाने की पुष्टि करने के लिए अपनी दुकान का पासवर्ड दर्ज करें:',
+        authRequiredTitle: 'प्रमाणीकरण आवश्यक',
+        authRequiredDesc: 'अपनी दुकान हटाने के लिए कृपया अपना पंजीकृत मोबाइल नंबर और पासवर्ड दर्ज करें।',
+        confirmMobileNumber: 'मोबाइल नंबर की पुष्टि करें',
+        confirmPassword: 'पासवर्ड की पुष्टि करें',
+        mobileNumberPlaceholder: 'अपना 10-अंकीय मोबाइल नंबर दर्ज करें',
+        deleteConfirmTitle: '{name} हटाएं?',
+        deleteConfirmDesc: 'क्या आप पूरी तरह से आश्वस्त हैं? इस क्रिया को पूर्ववत नहीं किया जा सकता है और आपकी दुकान का सारा डेटा हमेशा के लिए खो जाएगा।',
         shopDeleted: 'आपकी दुकान स्थायी रूप से हटा दी गई है।',
         deleting: 'हटाया जा रहा है...',
         ok: 'ठीक है',
@@ -1318,7 +1387,7 @@ async function getTranslation(text, targetLang) {
     if (found && translated !== text) return translated;
 
     try {
-        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
         const res = await fetch(url);
         const data = await res.json();
         if (data && data[0] && data[0][0] && data[0][0][0]) {
@@ -1422,6 +1491,9 @@ async function translateSingleStall(stall, lang) {
     // Translate area and address (meaning-based)
     stall.area_localized = await getTranslation(stall.area, lang);
     stall.address_localized = await getTranslation(stall.address, lang);
+    if (stall.todayDiscount) {
+        stall.todayDiscount_localized = await getTranslation(stall.todayDiscount, lang);
+    }
     
     if (stall.menu) {
         for (let item of stall.menu) {
@@ -1457,6 +1529,7 @@ function td(text, obj = null) {
         if (obj.area_localized && text === obj.area) return obj.area_localized;
         if (obj.address_localized && text === obj.address) return obj.address_localized;
         if (obj.comment_localized && text === obj.comment) return obj.comment_localized;
+        if (obj.todayDiscount_localized && text === obj.todayDiscount) return obj.todayDiscount_localized;
     }
 
     let translated = text;
@@ -1724,7 +1797,7 @@ function renderShopGrid() {
                 <span class="shop-status ${stall.status}">${stall.status === 'open' ? '✓ ' + t('open') : '✕ ' + t('closed')}</span>
                 <span class="shop-rating"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#fbbf24;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> ${(stall.rating || 0).toFixed(1)} (${stall.totalReviews || 0})</span>
             </div>
-            ${stall.todayDiscount ? `<div class="shop-discount"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#22c55e;"><polyline points="20 6 9 17 4 12"/></svg> ${stall.todayDiscount}</div>` : ''}
+            ${stall.todayDiscount ? `<div class="shop-discount"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#22c55e;"><polyline points="20 6 9 17 4 12"/></svg> ${td(stall.todayDiscount, stall)}</div>` : ''}
         </div>
     `).join('');
 
@@ -1782,7 +1855,12 @@ function showShopDetail(id) {
     if (stall) {
         renderShopDetailPage(stall);
     } else {
-        showToast('Shop not found', 'error');
+        const app = document.getElementById('app');
+        app.innerHTML = `<div class="empty-state">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <h3>${t('shopNotFound')}</h3>
+            </div>`;
+        showToast(t('shopNotFound'), 'error');
     }
     showLoading(false);
 }
@@ -1833,7 +1911,7 @@ function renderShopDetailPage(stall) {
 
             ${stall.todayDiscount ? `
                 <div class="discount-banner">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#22c55e;"><polyline points="20 6 9 17 4 12"/></svg> ${stall.todayDiscount}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#22c55e;"><polyline points="20 6 9 17 4 12"/></svg> ${td(stall.todayDiscount, stall)}
                 </div>
             ` : ''}
 
@@ -1892,8 +1970,8 @@ function renderShopDetailPage(stall) {
     // Setup submit review — POST to API
     app.querySelector('#submit-review').addEventListener('click', async () => {
         const comment = app.querySelector('#review-text').value.trim();
-        if (!comment || selectedRating === 0) {
-            showToast('Please select a rating and write a review', 'error');
+        if (selectedRating === 0 || !comment) {
+            showToast(t('pleaseSelectRating'), 'error');
             return;
         }
         try {
@@ -1906,10 +1984,11 @@ function renderShopDetailPage(stall) {
             // Update local stall data
             const idx = stalls.findIndex(s => s.id === stall.id);
             if (idx !== -1) stalls[idx] = updated;
-            showToast('Review submitted! <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#fbbf24;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>', 'success');
             renderShopDetailPage(updated);
+            showToast(t('reviewSubmitted'), 'success');
         } catch (e) {
-            showToast('Could not submit review', 'error');
+            console.error('Error adding review:', e);
+            showToast(t('couldNotSubmitReview'), 'error');
         }
     });
 }
@@ -2000,7 +2079,7 @@ function renderAddShopPage() {
                         <div class="form-row">
                             <div class="form-group">
                                 <label>${t('contactNumber')} *</label>
-                                <input type="tel" id="shop-contact" placeholder="9876543210" pattern="[0-9]{10}">
+                                <input type="tel" id="shop-contact" placeholder="9876543210" maxlength="10">
                             </div>
                             <div class="form-group">
                                 <label>${t('todaysDiscount')}</label>
@@ -2034,7 +2113,7 @@ function renderAddShopPage() {
                             <h3 class="section-title">${t('menuItems')}</h3>
                             <div class="menu-input-row">
                                 <input type="text" id="menu-item-name" placeholder="${t('itemName')}">
-                                <input type="number" id="menu-item-price" placeholder="${t('price')}">
+                                <input type="tel" id="menu-item-price" placeholder="${t('price')}" inputmode="numeric">
                                 <button class="add-menu-btn" id="add-menu-item">+</button>
                             </div>
                             <div class="added-menu-list" id="added-menu-list"></div>
@@ -2099,7 +2178,7 @@ function renderAddShopPage() {
         const name = modal.querySelector('#menu-item-name').value.trim();
         const price = parseInt(modal.querySelector('#menu-item-price').value);
         if (!name || isNaN(price) || price <= 0) {
-            showToast('Please enter item name and price', 'error');
+            showToast(t('fillRequired'), 'error');
             return;
         }
         menuItems.push({ itemName: name, price, available: true });
@@ -2215,13 +2294,15 @@ function renderProfilePage() {
                     <p style="color: #666; margin-bottom: 20px;">${td(vendorShop.area, vendorShop)}</p>
                     <p style="font-size: 0.85rem; color: #888; margin-bottom: 15px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${openTime12} - ${closeTime12}</p>
 
-                    <div class="toggle-section-large">
-                        <button class="toggle-switch-large ${vendorShop.status}" id="status-toggle">
-                            ${isOpen ? t('toggleOpen') : t('toggleClosed')}
-                        </button>
-                        <div class="toggle-info">
-                            <p class="toggle-status-text ${vendorShop.status}">${isOpen ? t('openNow') : t('closed')}</p>
+                    <div class="status-control-card ${vendorShop.status}">
+                        <div class="status-label-group">
+                            <h4 class="status-main-label">${t('shopStatus')}</h4>
+                            <p class="status-sub-label">${isOpen ? t('yourShopIsCurrentlyOpen') : t('yourShopIsCurrentlyClosed')}</p>
                         </div>
+                        <button class="status-toggle-pill ${vendorShop.status}" id="status-toggle">
+                            <span class="status-indicator"></span>
+                            <span class="status-toggle-text">${isOpen ? t('open') : t('closed')}</span>
+                        </button>
                     </div>
 
                     <div class="form-group">
@@ -2238,7 +2319,7 @@ function renderProfilePage() {
                                     <div class="menu-item-name">${td(item.itemName, item)}</div>
                                     <div class="menu-item-price">₹${item.price}</div>
                                 </div>
-                                <button class="availability-toggle ${item.available ? 'available' : 'unavailable'}" data-index="${index}">${item.available ? 'ON' : 'OFF'}</button>
+                                <button class="availability-toggle ${item.available ? 'available' : 'unavailable'}" data-index="${index}">${item.available ? t('on') : t('off')}</button>
                             </div>
                         `).join('')}
                     </div>
@@ -2253,7 +2334,7 @@ function renderProfilePage() {
                             </div>
                             <div class="form-group">
                                 <label>${t('price')}</label>
-                                <input type="number" id="new-item-price" placeholder="₹ 50">
+                                <input type="tel" id="new-item-price" placeholder="₹ 50" inputmode="numeric">
                             </div>
                         </div>
                         <button class="submit-btn" id="add-new-item-btn" style="background: #28a745; margin-top: 10px;">${t('addItemToMenu')}</button>
@@ -2282,8 +2363,8 @@ function renderProfilePage() {
                 vendorShop.status = newStatus;
                 await reloadStalls();
                 renderProfilePage();
-                showToast(`Shop is now ${newStatus === 'open' ? 'Open' : 'Closed'}`, 'success');
-            } catch (e) { showToast('Update failed', 'error'); }
+                showToast(newStatus === 'open' ? t('shopNowOpen') : t('shopNowClosed'), 'success');
+            } catch (e) { showToast(t('updateFailed'), 'error'); }
         });
 
         // Discount update — API call
@@ -2299,8 +2380,8 @@ function renderProfilePage() {
                     body: JSON.stringify({ discount: discount || null })
                 });
                 vendorShop.todayDiscount = discount || null;
-                showToast('Offer updated! <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#22c55e;"><polyline points="20 6 9 17 4 12"/></svg>', 'success');
-            } catch (e) { showToast('Update failed', 'error'); }
+                showToast(t('offerUpdated'), 'success');
+            } catch (e) { showToast(t('updateFailed'), 'error'); }
         };
 
         updateDiscountBtn.addEventListener('click', updateDiscount);
@@ -2315,12 +2396,12 @@ function renderProfilePage() {
                     await fetch(`/api/stalls/${vendorShop.id}/menu-item`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ item_index: index, available: newAvailable })
+                        body: JSON.stringify({ item_id: vendorShop.menu[index].id, available: newAvailable })
                     });
                     vendorShop.menu[index].available = newAvailable;
                     renderProfilePage();
-                    showToast(`${td(vendorShop.menu[index].itemName, vendorShop.menu[index])} is now ${newAvailable ? t('available') : t('unavailable')}`, 'success');
-                } catch (e) { showToast('Update failed', 'error'); }
+                    showToast(t('itemNowStatus').replace('{item}', td(vendorShop.menu[index].itemName, vendorShop.menu[index])).replace('{status}', newAvailable ? t('available') : t('unavailable')), 'success');
+                } catch (e) { showToast(t('updateFailed'), 'error'); }
             });
         });
 
@@ -2328,8 +2409,10 @@ function renderProfilePage() {
         app.querySelector('#logout-btn').addEventListener('click', () => {
             vendorShop = null;
             localStorage.removeItem('vendorShopId');
-            renderProfilePage();
-            showToast('Logged out', 'success');
+            localStorage.removeItem('vendorContact');
+            localStorage.removeItem('vendorPassword');
+            renderHomePage();
+            showToast(t('loggedOut'), 'success');
         });
 
         // Add new menu item — API call
@@ -2338,7 +2421,7 @@ function renderProfilePage() {
             const price = parseInt(app.querySelector('#new-item-price').value);
 
             if (!itemName || isNaN(price) || price <= 0) {
-                showToast('Please enter item name and price', 'error');
+                showToast(t('fillRequired'), 'error');
                 return;
             }
             try {
@@ -2349,12 +2432,11 @@ function renderProfilePage() {
                 });
                 const updated = await res.json();
                 vendorShop.menu = updated.menu || vendorShop.menu;
-                vendorShop.menu.push({ itemName, price, available: true });
                 app.querySelector('#new-item-name').value = '';
                 app.querySelector('#new-item-price').value = '';
                 renderProfilePage();
-                showToast('New item added! <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>', 'success');
-            } catch (e) { showToast('Failed to add item', 'error'); }
+                showToast(t('itemAdded'), 'success');
+            } catch (e) { showToast(t('failedToRemoveItem'), 'error'); }
         });
 
         // Custom translation-friendly Confirm
@@ -2400,31 +2482,81 @@ function renderProfilePage() {
             overlay.querySelector('#modal-ok').onclick = () => { if(input.value) { overlay.remove(); onOk(input.value); } };
         };
 
+        // Custom Delete Authentication Modal
+        const showDeleteAuthModal = (onOk) => {
+            const overlay = document.createElement('div');
+            overlay.className = 'location-overlay active';
+            overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:2000; opacity:1; pointer-events:auto;';
+            overlay.innerHTML = `
+                <div style="background:white; width:95%; max-width:400px; padding:30px; border-radius:28px; box-shadow:0 20px 50px rgba(0,0,0,0.3); transform:translateY(0); animation:modalSlideUp 0.3s ease-out;">
+                    <h3 class="section-title" style="margin-top:0; color:#dc2626; justify-content:center;">${t('authRequiredTitle')}</h3>
+                    <p style="margin-bottom:20px; line-height:1.6; color:#666; text-align:center; font-size:0.9rem;">${t('authRequiredDesc')}</p>
+                    
+                    <div class="form-group" style="margin-bottom:15px;">
+                        <label style="font-size:0.85rem; color:#444; font-weight:600;">${t('confirmMobileNumber')}</label>
+                        <input type="tel" id="modal-contact" class="search-input" placeholder="${t('mobileNumberPlaceholder')}" maxlength="10" inputmode="numeric">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:25px;">
+                        <label style="font-size:0.85rem; color:#444; font-weight:600;">${t('confirmPassword')}</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="modal-pwd" class="search-input" placeholder="${t('passwordPlaceholder')}">
+                            <button class="eye-toggle-btn" type="button" tabindex="-1">
+                                <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:12px;">
+                        <button class="submit-btn" style="background:#eee; color:#333; margin:0; flex:1;" id="modal-cancel">${t('cancel')}</button>
+                        <button class="submit-btn" style="background:#dc2626; margin:0; flex:1;" id="modal-ok">${t('deleteShop')}</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            
+            const contactInput = overlay.querySelector('#modal-contact');
+            const pwdInput = overlay.querySelector('#modal-pwd');
+            
+            // Password eye toggle logic
+            const eyeBtn = overlay.querySelector('.eye-toggle-btn');
+            eyeBtn.onclick = () => {
+                const type = pwdInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                pwdInput.setAttribute('type', type);
+                eyeBtn.classList.toggle('active');
+            };
+
+            overlay.querySelector('#modal-cancel').onclick = () => overlay.remove();
+            overlay.querySelector('#modal-ok').onclick = () => {
+                if (contactInput.value.length === 10 && pwdInput.value) {
+                    overlay.remove();
+                    onOk(contactInput.value, pwdInput.value);
+                } else {
+                    showToast(t('pleaseEnterDetails'), 'error');
+                }
+            };
+        };
+
         // Delete My Shop
         app.querySelector('#delete-shop-btn').addEventListener('click', async (e) => {
             const btn = e.target;
             if (btn.disabled) return;
             
             showCustomConfirm(`${t('deleteConfirmTitle').replace('{name}', vendorShop.name)}\n\n${t('deleteConfirmDesc')}`, () => {
-                let pwd = localStorage.getItem('vendorPassword');
-                if (!pwd) {
-                    showCustomPrompt(t('enterPasswordConfirm'), async (enteredPwd) => {
-                        performDelete(enteredPwd, btn);
-                    });
-                } else {
-                    performDelete(pwd, btn);
-                }
+                showDeleteAuthModal(async (enteredContact, enteredPwd) => {
+                    performDelete(enteredContact, enteredPwd, btn);
+                });
             });
         });
 
-        async function performDelete(pwd, btn) {
+        async function performDelete(contact, pwd, btn) {
             btn.disabled = true;
             btn.textContent = t('deleting');
             try {
                 const res = await fetch(`/api/stalls/${vendorShop.id}`, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contact: vendorShop.contact, password: pwd })
+                    body: JSON.stringify({ contact, password: pwd })
                 });
                 const data = await res.json();
                 if (res.ok && data.success) {
@@ -2436,7 +2568,7 @@ function renderProfilePage() {
                     renderProfilePage();
                     showToast(t('shopDeleted'), 'success');
                 } else {
-                    showToast(data.error || 'Deletion failed. Check your password.', 'error');
+                    showToast(data.error || t('deletionFailed'), 'error');
                     btn.disabled = false;
                     btn.textContent = t('deleteShop');
                 }
@@ -2611,6 +2743,13 @@ function showToast(message, type = 'success') {
         toast.classList.remove('show');
     }, 3000);
 }
+
+// Global numeric input enforcer
+document.addEventListener('input', (e) => {
+    if (e.target.type === 'tel' || e.target.id === 'new-item-price' || e.target.id === 'menu-item-price') {
+        e.target.value = e.target.value.replace(/[^0-9]/g, '');
+    }
+});
 // Password show/hide toggle — works on mobile (iOS + Android)
 function initPasswordToggles(container) {
     (container || document).querySelectorAll('.eye-toggle-btn').forEach(btn => {
