@@ -1967,7 +1967,7 @@ function renderShopGrid() {
                 <span class="shop-category-icon">${categorySVGs[stall.category] || ''}</span>
             </div>
             <span class="shop-category">${getCategoryName(stall.category)}</span>
-            <div class="shop-area"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${td(stall.area, stall)}</div>
+            <div class="shop-area"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${getAreaName(stall.area)}</div>
             <div>
                 <span class="shop-status ${getShopStatusInfo(stall).class}">${getShopStatusInfo(stall).icon}${getShopStatusInfo(stall).label}</span>
                 <span class="shop-rating"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#fbbf24;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> ${(stall.rating || 0).toFixed(1)} (${stall.totalReviews || 0})</span>
@@ -2066,7 +2066,7 @@ function renderShopDetailPage(stall) {
                 <div class="detail-info">
                     <div class="info-row">
                         <span class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
-                        <span>${td(stall.address || stall.area, stall)}</span>
+                        <span>${stall.address ? td(stall.address, stall) : getAreaName(stall.area)}</span>
                     </div>
                     ${stall.contact ? `
                     <div class="info-row">
@@ -2599,7 +2599,7 @@ function renderProfilePage() {
 
                 <div class="vendor-dashboard">
                     <h3 class="dashboard-shop-name">${categorySVGs[vendorShop.category] || ''} ${td(vendorShop.name, vendorShop)}</h3>
-                    <p style="color: #666; margin-bottom: 20px;">${td(vendorShop.area, vendorShop)}</p>
+                    <p style="color: #666; margin-bottom: 20px;">${getAreaName(vendorShop.area)}</p>
                     <p style="font-size: 0.85rem; color: #888; margin-bottom: 15px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${openTime12} - ${closeTime12}</p>
 
                     <div class="status-control-card">
@@ -3200,7 +3200,6 @@ function renderProfilePage() {
         app.querySelector('#vendor-password').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') app.querySelector('#vendor-login-btn').click();
         });
-        initPasswordToggles(app);
     }
 }
 
