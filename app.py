@@ -134,7 +134,7 @@ def update_status(stall_id):
     if 'status' not in status_data:
         return jsonify({'error': 'Status is required'}), 400
 
-    stall = db.update_stall_status(stall_id, status_data['status'])
+    stall = db.update_stall_status(stall_id, status_data['status'], public=False)
     return jsonify(stall)
 
 @app.route('/api/stalls/<int:stall_id>/discount', methods=['PUT'])
@@ -143,7 +143,7 @@ def update_discount(stall_id):
     discount_data = request.json
 
     discount = discount_data.get('discount')
-    stall = db.update_stall_discount(stall_id, discount)
+    stall = db.update_stall_discount(stall_id, discount, public=False)
     return jsonify(stall)
 
 @app.route('/api/stalls/<int:stall_id>/menu', methods=['PUT'])
@@ -171,7 +171,7 @@ def add_menu_item_post(stall_id):
     item_data['itemName_ta'] = transliterate(item_data['itemName'], 'ta')
     item_data['itemName_hi'] = transliterate(item_data['itemName'], 'hi')
     
-    stall = db.add_menu_item(stall_id, item_data)
+    stall = db.add_menu_item(stall_id, item_data, public=False)
     return jsonify(stall)
 
 @app.route('/api/stalls/<int:stall_id>/menu-item', methods=['POST', 'PUT', 'DELETE'])
@@ -184,20 +184,23 @@ def menu_item_handler(stall_id):
         available = item_data.get('available')
         if item_id is None or available is None:
             return jsonify({'error': 'item_id and available are required'}), 400
-        stall = db.update_menu_item_availability(stall_id, item_id, available)
+        stall = db.update_menu_item_availability(stall_id, item_id, available, public=False)
         return jsonify(stall)
     elif request.method == 'DELETE':
         # Remove item: body = {item_id}
         item_id = item_data.get('item_id')
-        if item_id is None:
-            return jsonify({'error': 'item_id is required'}), 400
-        stall = db.delete_menu_item(stall_id, item_id)
+        stall = db.delete_menu_item(stall_id, item_id, public=False)
         return jsonify(stall)
     else:
         # POST: Add new item
         if 'itemName' not in item_data or 'price' not in item_data:
             return jsonify({'error': 'Item name and price are required'}), 400
-        stall = db.add_menu_item(stall_id, item_data)
+        
+        # Auto-transliterate
+        item_data['itemName_ta'] = transliterate(item_data['itemName'], 'ta')
+        item_data['itemName_hi'] = transliterate(item_data['itemName'], 'hi')
+        
+        stall = db.add_menu_item(stall_id, item_data, public=False)
         return jsonify(stall)
 
 @app.route('/api/stalls/<int:stall_id>/vendor-login', methods=['POST'])

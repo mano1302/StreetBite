@@ -2787,7 +2787,7 @@ function renderProfilePage() {
                 // Step 9: Show red error toast, don't clear inputs
                 const toast = document.createElement('div');
                 toast.className = 'toast error';
-                toast.textContent = 'Failed to add item. Please try again';
+                toast.textContent = t('updateFailed');
                 document.body.appendChild(toast);
                 setTimeout(() => toast.remove(), 3000);
             } finally {

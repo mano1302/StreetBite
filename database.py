@@ -110,9 +110,14 @@ class Database:
         ''')
         try:
             cursor.execute('ALTER TABLE stalls ADD COLUMN name_ta TEXT')
+        except Exception: pass
+        try:
             cursor.execute('ALTER TABLE stalls ADD COLUMN name_hi TEXT')
-        except Exception:
-            pass
+        except Exception: pass
+        try:
+            cursor.execute('ALTER TABLE stalls ADD COLUMN district TEXT')
+        except Exception: pass
+
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS menu_items (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -125,6 +130,13 @@ class Database:
                 FOREIGN KEY (stall_id) REFERENCES stalls(id) ON DELETE CASCADE
             )
         ''')
+        try:
+            cursor.execute('ALTER TABLE menu_items ADD COLUMN item_name_ta TEXT')
+        except Exception: pass
+        try:
+            cursor.execute('ALTER TABLE menu_items ADD COLUMN item_name_hi TEXT')
+        except Exception: pass
+
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS reviews (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -165,21 +177,32 @@ class Database:
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
-        # Add password_hash column if upgrading from old schema
+        # Add missing columns if upgrading from old schema
         cursor.execute('''
             DO $$ BEGIN
                 ALTER TABLE stalls ADD COLUMN password_hash TEXT;
             EXCEPTION WHEN duplicate_column THEN NULL;
             END $$;
         ''')
-        # Add localized columns if upgrading from old schema
         cursor.execute('''
             DO $$ BEGIN
                 ALTER TABLE stalls ADD COLUMN name_ta TEXT;
+            EXCEPTION WHEN duplicate_column THEN NULL;
+            END $$;
+        ''')
+        cursor.execute('''
+            DO $$ BEGIN
                 ALTER TABLE stalls ADD COLUMN name_hi TEXT;
             EXCEPTION WHEN duplicate_column THEN NULL;
             END $$;
         ''')
+        cursor.execute('''
+            DO $$ BEGIN
+                ALTER TABLE stalls ADD COLUMN district TEXT;
+            EXCEPTION WHEN duplicate_column THEN NULL;
+            END $$;
+        ''')
+
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS menu_items (
                 id SERIAL PRIMARY KEY,
@@ -191,6 +214,19 @@ class Database:
                 available BOOLEAN DEFAULT TRUE
             )
         ''')
+        cursor.execute('''
+            DO $$ BEGIN
+                ALTER TABLE menu_items ADD COLUMN item_name_ta TEXT;
+            EXCEPTION WHEN duplicate_column THEN NULL;
+            END $$;
+        ''')
+        cursor.execute('''
+            DO $$ BEGIN
+                ALTER TABLE menu_items ADD COLUMN item_name_hi TEXT;
+            EXCEPTION WHEN duplicate_column THEN NULL;
+            END $$;
+        ''')
+
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS reviews (
                 id SERIAL PRIMARY KEY,
@@ -399,7 +435,7 @@ class Database:
 
         return self.get_stall_by_id(stall_id)
 
-    def update_stall_status(self, stall_id, status):
+    def update_stall_status(self, stall_id, status, public=True):
         """Update stall open/closed status."""
         ph = '%s' if self.is_postgresql else '?'
         with self._cursor() as cursor:
@@ -407,9 +443,9 @@ class Database:
                 UPDATE stalls SET status = {ph}, updated_at = CURRENT_TIMESTAMP
                 WHERE id = {ph}
             ''', (status, stall_id))
-        return self.get_stall_by_id(stall_id)
+        return self.get_stall_by_id(stall_id, public=public)
 
-    def update_stall_discount(self, stall_id, discount):
+    def update_stall_discount(self, stall_id, discount, public=True):
         """Update stall's today discount."""
         ph = '%s' if self.is_postgresql else '?'
         with self._cursor() as cursor:
@@ -417,18 +453,18 @@ class Database:
                 UPDATE stalls SET today_discount = {ph}, updated_at = CURRENT_TIMESTAMP
                 WHERE id = {ph}
             ''', (discount, stall_id))
-        return self.get_stall_by_id(stall_id)
+        return self.get_stall_by_id(stall_id, public=public)
 
-    def update_menu_item_availability(self, stall_id, item_id, available):
+    def update_menu_item_availability(self, stall_id, item_id, available, public=True):
         """Toggle availability of a menu item by its unique ID."""
         ph = '%s' if self.is_postgresql else '?'
         with self._cursor() as cursor:
             cursor.execute(f'''
                 UPDATE menu_items SET available = {ph} WHERE id = {ph} AND stall_id = {ph}
             ''', (available, item_id, stall_id))
-        return self.get_stall_by_id(stall_id)
+        return self.get_stall_by_id(stall_id, public=public)
 
-    def add_menu_item(self, stall_id, item_data):
+    def add_menu_item(self, stall_id, item_data, public=True):
         """Add a new menu item to a stall."""
         ph = '%s' if self.is_postgresql else '?'
         with self._cursor() as cursor:
@@ -438,9 +474,9 @@ class Database:
             ''', (stall_id, item_data['itemName'], item_data.get('itemName_ta'), 
                   item_data.get('itemName_hi'), item_data['price'],
                   item_data.get('available', True)))
-        return self.get_stall_by_id(stall_id)
+        return self.get_stall_by_id(stall_id, public=public)
 
-    def delete_menu_item(self, stall_id, item_id):
+    def delete_menu_item(self, stall_id, item_id, public=True):
         """Delete a menu item by its unique ID."""
         ph = '%s' if self.is_postgresql else '?'
         with self._cursor() as cursor:
@@ -448,9 +484,9 @@ class Database:
                 f'DELETE FROM menu_items WHERE id = {ph} AND stall_id = {ph}',
                 (item_id, stall_id)
             )
-        return self.get_stall_by_id(stall_id)
+        return self.get_stall_by_id(stall_id, public=public)
 
-    def update_menu(self, stall_id, menu_data):
+    def update_menu(self, stall_id, menu_data, public=True):
         """Update entire menu for a stall."""
         ph = '%s' if self.is_postgresql else '?'
         with self._cursor() as cursor:
@@ -463,7 +499,8 @@ class Database:
                 ''', (stall_id, item['itemName'], item.get('itemName_ta'), 
                       item.get('itemName_hi'), item['price'], item.get('available', True)))
 
-        return self.get_stall_by_id(stall_id)
+        return self.get_stall_by_id(stall_id, public=public)
+
 
     def delete_stall(self, stall_id, contact, password):
         """Permanently delete a stall after verifying credentials."""
