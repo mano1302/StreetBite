@@ -14,6 +14,7 @@ let selectedCategory = 'All';
 let searchQuery = '';
 let vendorShop = null;
 let currentLanguage = 'en';
+let currentStallId = null;
 
 // API base URL — smart detection so every environment works:
 //   localhost / Render → '' (Flask serves both frontend + /api/... on same origin)
@@ -184,25 +185,6 @@ const dynamicTranslations = {
 };
 
 // Helper: translate dynamic content (shop names, menu items)
-// Helper: translate dynamic content (shop names, menu items)
-function td(text, obj = {}) {
-    if (!text) return '';
-    if (currentLanguage === 'en') return text;
-
-    // 1. Check for specific transliterations in the object itself
-    if (currentLanguage === 'ta' && (obj.itemNameTa || obj.nameTa)) return obj.itemNameTa || obj.nameTa;
-    if (currentLanguage === 'hi' && (obj.itemNameHi || obj.nameHi)) return obj.itemNameHi || obj.nameHi;
-    
-    // 2. Fallback to dictionary-based keyword replacement
-    let translated = text;
-    for (const [enKey, translations] of Object.entries(dynamicTranslations)) {
-        if (translations[currentLanguage]) {
-            const regex = new RegExp(`\\b${enKey}\\b`, 'gi');
-            translated = translated.replace(regex, translations[currentLanguage]);
-        }
-    }
-    return translated;
-}
 
 // Translate a single stall's properties (useful for new items/updates)
 async function translateSingleStall(stall, lang) {
@@ -992,6 +974,7 @@ const translations = {
         networkError: 'Network error. Please try again.',
         loggingIn: 'Logging in...',
         invalidCredentials: 'Invalid mobile number or password',
+        pleaseEnterDetails: 'Please enter your mobile number and password',
         welcomeVendor: 'Welcome',
         registering: 'Registering...',
         fillRequired: 'Please fill all required fields',
@@ -1145,6 +1128,7 @@ const translations = {
         networkError: 'பிணைய பிழை. மீண்டும் முயற்சிக்கவும்.',
         loggingIn: 'உள்நுழைகிறது...',
         invalidCredentials: 'தவறான மொபைல் எண் அல்லது கடவுச்சொல்',
+        pleaseEnterDetails: 'மொபைல் எண் மற்றும் கடவுச்சொல்லை உள்ளிடுக',
         welcomeVendor: 'வரவேற்கிறோம்',
         registering: 'பதிவு செய்யப்படுகிறது...',
         fillRequired: 'அனைத்து கட்டாய புலங்களையும் நிரப்பவும்',
@@ -1298,6 +1282,7 @@ const translations = {
         networkError: 'नेटवर्क त्रुटि। कृपया पुनः प्रयास करें।',
         loggingIn: 'लॉग इन हो रहा है...',
         invalidCredentials: 'अमान्य मोबाइल नंबर या पासवर्ड',
+        pleaseEnterDetails: 'मोबाइल नंबर और पासवर्ड डालें',
         welcomeVendor: 'स्वागत है',
         registering: 'पंजीकरण हो रहा है...',
         fillRequired: 'कृपया सभी आवश्यक फ़ील्ड भरें',
@@ -2040,6 +2025,7 @@ function renderSearchPage() {
 
 // Show Shop Detail (static version for GitHub Pages)
 function showShopDetail(id) {
+    currentStallId = id;
     showLoading(true);
     const stall = stalls.find(s => s.id === id);
     if (stall) {
@@ -2500,6 +2486,10 @@ function renderAddShopPage() {
                 showToast(t('fillRequired'), 'error');
                 return;
             }
+            if (contact.length !== 10) {
+                showToast('Contact number must be exactly 10 digits', 'error');
+                return;
+            }
             if (!password || password.length < 4) {
                 showToast(t('passwordTooShort'), 'error');
                 return;
@@ -2826,7 +2816,7 @@ function renderProfilePage() {
 
             try {
                 // Step 3: Send POST request to backend
-                const res = await fetch(`/api/stalls/${vendorShop.id}/menu`, {
+                const res = await fetch(`/api/stalls/${vendorShop.id}/menu-item`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ itemName, price, available: true })
@@ -3162,7 +3152,6 @@ function renderProfilePage() {
                     vendorShop.contact = contact; // keep contact in memory for delete/actions
                     localStorage.setItem('vendorShopId', vendorShop.id);
                     localStorage.setItem('vendorContact', contact);
-                    localStorage.setItem('vendorPassword', password);
                     
                     // Ensure it is transliterated for the dashboard
                     await translateSingleStall(vendorShop, currentLanguage);
@@ -3185,6 +3174,7 @@ function renderProfilePage() {
         app.querySelector('#vendor-password').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') app.querySelector('#vendor-login-btn').click();
         });
+        initPasswordToggles(app);
     }
 }
 
