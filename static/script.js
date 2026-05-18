@@ -1658,37 +1658,40 @@ async function getTransliteration(text, targetLang) {
 }
 
 async function translateSingleStall(stall, lang) {
-    if (lang === 'en') return;
-    
-    // 1. Check if database already has the transliteration
-    const dbName = lang === 'ta' ? stall.nameTa : stall.nameHi;
-    if (dbName) {
-        stall.name_localized = dbName;
-    } else {
-        stall.name_localized = await getTransliteration(stall.name, lang);
-    }
-    
-    // Translate area and address (meaning-based) — usually from fixed list or Google Translate
-    stall.area_localized = await getTranslation(stall.area, lang);
-    stall.address_localized = await getTranslation(stall.address, lang);
-    if (stall.todayDiscount) {
-        stall.todayDiscount_localized = await getTranslation(stall.todayDiscount, lang);
-    }
-    
-    if (stall.menu) {
-        for (let item of stall.menu) {
-            const dbItemName = lang === 'ta' ? item.itemNameTa : item.itemNameHi;
-            if (dbItemName) {
-                item.itemName_localized = dbItemName;
-            } else {
-                item.itemName_localized = await getTransliteration(item.itemName, lang);
+    if (!stall || lang === 'en') return;
+    try {
+        // 1. Check if database already has the transliteration
+        const dbName = lang === 'ta' ? stall.nameTa : stall.nameHi;
+        if (dbName) {
+            stall.name_localized = dbName;
+        } else {
+            stall.name_localized = await getTransliteration(stall.name, lang);
+        }
+        
+        // Translate area and address (meaning-based) — usually from fixed list or Google Translate
+        stall.area_localized = await getTranslation(stall.area, lang);
+        stall.address_localized = await getTranslation(stall.address, lang);
+        if (stall.todayDiscount) {
+            stall.todayDiscount_localized = await getTranslation(stall.todayDiscount, lang);
+        }
+        
+        if (stall.menu) {
+            for (let item of stall.menu) {
+                const dbItemName = lang === 'ta' ? item.itemNameTa : item.itemNameHi;
+                if (dbItemName) {
+                    item.itemName_localized = dbItemName;
+                } else {
+                    item.itemName_localized = await getTransliteration(item.itemName, lang);
+                }
             }
         }
-    }
-    if (stall.reviews) {
-        for (let rev of stall.reviews) {
-            rev.comment_localized = await getTranslation(rev.comment, lang);
+        if (stall.reviews) {
+            for (let rev of stall.reviews) {
+                rev.comment_localized = await getTranslation(rev.comment, lang);
+            }
         }
+    } catch (e) {
+        console.error("Error in translateSingleStall:", e);
     }
 }
 
@@ -2989,14 +2992,23 @@ function renderProfilePage() {
                         const res = await fetch(`/api/stalls/${vendorShop.id}/menu-item`, {
                             method: 'DELETE',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ item_id: itemId })
+                            body: JSON.stringify({ 
+                                item_id: itemId,
+                                contact: localStorage.getItem('vendorContact'),
+                                password: vendorShop._sessionPwd || ''
+                            })
                         });
-                        const updated = await res.json();
-                        vendorShop = updated;
+                        const data = await res.json();
+                        if (!res.ok) {
+                            throw new Error(data.error || t('failedToRemoveItem'));
+                        }
+                        vendorShop = data;
                         renderVendorMenuList();
                         showToast(t('itemRemoved'), 'success');
                         loadStalls();
-                    } catch (e) { showToast(t('failedToRemoveItem'), 'error'); }
+                    } catch (e) { 
+                        showToast(e.message || t('failedToRemoveItem'), 'error'); 
+                    }
                 });
             });
         }
