@@ -3189,7 +3189,11 @@ function renderProfilePage() {
             try {
                 const res = await fetch(`/api/stalls/${vendorShop.id}`, {
                     method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-Vendor-Contact': contact,
+                        'X-Vendor-Password': pwd
+                    },
                     body: JSON.stringify({ contact, password: pwd })
                 });
                 const data = await res.json();
