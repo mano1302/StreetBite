@@ -502,18 +502,19 @@ class Database:
 
 
     def delete_stall(self, stall_id, contact, password):
-        """Permanently delete a stall after verifying credentials."""
+        """Permanently delete a stall after verifying admin credentials."""
+        admin_contact = os.environ.get('ADMIN_CONTACT', '9999999999')
+        admin_password = os.environ.get('ADMIN_PASSWORD', 'StreetBiteAdmin2026!')
+        
+        if contact != admin_contact or password != admin_password:
+            return False, 'Unauthorized: Only Admin can delete shops'
+
         ph = '%s' if self.is_postgresql else '?'
         with self._cursor() as cursor:
             cursor.execute(f'SELECT * FROM stalls WHERE id = {ph}', (stall_id,))
             stall = cursor.fetchone()
             if not stall:
                 return False, 'Shop not found'
-            row = self._row_to_dict(stall, public=False)
-            if row.get('contact') != contact:
-                return False, 'Invalid credentials'
-            if not self._verify_password(password, row.get('passwordHash')):
-                return False, 'Invalid credentials'
             cursor.execute(f'DELETE FROM menu_items WHERE stall_id = {ph}', (stall_id,))
             cursor.execute(f'DELETE FROM reviews WHERE stall_id = {ph}', (stall_id,))
             cursor.execute(f'DELETE FROM stalls WHERE id = {ph}', (stall_id,))
