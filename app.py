@@ -287,9 +287,19 @@ def vendor_login_by_contact():
 @app.route('/api/health', methods=['GET'])
 def health_check():
     """Health check endpoint."""
+    import sys
+    try:
+        import psycopg2
+        import_status = "success"
+    except Exception as e:
+        import_status = f"fail: {str(e)}"
+        
     return jsonify({
         'status': 'healthy',
-        'database': 'postgresql' if db.is_postgresql else 'sqlite'
+        'database': 'postgresql' if db.is_postgresql else 'sqlite',
+        'psycopg2_import': import_status,
+        'has_db_url_env': 'DATABASE_URL' in os.environ,
+        'env_keys': [k for k in os.environ.keys() if 'DATABASE' in k or 'URL' in k or 'DB' in k]
     })
 
 if __name__ == '__main__':
