@@ -2581,6 +2581,64 @@ body {
 }
 
 /* ========================================
+   Custom 12-Hour Time Picker
+   ======================================== */
+.time-picker-12h {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.time-select {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 4px;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    font-weight: 600;
+    color: #333;
+    background: #fff;
+    cursor: pointer;
+    outline: none;
+    text-align: center;
+    -webkit-appearance: none;
+    appearance: none;
+    box-sizing: border-box;
+    transition: border-color 0.25s;
+}
+
+.time-select:focus {
+    border-color: #f97316;
+}
+
+.time-ampm {
+    flex: 0 0 52px;
+    width: 52px;
+    color: #f97316;
+    font-weight: 800;
+    font-size: 0.82rem;
+    letter-spacing: 0.03em;
+    background: #fff7ed;
+    border-color: #ffedd5;
+}
+
+.time-ampm:focus {
+    border-color: #f97316;
+}
+
+.time-sep {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #bbb;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+/* ========================================
    Password Field with Eye Toggle
    ======================================== */
 .password-wrapper {

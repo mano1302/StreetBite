@@ -2436,18 +2436,26 @@ function renderAddShopPage() {
                         <div class="form-row">
                             <div class="form-group">
                                 <label>${t('openingTime')}</label>
-                                <input type="time" id="open-time" value="09:00">
+                                <div class="time-picker-12h">
+                                    <select id="open-hour" class="time-select">${Array.from({length:12},(_,i)=>{const h=i+1;return `<option value="${h}" ${h===9?'selected':''}>  ${h}</option>`;}).join('')}</select>
+                                    <span class="time-sep">:</span>
+                                    <select id="open-min" class="time-select">${['00','05','10','15','20','25','30','35','40','45','50','55'].map(m=>`<option value="${m}" ${m==='00'?'selected':''}>${m}</option>`).join('')}</select>
+                                    <select id="open-ampm" class="time-select time-ampm"><option value="AM" selected>AM</option><option value="PM">PM</option></select>
+                                </div>
+                                <input type="hidden" id="open-time" value="09:00">
                             </div>
                             <div class="form-group">
                                 <label>${t('closingTime')}</label>
-                                <input type="time" id="close-time" value="22:00">
+                                <div class="time-picker-12h">
+                                    <select id="close-hour" class="time-select">${Array.from({length:12},(_,i)=>{const h=i+1;return `<option value="${h}" ${h===10?'selected':''}>  ${h}</option>`;}).join('')}</select>
+                                    <span class="time-sep">:</span>
+                                    <select id="close-min" class="time-select">${['00','05','10','15','20','25','30','35','40','45','50','55'].map(m=>`<option value="${m}" ${m==='00'?'selected':''}>${m}</option>`).join('')}</select>
+                                    <select id="close-ampm" class="time-select time-ampm"><option value="AM">AM</option><option value="PM" selected>PM</option></select>
+                                </div>
+                                <input type="hidden" id="close-time" value="22:00">
                             </div>
                         </div>
 
-                        <div id="time-preview-label" style="text-align: center; margin-top: -5px; margin-bottom: 15px; font-size: 0.85rem; font-weight: 600; color: #f97316; display: flex; align-items: center; justify-content: center; gap: 6px; background: rgba(249, 115, 22, 0.05); padding: 8px 12px; border-radius: 8px; border: 1px dashed rgba(249, 115, 22, 0.2);">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                            <span id="time-preview-text">9:00 AM - 10:00 PM</span>
-                        </div>
 
                         <div class="menu-items-section">
                             <h3 class="section-title">${t('menuItems')}</h3>
@@ -2490,31 +2498,29 @@ function renderAddShopPage() {
     renderMenuList();
     setupPasswordToggles(modal);
 
-    // Live 12-Hour Format Time Preview Logic
-    const openTimeInput = modal.querySelector('#open-time');
-    const closeTimeInput = modal.querySelector('#close-time');
-    const timePreviewText = modal.querySelector('#time-preview-text');
+    // ── Custom 12-Hour Time Picker Logic ──────────────────────────────────────
+    // Converts the three select values (hour / minute / AM-PM) into a 24-hour
+    // string stored in the hidden <input id="open-time"> / <input id="close-time">
+    // so the form submission still sends the correct 24hr value to the backend.
 
-    // Mobile browsers (iOS/Android) often do NOT apply the value= HTML attribute
-    // on dynamically-inserted innerHTML time inputs — set it explicitly via JS.
-    if (!openTimeInput.value)  openTimeInput.value  = openTimeInput.getAttribute('value')  || '09:00';
-    if (!closeTimeInput.value) closeTimeInput.value = closeTimeInput.getAttribute('value') || '22:00';
-
-    function updateTimePreview() {
-        // Always read both fields; fall back to the last known good value
-        const openVal  = openTimeInput.value  || '09:00';
-        const closeVal = closeTimeInput.value || '22:00';
-        const open12  = formatTime12Hour(openVal);
-        const close12 = formatTime12Hour(closeVal);
-        timePreviewText.textContent = `${open12} \u2013 ${close12}`;
+    function getTime24(prefix) {
+        let h = parseInt(modal.querySelector(`#${prefix}-hour`).value);
+        const min = modal.querySelector(`#${prefix}-min`).value;
+        const ampm = modal.querySelector(`#${prefix}-ampm`).value;
+        if (ampm === 'AM' && h === 12) h = 0;          // 12 AM → 00:xx
+        if (ampm === 'PM' && h !== 12) h += 12;        // 1-11 PM → 13-23
+        return `${String(h).padStart(2, '0')}:${min}`;
     }
 
-    openTimeInput.addEventListener('change', updateTimePreview);
-    closeTimeInput.addEventListener('change', updateTimePreview);
-    openTimeInput.addEventListener('input', updateTimePreview);
-    closeTimeInput.addEventListener('input', updateTimePreview);
-    // Run once immediately so the preview is correct from the start
-    updateTimePreview();
+    function syncTimePickers() {
+        modal.querySelector('#open-time').value  = getTime24('open');
+        modal.querySelector('#close-time').value = getTime24('close');
+    }
+
+    ['open-hour','open-min','open-ampm','close-hour','close-min','close-ampm']
+        .forEach(id => modal.querySelector(`#${id}`).addEventListener('change', syncTimePickers));
+
+    syncTimePickers(); // initialise hidden inputs on load
 
     // Custom Dropdown Logic for Signup (District & Area)
     let signupSelectedDistrict = '';
