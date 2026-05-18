@@ -18,16 +18,18 @@ function updateVendorShop(newShop) {
         vendorShop = null;
         return;
     }
-    const oldPwd = (vendorShop && vendorShop._sessionPwd) || sessionStorage.getItem('vendorSessionPassword') || '';
-    const oldContact = (vendorShop && vendorShop.contact) || localStorage.getItem('vendorContact') || '';
+    const pwdToUse = newShop._sessionPwd || (vendorShop && vendorShop._sessionPwd) || sessionStorage.getItem('vendorSessionPassword') || '';
+    const contactToUse = newShop.contact || (vendorShop && vendorShop.contact) || localStorage.getItem('vendorContact') || '';
+    
     vendorShop = newShop;
-    if (oldPwd) {
-        vendorShop._sessionPwd = oldPwd;
-        sessionStorage.setItem('vendorSessionPassword', oldPwd);
+    
+    if (pwdToUse) {
+        vendorShop._sessionPwd = pwdToUse;
+        sessionStorage.setItem('vendorSessionPassword', pwdToUse);
     }
-    if (oldContact) {
-        vendorShop.contact = oldContact;
-        localStorage.setItem('vendorContact', oldContact);
+    if (contactToUse) {
+        vendorShop.contact = contactToUse;
+        localStorage.setItem('vendorContact', contactToUse);
     }
 }
 let currentLanguage = 'en';
@@ -2989,7 +2991,7 @@ function renderProfilePage() {
                             body: JSON.stringify({ 
                                 item_id: itemId, 
                                 available: newAvailable,
-                                contact: localStorage.getItem('vendorContact'),
+                                contact: vendorShop.contact || localStorage.getItem('vendorContact') || '',
                                 password: vendorShop._sessionPwd || ''
                             })
                         });
@@ -3011,7 +3013,7 @@ function renderProfilePage() {
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ 
                                 item_id: itemId,
-                                contact: localStorage.getItem('vendorContact'),
+                                contact: vendorShop.contact || localStorage.getItem('vendorContact') || '',
                                 password: vendorShop._sessionPwd || ''
                             })
                         });
@@ -3078,7 +3080,7 @@ function renderProfilePage() {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         itemName, price, available: true,
-                        contact: localStorage.getItem('vendorContact'),
+                        contact: vendorShop.contact || localStorage.getItem('vendorContact') || '',
                         password: vendorShop._sessionPwd || ''
                     })
                 });
