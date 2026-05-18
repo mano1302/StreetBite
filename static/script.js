@@ -3227,58 +3227,70 @@ function renderProfilePage() {
         const savedPassword = localStorage.getItem('vendorPassword');
 
         if (savedShopId) {
-            // Show a loading placeholder immediately so the page visibly changes
-            app.innerHTML = `
-                <div class="page vendor-login-page" style="display:flex;align-items:center;justify-content:center;min-height:60vh;">
-                    <div style="text-align:center;">
-                        <div class="spinner" style="margin:0 auto 16px;"></div>
-                        <p style="color:#888;">${t('loggingIn')}</p>
+            const isAdmin = savedShopId === '-99';
+            const sessionPassword = sessionStorage.getItem('vendorSessionPassword');
+            
+            if (!isAdmin && !sessionPassword) {
+                // If normal vendor is auto-logging in, but does not have password in memory/sessionStorage,
+                // do not auto-login (which would cause all dashboard actions to fail authentication).
+                // Instead, clear the savedShopId to show the login form directly.
+                localStorage.removeItem('vendorShopId');
+                localStorage.removeItem('vendorContact');
+                localStorage.removeItem('vendorLoginTime');
+            } else {
+                // Show a loading placeholder immediately so the page visibly changes
+                app.innerHTML = `
+                    <div class="page vendor-login-page" style="display:flex;align-items:center;justify-content:center;min-height:60vh;">
+                        <div style="text-align:center;">
+                            <div class="spinner" style="margin:0 auto 16px;"></div>
+                            <p style="color:#888;">${t('loggingIn')}</p>
+                        </div>
                     </div>
-                </div>
-            `;
-            // Re-fetch from API to get fresh data
-            if (savedShopId === '-99') {
-                vendorShop = {
-                    id: -99,
-                    name: 'StreetBite Administrator',
-                    category: 'admin',
-                    contact: savedContact,
-                    area: 'All Districts',
-                    district: 'Tamil Nadu',
-                    menu: [],
-                    status: 'open',
-                    openTime: '00:00',
-                    closeTime: '23:59',
-                    _sessionPwd: savedPassword
-                };
-                renderProfilePage();
-                return;
-            }
+                `;
+                // Re-fetch from API to get fresh data
+                if (savedShopId === '-99') {
+                    vendorShop = {
+                        id: -99,
+                        name: 'StreetBite Administrator',
+                        category: 'admin',
+                        contact: savedContact,
+                        area: 'All Districts',
+                        district: 'Tamil Nadu',
+                        menu: [],
+                        status: 'open',
+                        openTime: '00:00',
+                        closeTime: '23:59',
+                        _sessionPwd: savedPassword
+                    };
+                    renderProfilePage();
+                    return;
+                }
 
-            fetch(`/api/stalls/${savedShopId}`)
-                .then(r => r.json())
-                .then(shop => {
-                    if (shop && shop.id) {
-                        updateVendorShop(shop);
-                        // Re-attach contact from localStorage so delete/actions work
-                        if (savedContact) vendorShop.contact = savedContact;
-                        
-                        // Ensure it is transliterated for the dashboard
-                        translateSingleStall(vendorShop, currentLanguage).then(() => {
+                fetch(`/api/stalls/${savedShopId}`)
+                    .then(r => r.json())
+                    .then(shop => {
+                        if (shop && shop.id) {
+                            updateVendorShop(shop);
+                            // Re-attach contact from localStorage so delete/actions work
+                            if (savedContact) vendorShop.contact = savedContact;
+                            
+                            // Ensure it is transliterated for the dashboard
+                            translateSingleStall(vendorShop, currentLanguage).then(() => {
+                                renderProfilePage();
+                            });
+                        } else {
+                            // Saved ID no longer valid — show login form
+                            localStorage.removeItem('vendorShopId');
                             renderProfilePage();
-                        });
-                    } else {
-                        // Saved ID no longer valid — show login form
+                        }
+                    })
+                    .catch(() => {
+                        // Network error — still show login form
                         localStorage.removeItem('vendorShopId');
                         renderProfilePage();
-                    }
-                })
-                .catch(() => {
-                    // Network error — still show login form
-                    localStorage.removeItem('vendorShopId');
-                    renderProfilePage();
-                });
-            return;
+                    });
+                return;
+            }
         }
 
         app.innerHTML = `
