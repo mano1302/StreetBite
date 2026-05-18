@@ -55,13 +55,6 @@ def add_stall():
         stall_data['openTime'] = '09:00'
     if 'closeTime' not in stall_data:
         stall_data['closeTime'] = '22:00'
-    emoji_map = {
-        'Fast Food': '🍟', 'Biryani': '🍚', 'Parotta & Meals': '🫓',
-        'Grilled & Non-Veg': '🍗', 'Juice': '🧃', 'Sweet & Beverages': '🍧',
-        'Snacks': '🍿', 'Others': '🍽️'
-    }
-    if 'emoji' not in stall_data:
-        stall_data['emoji'] = emoji_map.get(stall_data.get('category', ''), '🍽️')
     new_stall = db.add_stall(stall_data)
     return jsonify(new_stall), 201
 
@@ -76,12 +69,6 @@ def signup_stall():
             return jsonify({'error': f'{field} is required'}), 400
     if len(stall_data['password']) < 4:
         return jsonify({'error': 'Password must be at least 4 characters'}), 400
-    emoji_map = {
-        'Fast Food': '🍟', 'Biryani': '🍚', 'Parotta & Meals': '🫓',
-        'Grilled & Non-Veg': '🍗', 'Juice': '🧃', 'Sweet & Beverages': '🍧',
-        'Snacks': '🍿', 'Others': '🍽️'
-    }
-    stall_data['emoji'] = emoji_map.get(stall_data.get('category', ''), '🍽️')
     stall_data['status'] = 'auto'
     
     # Safe transliteration (Optimized with Parallel Execution)
