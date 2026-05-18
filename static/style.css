@@ -1788,14 +1788,11 @@ body {
     box-shadow: 0 2px 8px rgba(114, 28, 36, 0.2);
 }
 
-/* Modern Status Control Card */
+/* Modern Status Control Card — legacy, overridden below */
 .status-control-card {
     background: white;
     border-radius: 20px;
     padding: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     margin-bottom: 25px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     border: 2px solid #f1f5f9;
@@ -2221,7 +2218,8 @@ body {
         grid-template-columns: 1fr;
     }
     .menu-input-row {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 2fr 1fr 40px;
+        gap: 8px;
     }
     .shop-card {
         padding: 13px;
@@ -2962,50 +2960,57 @@ input::-webkit-credentials-auto-fill-button {
 
 .status-label-group {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
     margin-bottom: 20px;
 }
 
 .status-main-label {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 800;
     color: #1a1a1a;
     letter-spacing: -0.02em;
+    margin: 0;
 }
 
 .status-sub-label {
-    font-size: 0.82rem;
-    font-weight: 600;
+    font-size: 0.78rem;
+    font-weight: 700;
     color: #f97316;
     background: #fff7ed;
-    padding: 4px 12px;
+    padding: 4px 14px;
     border-radius: 99px;
     border: 1px solid #ffedd5;
+    white-space: nowrap;
+    display: inline-block;
 }
 
 .status-modes {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 10px;
 }
 
 .mode-btn {
-    padding: 16px 12px;
+    padding: 14px 8px;
     border: 1.5px solid #f3f4f6;
-    border-radius: 18px;
+    border-radius: 16px;
     background: #f9fafb;
     color: #6b7280;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 7px;
     box-shadow: inset 0 1px 1px rgba(255,255,255,0.8);
+    text-align: center;
+    line-height: 1.3;
+    word-break: break-word;
 }
 
 .mode-btn svg {
@@ -3072,8 +3077,96 @@ input::-webkit-credentials-auto-fill-button {
     animation: pulse-sub 3s ease-in-out infinite;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
 }
 
+/* ============================================
+   Vendor Dashboard — Mobile Responsive Fixes
+   ============================================ */
+@media (max-width: 540px) {
+    .status-control-card {
+        padding: 18px 16px;
+        border-radius: 18px;
+    }
 
+    .status-label-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        margin-bottom: 16px;
+    }
+
+    .status-main-label {
+        font-size: 0.95rem;
+    }
+
+    .status-sub-label {
+        font-size: 0.7rem;
+        padding: 3px 11px;
+    }
+
+    .status-modes {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .mode-btn {
+        padding: 12px 6px;
+        font-size: 0.75rem;
+        border-radius: 13px;
+        gap: 5px;
+    }
+
+    .mode-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .dashboard-shop-name {
+        font-size: 1.1rem;
+        gap: 8px;
+    }
+
+    .vendor-dashboard {
+        padding: 16px;
+    }
+
+    .dashboard-header {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .dashboard-header h2 {
+        font-size: 1rem;
+        max-width: 60%;
+    }
+
+    .logout-btn {
+        font-size: 0.8rem;
+        padding: 8px 14px;
+    }
+
+    .form-group label {
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 0.9rem;
+        padding: 10px 12px;
+    }
+
+    .submit-btn {
+        font-size: 0.9rem;
+        padding: 13px;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        margin-top: 22px;
+        margin-bottom: 15px;
+    }
+}
 

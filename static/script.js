@@ -2444,6 +2444,11 @@ function renderAddShopPage() {
                             </div>
                         </div>
 
+                        <div id="time-preview-label" style="text-align: center; margin-top: -5px; margin-bottom: 15px; font-size: 0.85rem; font-weight: 600; color: #f97316; display: flex; align-items: center; justify-content: center; gap: 6px; background: rgba(249, 115, 22, 0.05); padding: 8px 12px; border-radius: 8px; border: 1px dashed rgba(249, 115, 22, 0.2);">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            <span id="time-preview-text">9:00 AM - 10:00 PM</span>
+                        </div>
+
                         <div class="menu-items-section">
                             <h3 class="section-title">${t('menuItems')}</h3>
                             <div class="menu-input-row">
@@ -2484,6 +2489,27 @@ function renderAddShopPage() {
 
     renderMenuList();
     setupPasswordToggles(modal);
+
+    // Live 12-Hour Format Time Preview Logic
+    const openTimeInput = modal.querySelector('#open-time');
+    const closeTimeInput = modal.querySelector('#close-time');
+    const timePreviewText = modal.querySelector('#time-preview-text');
+
+    function updateTimePreview() {
+        const openVal = openTimeInput.value;
+        const closeVal = closeTimeInput.value;
+        if (openVal && closeVal) {
+            const open12 = formatTime12Hour(openVal);
+            const close12 = formatTime12Hour(closeVal);
+            timePreviewText.textContent = `${open12} - ${close12}`;
+        }
+    }
+
+    openTimeInput.addEventListener('change', updateTimePreview);
+    closeTimeInput.addEventListener('change', updateTimePreview);
+    openTimeInput.addEventListener('input', updateTimePreview);
+    closeTimeInput.addEventListener('input', updateTimePreview);
+    updateTimePreview();
 
     // Custom Dropdown Logic for Signup (District & Area)
     let signupSelectedDistrict = '';
