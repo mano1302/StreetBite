@@ -1012,6 +1012,12 @@ const translations = {
         categoryOthers: 'Others',
         welcomeTitle: 'Welcome to StreetBite!',
         welcomeSubtitle: 'Discover the best street food near you',
+        adminConsole: 'StreetBite Admin Console',
+        adminConsoleDesc: 'Manage and delete any listed street food stall',
+        deleteShopBtn: 'Delete Shop',
+        deletingShopBtn: 'Deleting...',
+        deleteShopConfirm: 'Are you sure you want to permanently delete "{name}"?\n\nThis action cannot be undone.',
+        shopDeletedSuccessfully: '"{name}" deleted successfully!',
         shopsAvailable: 'shops available',
         toggleOpen: 'Open',
         toggleClosed: 'Closed',
@@ -1166,6 +1172,12 @@ const translations = {
         categoryOthers: 'மற்றவை',
         welcomeTitle: 'ஸ்ட்ரீட்பைட்-க்கு வரவேற்பு!',
         welcomeSubtitle: 'உங்கள் அருகில் சிறந்த தெரு உணவுகளைக் கண்டறியுங்கள்',
+        adminConsole: 'ஸ்ட்ரீட்பைட் நிர்வாக கன்சோல்',
+        adminConsoleDesc: 'பட்டியலிடப்பட்ட எந்தவொரு தெரு உணவுக் கடையையும் நிர்வகிக்கவும் மற்றும் நீக்கவும்',
+        deleteShopBtn: 'கடையை நீக்கு',
+        deletingShopBtn: 'நீக்கப்படுகிறது...',
+        deleteShopConfirm: '"{name}" கடையை நிரந்தரமாக நீக்க விரும்புகிறீர்களா?\n\nஇந்தச் செயலை மாற்ற முடியாது.',
+        shopDeletedSuccessfully: '"{name}" வெற்றிகரமாக நீக்கப்பட்டது!',
         shopsAvailable: 'கடைகள் கிடைக்கின்றன',
         toggleOpen: 'திறந்திருக்கிறது',
         toggleClosed: 'மூடியிருக்கிறது',
@@ -1320,6 +1332,12 @@ const translations = {
         categoryOthers: 'अन्य',
         welcomeTitle: 'स्ट्रीटबाइट में आपका स्वागत है!',
         welcomeSubtitle: 'आपके आस-पास का बेहतरीन स्ट्रीट फूड खोजें',
+        adminConsole: 'स्ट्रीटबाइट एडमिन कंसोल',
+        adminConsoleDesc: 'सूचीबद्ध किसी भी स्ट्रीट फूड स्टॉल को प्रबंधित और हटाएं',
+        deleteShopBtn: 'दुकान हटाएं',
+        deletingShopBtn: 'हटाया जा रहा है...',
+        deleteShopConfirm: 'क्या आप "{name}" को स्थायी रूप से हटाना चाहते हैं?\n\nइस क्रिया को वापस नहीं लिया जा सकता।',
+        shopDeletedSuccessfully: '"{name}" सफलतापूर्वक हटा दिया गया!',
         shopsAvailable: 'दुकानें उपलब्ध',
         toggleOpen: 'खुला है',
         toggleClosed: 'बंद है',
@@ -1715,6 +1733,17 @@ function td(text, obj = null) {
         }
     }
     return translated;
+}
+
+// Helper: translate district names dynamically
+function tDistrict(dist) {
+    if (!dist) return '';
+    if (currentLanguage === 'ta') {
+        return districtNamesTa[dist] || dist;
+    } else if (currentLanguage === 'hi') {
+        return districtNamesHi[dist] || dist;
+    }
+    return dist;
 }
 
 // Load saved language preference
@@ -2689,9 +2718,9 @@ function renderProfilePage() {
                         <div>
                             <h2 class="section-title" style="margin: 0; color:#dc2626; display:flex; align-items:center; gap:8px;">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                                StreetBite Admin Console
+                                ${t('adminConsole')}
                             </h2>
-                            <p style="color: #666; margin: 5px 0 0 0; font-size: 0.9rem;">Manage and delete any listed street food stall</p>
+                            <p style="color: #666; margin: 5px 0 0 0; font-size: 0.9rem;">${t('adminConsoleDesc')}</p>
                         </div>
                         <button class="logout-btn" id="logout-btn" style="background:#eee; color:#333; padding:10px 20px; border-radius:12px; font-weight:600; border:none; cursor:pointer;">${t('logout')}</button>
                     </div>
@@ -2702,16 +2731,16 @@ function renderProfilePage() {
                                 <div>
                                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
                                         <span style="font-size: 1.5rem;">${categorySVGs[stall.category] || '🏪'}</span>
-                                        <h4 style="margin: 0; font-size: 1.15rem; color: #111; font-weight: 700;">${stall.name}</h4>
+                                        <h4 style="margin: 0; font-size: 1.15rem; color: #111; font-weight: 700;">${td(stall.name, stall)}</h4>
                                     </div>
                                     <div style="color: #666; font-size: 0.85rem; display: flex; flex-direction: column; gap: 4px;">
-                                        <span>📍 ${stall.district} - ${stall.area}</span>
+                                        <span>📍 ${tDistrict(stall.district)} - ${td(stall.area, stall)}</span>
                                         <span>📞 ${stall.contact}</span>
                                     </div>
                                 </div>
                                 <button class="submit-btn admin-delete-btn" data-id="${stall.id}" data-name="${stall.name}" style="background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; margin: 0; padding: 10px 18px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                                    Delete Shop
+                                    ${t('deleteShopBtn')}
                                 </button>
                             </div>
                         `).join('')}
@@ -2733,11 +2762,13 @@ function renderProfilePage() {
             app.querySelectorAll('.admin-delete-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const stallId = parseInt(btn.dataset.id);
-                    const stallName = btn.dataset.name;
+                    const stallObj = stalls.find(s => s.id === stallId);
+                    const stallName = stallObj ? stallObj.name : btn.dataset.name;
+                    const localizedName = stallObj ? td(stallObj.name, stallObj) : stallName;
                     
-                    showCustomConfirm(`Are you sure you want to permanently delete "${stallName}"?\n\nThis action cannot be undone.`, async () => {
+                    showCustomConfirm(t('deleteShopConfirm').replace('{name}', localizedName), async () => {
                         btn.disabled = true;
-                        btn.textContent = 'Deleting...';
+                        btn.textContent = t('deletingShopBtn');
                         try {
                             const res = await fetch(`/api/stalls/${stallId}`, {
                                 method: 'DELETE',
@@ -2749,18 +2780,18 @@ function renderProfilePage() {
                             });
                             const data = await res.json();
                             if (res.ok && data.success) {
-                                showToast(`"${stallName}" deleted successfully!`, 'success');
+                                showToast(t('shopDeletedSuccessfully').replace('{name}', localizedName), 'success');
                                 await loadStalls();
                                 renderProfilePage();
                             } else {
-                                showToast(data.error || 'Failed to delete shop', 'error');
+                                showToast(data.error || t('deletionFailed'), 'error');
                                 btn.disabled = false;
-                                btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg> Delete Shop`;
+                                btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg> ${t('deleteShopBtn')}`;
                             }
                         } catch (e) {
-                            showToast('Network error', 'error');
+                            showToast(t('networkError'), 'error');
                             btn.disabled = false;
-                            btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg> Delete Shop`;
+                            btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg> ${t('deleteShopBtn')}`;
                         }
                     });
                 });
