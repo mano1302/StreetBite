@@ -13,6 +13,23 @@ let currentPage = 'home';
 let selectedCategory = 'All';
 let searchQuery = '';
 let vendorShop = null;
+function updateVendorShop(newShop) {
+    if (!newShop) {
+        vendorShop = null;
+        return;
+    }
+    const oldPwd = (vendorShop && vendorShop._sessionPwd) || sessionStorage.getItem('vendorSessionPassword') || '';
+    const oldContact = (vendorShop && vendorShop.contact) || localStorage.getItem('vendorContact') || '';
+    vendorShop = newShop;
+    if (oldPwd) {
+        vendorShop._sessionPwd = oldPwd;
+        sessionStorage.setItem('vendorSessionPassword', oldPwd);
+    }
+    if (oldContact) {
+        vendorShop.contact = oldContact;
+        localStorage.setItem('vendorContact', oldContact);
+    }
+}
 let currentLanguage = 'en';
 let currentStallId = null;
 
@@ -2977,7 +2994,7 @@ function renderProfilePage() {
                             })
                         });
                         const updated = await res.json();
-                        vendorShop = updated;
+                        updateVendorShop(updated);
                         renderVendorMenuList();
                         showToast(t('itemNowStatus').replace('{item}', td(item.itemName, item)).replace('{status}', newAvailable ? t('available') : t('unavailable')), 'success');
                         loadStalls();
@@ -3002,7 +3019,7 @@ function renderProfilePage() {
                         if (!res.ok) {
                             throw new Error(data.error || t('failedToRemoveItem'));
                         }
-                        vendorShop = data;
+                        updateVendorShop(data);
                         renderVendorMenuList();
                         showToast(t('itemRemoved'), 'success');
                         loadStalls();
@@ -3069,7 +3086,7 @@ function renderProfilePage() {
                 if (!res.ok) throw new Error('API Error');
                 
                 const updated = await res.json();
-                vendorShop = updated;
+                updateVendorShop(updated);
 
                 // Step 5: Directly add to screen with animation (Optimistic/Direct DOM)
                 const listContainer = app.querySelector('#vendor-menu-list');
@@ -3210,7 +3227,7 @@ function renderProfilePage() {
                 .then(r => r.json())
                 .then(shop => {
                     if (shop && shop.id) {
-                        vendorShop = shop;
+                        updateVendorShop(shop);
                         // Re-attach contact from localStorage so delete/actions work
                         if (savedContact) vendorShop.contact = savedContact;
                         
@@ -3314,9 +3331,8 @@ function renderProfilePage() {
                 });
                 const data = await res.json();
                 if (res.ok && data.success) {
-                    vendorShop = data.stall;
-                    vendorShop._sessionPwd = password;
-                    vendorShop.contact = contact; // keep contact in memory for delete/actions
+                    sessionStorage.setItem('vendorSessionPassword', password);
+                    updateVendorShop(data.stall);
                     localStorage.setItem('vendorShopId', vendorShop.id);
                     localStorage.setItem('vendorLoginTime', Date.now());
                     localStorage.setItem('vendorContact', contact);
