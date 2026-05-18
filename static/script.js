@@ -2495,20 +2495,25 @@ function renderAddShopPage() {
     const closeTimeInput = modal.querySelector('#close-time');
     const timePreviewText = modal.querySelector('#time-preview-text');
 
+    // Mobile browsers (iOS/Android) often do NOT apply the value= HTML attribute
+    // on dynamically-inserted innerHTML time inputs — set it explicitly via JS.
+    if (!openTimeInput.value)  openTimeInput.value  = openTimeInput.getAttribute('value')  || '09:00';
+    if (!closeTimeInput.value) closeTimeInput.value = closeTimeInput.getAttribute('value') || '22:00';
+
     function updateTimePreview() {
-        const openVal = openTimeInput.value;
-        const closeVal = closeTimeInput.value;
-        if (openVal && closeVal) {
-            const open12 = formatTime12Hour(openVal);
-            const close12 = formatTime12Hour(closeVal);
-            timePreviewText.textContent = `${open12} - ${close12}`;
-        }
+        // Always read both fields; fall back to the last known good value
+        const openVal  = openTimeInput.value  || '09:00';
+        const closeVal = closeTimeInput.value || '22:00';
+        const open12  = formatTime12Hour(openVal);
+        const close12 = formatTime12Hour(closeVal);
+        timePreviewText.textContent = `${open12} \u2013 ${close12}`;
     }
 
     openTimeInput.addEventListener('change', updateTimePreview);
     closeTimeInput.addEventListener('change', updateTimePreview);
     openTimeInput.addEventListener('input', updateTimePreview);
     closeTimeInput.addEventListener('input', updateTimePreview);
+    // Run once immediately so the preview is correct from the start
     updateTimePreview();
 
     // Custom Dropdown Logic for Signup (District & Area)

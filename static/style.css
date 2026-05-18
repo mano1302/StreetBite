@@ -1554,9 +1554,12 @@ body {
 
 .menu-input-row {
     display: grid;
-    grid-template-columns: 2fr 1fr auto;
-    gap: 10px;
+    grid-template-columns: 2fr 1fr 44px;
+    gap: 8px;
     margin-bottom: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .menu-input-row input {
@@ -1564,14 +1567,19 @@ body {
     border: 2px solid #eee;
     border-radius: 8px;
     font-size: 0.9rem;
+    /* Critical: prevents grid children from overflowing column width */
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .add-menu-btn {
     background: linear-gradient(135deg, #28a745, #20c997);
     color: white;
     border: none;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
     border-radius: 8px;
     cursor: pointer;
     font-size: 1.5rem;
@@ -1579,6 +1587,7 @@ body {
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+    flex-shrink: 0;
 }
 
 .add-menu-btn:hover {
@@ -2218,8 +2227,13 @@ body {
         grid-template-columns: 1fr;
     }
     .menu-input-row {
-        grid-template-columns: 2fr 1fr 40px;
-        gap: 8px;
+        grid-template-columns: 2fr 1fr 44px;
+        gap: 6px;
+    }
+    .menu-input-row input {
+        font-size: 0.85rem;
+        padding: 9px 8px;
+        min-width: 0;
     }
     .shop-card {
         padding: 13px;
