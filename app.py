@@ -209,7 +209,10 @@ def menu_item_handler(stall_id):
     password = item_data.get('password')
 
     if not db.vendor_login(stall_id, contact, password):
-        return jsonify({'error': 'Authentication failed'}), 401
+        print(f"[AUTH FAIL] stall_id={stall_id}, contact={contact}, pwd_len={len(password) if password else 0}")
+        return jsonify({
+            'error': f'Authentication failed (stall_id={stall_id}, contact={contact}, has_pwd={bool(password)})'
+        }), 401
 
     if request.method == 'PUT':
         # Toggle availability: body = {item_id, available}
