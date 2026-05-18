@@ -1,6 +1,0 @@
-[ta] Amma Fresh Juice Shop -> அம்மா ப்ரெஷ் ஜூஸ் ஷாப்
-[ta] Mano drinks -> மனோ டிரிங்க்ஸ்
-[hi] Mano drinks -> मनो ड्रिंक्स
-[ta] Chicken Puffs -> சிக்கன் பஃப்ஸ்
-[hi] Egg Puffs -> एग पफ्स
-[ta] StreetBite Cafe -> ஸ்ட்ரீட்ப்பிட்டே கபே
