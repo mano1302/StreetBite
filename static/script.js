@@ -2681,6 +2681,93 @@ function renderProfilePage() {
     const app = document.getElementById('app');
 
     if (vendorShop) {
+        if (vendorShop.id === -99) {
+            // Admin Dashboard View
+            app.innerHTML = `
+                <div class="page admin-dashboard-page" style="padding: 20px; max-width: 800px; margin: 0 auto;">
+                    <div class="dashboard-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 30px; border-bottom: 2px solid #fee2e2; padding-bottom: 15px;">
+                        <div>
+                            <h2 class="section-title" style="margin: 0; color:#dc2626; display:flex; align-items:center; gap:8px;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                StreetBite Admin Console
+                            </h2>
+                            <p style="color: #666; margin: 5px 0 0 0; font-size: 0.9rem;">Manage and delete any listed street food stall</p>
+                        </div>
+                        <button class="logout-btn" id="logout-btn" style="background:#eee; color:#333; padding:10px 20px; border-radius:12px; font-weight:600; border:none; cursor:pointer;">${t('logout')}</button>
+                    </div>
+
+                    <div class="admin-shop-list" style="display: flex; flex-direction: column; gap: 16px;">
+                        ${stalls.map(stall => `
+                            <div class="admin-shop-card" style="background: white; border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border: 1px solid #f0f0f0;">
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                        <span style="font-size: 1.5rem;">${categorySVGs[stall.category] || '🏪'}</span>
+                                        <h4 style="margin: 0; font-size: 1.15rem; color: #111; font-weight: 700;">${stall.name}</h4>
+                                    </div>
+                                    <div style="color: #666; font-size: 0.85rem; display: flex; flex-direction: column; gap: 4px;">
+                                        <span>📍 ${stall.district} - ${stall.area}</span>
+                                        <span>📞 ${stall.contact}</span>
+                                    </div>
+                                </div>
+                                <button class="submit-btn admin-delete-btn" data-id="${stall.id}" data-name="${stall.name}" style="background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; margin: 0; padding: 10px 18px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                                    Delete Shop
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            // Attach Logout Event
+            app.querySelector('#logout-btn').addEventListener('click', () => {
+                vendorShop = null;
+                localStorage.removeItem('vendorShopId');
+                localStorage.removeItem('vendorContact');
+                localStorage.removeItem('vendorPassword');
+                localStorage.removeItem('vendorLoginTime');
+                renderProfilePage();
+            });
+
+            // Attach Delete Events
+            app.querySelectorAll('.admin-delete-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const stallId = parseInt(btn.dataset.id);
+                    const stallName = btn.dataset.name;
+                    
+                    showCustomConfirm(`Are you sure you want to permanently delete "${stallName}"?\n\nThis action cannot be undone.`, async () => {
+                        btn.disabled = true;
+                        btn.textContent = 'Deleting...';
+                        try {
+                            const res = await fetch(`/api/stalls/${stallId}`, {
+                                method: 'DELETE',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ 
+                                    contact: vendorShop.contact, 
+                                    password: vendorShop._sessionPwd 
+                                })
+                            });
+                            const data = await res.json();
+                            if (res.ok && data.success) {
+                                showToast(`"${stallName}" deleted successfully!`, 'success');
+                                await loadStalls();
+                                renderProfilePage();
+                            } else {
+                                showToast(data.error || 'Failed to delete shop', 'error');
+                                btn.disabled = false;
+                                btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg> Delete Shop`;
+                            }
+                        } catch (e) {
+                            showToast('Network error', 'error');
+                            btn.disabled = false;
+                            btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg> Delete Shop`;
+                        }
+                    });
+                });
+            });
+            return;
+        }
+
         // Vendor dashboard
         const openTime12 = formatTime12Hour(vendorShop.openTime);
         const closeTime12 = formatTime12Hour(vendorShop.closeTime);
@@ -3161,6 +3248,24 @@ function renderProfilePage() {
                 </div>
             `;
             // Re-fetch from API to get fresh data
+            if (savedShopId === '-99') {
+                vendorShop = {
+                    id: -99,
+                    name: 'StreetBite Administrator',
+                    category: 'admin',
+                    contact: savedContact,
+                    area: 'All Districts',
+                    district: 'Tamil Nadu',
+                    menu: [],
+                    status: 'open',
+                    openTime: '00:00',
+                    closeTime: '23:59',
+                    _sessionPwd: savedPassword
+                };
+                renderProfilePage();
+                return;
+            }
+
             fetch(`/api/stalls/${savedShopId}`)
                 .then(r => r.json())
                 .then(shop => {

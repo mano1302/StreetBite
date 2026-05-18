@@ -278,6 +278,27 @@ def vendor_login_by_contact():
     if not password:
         return jsonify({'error': 'Password is required'}), 400
 
+    # Check for Admin Credentials
+    admin_contact = os.environ.get('ADMIN_CONTACT', '9999999999')
+    admin_password = os.environ.get('ADMIN_PASSWORD', 'StreetBiteAdmin2026!')
+    
+    if contact == admin_contact and password == admin_password:
+        return jsonify({
+            'success': True,
+            'stall': {
+                'id': -99,
+                'name': 'StreetBite Administrator',
+                'category': 'admin',
+                'contact': admin_contact,
+                'area': 'All Districts',
+                'district': 'Tamil Nadu',
+                'menu': [],
+                'status': 'open',
+                'openTime': '00:00',
+                'closeTime': '23:59'
+            }
+        })
+
     stall = db.login_by_contact(contact, password)
     if stall:
         return jsonify({'success': True, 'stall': stall})
