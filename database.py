@@ -11,22 +11,17 @@ import secrets
 from datetime import datetime
 from contextlib import contextmanager
 
-# Try to import psycopg2 or psycopg (v3) for PostgreSQL support
-PSYCOPG2_AVAILABLE = False
+# Try to import psycopg (v3) for PostgreSQL support
 PSYCOPG3_AVAILABLE = False
-RealDictCursor = None
-
 try:
-    import psycopg2
-    from psycopg2.extras import RealDictCursor
-    PSYCOPG2_AVAILABLE = True
+    import psycopg
+    from psycopg.rows import dict_row
+    PSYCOPG3_AVAILABLE = True
 except Exception:
-    try:
-        import psycopg
-        from psycopg.rows import dict_row
-        PSYCOPG3_AVAILABLE = True
-    except Exception:
-        pass
+    pass
+
+# Expose for app.py diagnostics
+PSYCOPG2_AVAILABLE = False
 
 
 class Database:
@@ -34,7 +29,7 @@ class Database:
 
     def __init__(self):
         self.db_url = os.environ.get('DATABASE_URL')
-        self.is_postgresql = bool(self.db_url) and (PSYCOPG2_AVAILABLE or PSYCOPG3_AVAILABLE)
+        self.is_postgresql = bool(self.db_url) and PSYCOPG3_AVAILABLE
         # SQLite fallback: use local directory
         data_dir = os.path.dirname(__file__)
         self.sqlite_path = os.path.join(data_dir, 'streetbite_clean.db')
@@ -47,12 +42,9 @@ class Database:
     def _get_connection(self):
         """Get database connection based on configuration."""
         if self.is_postgresql:
-            # Render gives postgres:// but psycopg/psycopg2 needs postgresql://
+            # Render gives postgres:// but psycopg needs postgresql://
             url = self.db_url.replace('postgres://', 'postgresql://', 1)
-            if PSYCOPG2_AVAILABLE:
-                return psycopg2.connect(url)
-            else:
-                return psycopg.connect(url)
+            return psycopg.connect(url, row_factory=dict_row)
         else:
             import sqlite3
             conn = sqlite3.connect(self.sqlite_path)
@@ -64,13 +56,7 @@ class Database:
         """Context manager for database cursors."""
         conn = self._get_connection()
         try:
-            if self.is_postgresql:
-                if PSYCOPG2_AVAILABLE:
-                    cursor = conn.cursor(cursor_factory=RealDictCursor)
-                else:
-                    cursor = conn.cursor(row_factory=dict_row)
-            else:
-                cursor = conn.cursor()
+            cursor = conn.cursor()
             yield cursor
             conn.commit()
         except Exception as e:
