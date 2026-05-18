@@ -112,76 +112,146 @@ const districtNamesHi = {
 
 // Dynamic Translation for User Content (Shop Names, Menu Items)
 const dynamicTranslations = {
-    // Common Food Items
-    'Dosa': { ta: 'தோசை', hi: 'डोसा' },
-    'Idli': { ta: 'இட்லி', hi: 'इडली' },
-    'Vada': { ta: 'வடை', hi: 'वड़ा' },
-    'Samosa': { ta: 'சமோசா', hi: 'समोसा' },
-    'Biryani': { ta: 'பிரியாணி', hi: 'बिरयानी' },
-    'Parotta': { ta: 'பரோட்டா', hi: 'परोटा' },
-    'Noodles': { ta: 'நூடுல்ஸ்', hi: 'नूडल्स' },
-    'Fried Rice': { ta: 'ப்ரைடு ரைஸ்', hi: 'फ्राइड राइस' },
-    'Omelette': { ta: 'ஆம்லெட்', hi: 'आमलेट' },
-    'Bread Omelette': { ta: 'பிரட் ஆம்லெட்', hi: 'ब्रेड आमलेट' },
-    'Poori': { ta: 'பூரி', hi: 'पूरी' },
-    'Pongal': { ta: 'பொங்கல்', hi: 'पोंगल' },
-    'Meals': { ta: 'சாப்பாடு', hi: 'भोजन' },
-    'Chicken': { ta: 'சிக்கன்', hi: 'चिकन' },
-    'Mutton': { ta: 'மட்டன்', hi: 'मटन' },
-    'Fish': { ta: 'மீன்', hi: 'मछली' },
-    'Egg': { ta: 'முட்டை', hi: 'अंडा' },
-    'Veg': { ta: 'வெஜ்', hi: 'वेज' },
-    'Non-Veg': { ta: 'நான்-வெஜ்', hi: 'नॉन-वेज' },
-    'Tea': { ta: 'டீ', hi: 'चाय' },
-    'Coffee': { ta: 'காபி', hi: 'कॉफी' },
-    'Milk': { ta: 'பால்', hi: 'दूध' },
-    'Juice': { ta: 'ஜூஸ்', hi: 'जूस' },
-    'Water': { ta: 'தண்ணீர்', hi: 'पानी' },
-    'Rose Milk': { ta: 'ரோஸ் மில்க்', hi: 'रोज मिल्क' },
-    'Badam Milk': { ta: 'பாதாம் பால்', hi: 'बादाम दूध' },
-    'Chai': { ta: 'டீ', hi: 'चाय' },
-    'Pav Bhaji': { ta: 'பாவ் பாஜி', hi: 'पाव भाजी' },
-    'Pani Puri': { ta: 'பாணி பூரி', hi: 'पानी पूरी' },
-    'Bhel Puri': { ta: 'பெல் பூரி', hi: 'भेल पूरी' },
-    'Chat': { ta: 'சாட்', hi: 'चाट' },
-    'Chilli': { ta: 'சில்லி', hi: 'चिली' },
-    'Manchurian': { ta: 'மஞ்சூரியன்', hi: 'मंचूरियन' },
-    'Soup': { ta: 'சூப்', hi: 'सूप' },
-    'Ice Cream': { ta: 'ஐஸ் கிரீம்', hi: 'आइसक्रीम' },
-    
-    // Common Shop Suffixes
-    'Shop': { ta: 'கடை', hi: 'दुकान' },
-    'Stall': { ta: 'கடை', hi: 'स्टॉल' },
-    'Hotel': { ta: 'ஹோட்டல்', hi: 'होटल' },
-    'Mess': { ta: 'மெஸ்', hi: 'मेस' },
-    'Tiffin Centre': { ta: 'டிஃபின் சென்டர்', hi: 'टिफिन सेंटर' },
-    'Snacks': { ta: 'சிற்றுண்டி', hi: 'नाश्ता' },
-    'Others': { ta: 'மற்றவை', hi: 'अन्य' },
-    
-    // Tough words for API (Manual Phonetics)
-    'Puffs': { ta: 'பஃப்ஸ்', hi: 'पफ्स' },
-    'Egg Puffs': { ta: 'முட்டை பஃப்ஸ்', hi: 'एग पफ्स' },
-    'Veg Puffs': { ta: 'வெஜ் பஃப்ஸ்', hi: 'वेज पफ्स' },
-    'Chicken Puffs': { ta: 'சிக்கன் பஃப்ஸ்', hi: 'चिकन पफ्स' },
-    'Sandwich': { ta: 'சாண்ட்விச்', hi: 'सैंडविच' },
-    'Momos': { ta: 'மோமோஸ்', hi: 'मोमोज' },
-    'Burger': { ta: 'பர்கர்', hi: 'बर्गर' },
-    'Pizza': { ta: 'பிட்சா', hi: 'पिज्जा' },
-    'Pasta': { ta: 'பாஸ்தா', hi: 'पास्ता' },
-    'Milkshake': { ta: 'மில்க் ஷேக்', hi: 'मिल्कशेक' },
-    'Brownie': { ta: 'பிரவுனி', hi: 'ब्राउनी' },
-    'Roll': { ta: 'ரோல்', hi: 'रोल' },
-    'Spring Roll': { ta: 'ஸ்பிரிங் ரோல்', hi: 'स्प्रिंग रोल' },
-    'Cutlet': { ta: 'கட்லெட்', hi: 'कटलेट' },
-    'Noodles': { ta: 'நூடுல்ஸ்', hi: 'नूडल्स' },
-    'Maggi': { ta: 'மேகி', hi: 'मैगी' },
-    'Pasta': { ta: 'பாஸ்தா', hi: 'पास्ता' },
-    'Mojito': { ta: 'மொகித்தோ', hi: 'मोजितो' },
-    'Shake': { ta: 'ஷேக்', hi: 'शेक' },
-    
-    // Common Shop Suffixes
-    'Sweets': { ta: 'ஸ்வீட்ஸ்', hi: 'स्वीட்ஸ்' },
-    'Cool Bar': { ta: 'கூல் பார்', hi: 'कूल बार' }
+    'Dosa': { 'ta': 'தோசை', 'hi': 'डोसा' },
+    'Idli': { 'ta': 'இட்லி', 'hi': 'इडली' },
+    'Vada': { 'ta': 'வடை', 'hi': 'वड़ा' },
+    'Samosa': { 'ta': 'சமோசா', 'hi': 'समोसा' },
+    'Biryani': { 'ta': 'பிரியாணி', 'hi': 'बिरयानी' },
+    'Parotta': { 'ta': 'பரோட்டா', 'hi': 'परोटा' },
+    'Noodles': { 'ta': 'நூடுல்ஸ்', 'hi': 'नूडल्स' },
+    'Fried Rice': { 'ta': 'ப்ரைடு ரைஸ்', 'hi': 'फ्राइड राइस' },
+    'Omelette': { 'ta': 'ஆம்லெட்', 'hi': 'आमलेट' },
+    'Bread Omelette': { 'ta': 'பிரட் ஆம்லெட்', 'hi': 'ब्रेड आमलेट' },
+    'Poori': { 'ta': 'பூரி', 'hi': 'पूरी' },
+    'Pongal': { 'ta': 'பொங்கல்', 'hi': 'पोंगल' },
+    'Meals': { 'ta': 'மீல்ஸ்', 'hi': 'मील्स' },
+    'Chicken': { 'ta': 'சிக்கன்', 'hi': 'चिकन' },
+    'Mutton': { 'ta': 'மட்டன்', 'hi': 'मटन' },
+    'Fish': { 'ta': 'பிஷ்', 'hi': 'फिश' },
+    'Egg': { 'ta': 'எக்', 'hi': 'एग' },
+    'Veg': { 'ta': 'வெஜ்', 'hi': 'वेज' },
+    'Non-Veg': { 'ta': 'நான்-வெஜ்', 'hi': 'नॉन-वेज' },
+    'Tea': { 'ta': 'டீ', 'hi': 'टी' },
+    'Coffee': { 'ta': 'காபி', 'hi': 'कॉफी' },
+    'Milk': { 'ta': 'மில்க்', 'hi': 'मिल्क' },
+    'Juice': { 'ta': 'ஜூஸ்', 'hi': 'जूस' },
+    'Water': { 'ta': 'வாட்டர்', 'hi': 'वाटर' },
+    'Rose Milk': { 'ta': 'ரோஸ் மில்க்', 'hi': 'रोज मिल्क' },
+    'Badam Milk': { 'ta': 'பாதாம் மில்க்', 'hi': 'बादाम मिल्क' },
+    'Chai': { 'ta': 'டீ', 'hi': 'टी' },
+    'Pav Bhaji': { 'ta': 'பாவ் பாஜி', 'hi': 'पाव भाजी' },
+    'Pani Puri': { 'ta': 'பாணி பூரி', 'hi': 'पानी पूरी' },
+    'Bhel Puri': { 'ta': 'பெல் பூரி', 'hi': 'भेल पूरी' },
+    'Chat': { 'ta': 'சாட்', 'hi': 'चाट' },
+    'Chilli': { 'ta': 'சில்லி', 'hi': 'चिली' },
+    'Manchurian': { 'ta': 'மஞ்சூரியன்', 'hi': 'मंचूरियन' },
+    'Soup': { 'ta': 'சூப்', 'hi': 'सूप' },
+    'Ice Cream': { 'ta': 'ஐஸ் கிரீம்', 'hi': 'आइसक्रीम' },
+    'Kadalai': { 'ta': 'கடலை', 'hi': 'कडलई' },
+    'Kool': { 'ta': 'கூல்', 'hi': 'कूल' },
+    'Idiyappam': { 'ta': 'இடியாப்பம்', 'hi': 'इडियप्पम' },
+    'Appam': { 'ta': 'ஆப்பம்', 'hi': 'अप्पम' },
+    'Puttu': { 'ta': 'புட்டு', 'hi': 'पुट्टू' },
+    'Murukku': { 'ta': 'முறுக்கு', 'hi': 'मुरुक्कू' },
+    'Sundal': { 'ta': 'சுண்டல்', 'hi': 'सुंडल' },
+    'Bajji': { 'ta': 'பஜ்ஜி', 'hi': 'बज्जी' },
+    'Bonda': { 'ta': 'போண்டா', 'hi': 'बोंடா' },
+    'Aththo': { 'ta': 'அத்தோ', 'hi': 'अत्தோ' },
+    'Bejo': { 'ta': 'பெஜோ', 'hi': 'बेजो' },
+    'Mohinga': { 'ta': 'மோகிங்கா', 'hi': 'मोहिंंगा' },
+    'Kalakki': { 'ta': 'கலக்கி', 'hi': 'कलक्की' },
+    'Kizhi': { 'ta': 'கிழி', 'hi': 'किजी' },
+    'Bun': { 'ta': 'பன்', 'hi': 'बन' },
+    'Butter': { 'ta': 'பட்டர்', 'hi': 'बटर' },
+    'Jam': { 'ta': 'ஜாம்', 'hi': 'जाम' },
+    'Kulfi': { 'ta': 'குல்பி', 'hi': 'कुल्फी' },
+    'Jigarthanda': { 'ta': 'ஜிகர்தண்டா', 'hi': 'जिगरठंडा' },
+    'Halwa': { 'ta': 'அல்வா', 'hi': 'हलवा' },
+    'Ladoo': { 'ta': 'லட்டு', 'hi': 'लड्डू' },
+    'Jalebi': { 'ta': 'ஜிலேபி', 'hi': 'जलेबी' },
+    'Pakoda': { 'ta': 'பக்கோடா', 'hi': 'पकोड़ा' },
+    'Vadai': { 'ta': 'வடை', 'hi': 'वड़ा' },
+    'Nellai': { 'ta': 'நெல்லை', 'hi': 'नेल्लई' },
+    'Madurai': { 'ta': 'மதுரை', 'hi': 'मदुरई' },
+    'Chennai': { 'ta': 'சென்னை', 'hi': 'चेन्नई' },
+    'Madras': { 'ta': 'மெட்ராஸ்', 'hi': 'मद्रास' },
+    'Bombay': { 'ta': 'பாம்பே', 'hi': 'बॉम्बे' },
+    'Chettinadu': { 'ta': 'செட்டிநாடு', 'hi': 'चेट्टीनाडु' },
+    'Karaikudi': { 'ta': 'காரைக்குடி', 'hi': 'काराइकुडी' },
+    'Dindigul': { 'ta': 'திண்டுக்கல்', 'hi': 'डिंडीगुल' },
+    'Ambur': { 'ta': 'ஆம்பூர்', 'hi': 'आम्बुर' },
+    'Vaniyambadi': { 'ta': 'வாணியம்பாடி', 'hi': 'वाणियमबाड़ी' },
+    'Thalappakatti': { 'ta': 'தலப்பாக்கட்டி', 'hi': 'थलप्पकट्टी' },
+    'Saravana': { 'ta': 'சரவண', 'hi': 'सरवण' },
+    'Annapoorna': { 'ta': 'அன்னபூர்ணா', 'hi': 'अन्नपूर्णा' },
+    'Lakshmi': { 'ta': 'லட்சுமி', 'hi': 'लक्ष्मी' },
+    'Ganesh': { 'ta': 'கணேஷ்', 'hi': 'गणेश' },
+    'Murugan': { 'ta': 'முருகன்', 'hi': 'मुरुगन' },
+    'Vilas': { 'ta': 'விலாஸ்', 'hi': 'विलास' },
+    'Bhavan': { 'ta': 'பவன்', 'hi': 'भवन' },
+    'Canteen': { 'ta': 'கேண்டீன்', 'hi': 'कैंटीन' },
+    'Eatery': { 'ta': 'ஈட்டரி', 'hi': 'ईटरी' },
+    'Dhaba': { 'ta': 'தாபா', 'hi': 'ढाबा' },
+    'Tea Stall': { 'ta': 'டீ ஸ்டால்', 'hi': 'टी स्टॉल' },
+    'Coffee Bar': { 'ta': 'காபி பார்', 'hi': 'कॉफी बार' },
+    'Shop': { 'ta': 'ஷாப்', 'hi': 'शॉप' },
+    'Stall': { 'ta': 'ஸ்டால்', 'hi': 'स्टॉल' },
+    'Hotel': { 'ta': 'ஹோட்டல்', 'hi': 'होटल' },
+    'Mess': { 'ta': 'மெஸ்', 'hi': 'मेस' },
+    'Tiffin Centre': { 'ta': 'டிஃபின் சென்டர்', 'hi': 'टिफिन सेंटर' },
+    'Snacks': { 'ta': 'ஸ்நாக்ஸ்', 'hi': 'स्नैक्स' },
+    'Others': { 'ta': 'அதர்ஸ்', 'hi': 'अदर्स' },
+    'Puffs': { 'ta': 'பஃப்ஸ்', 'hi': 'पफ्स' },
+    'Egg Puffs': { 'ta': 'எக் பஃப்ஸ்', 'hi': 'एग पफ्स' },
+    'Veg Puffs': { 'ta': 'வெஜ் பஃப்ஸ்', 'hi': 'वेज पफ्स' },
+    'Chicken Puffs': { 'ta': 'சிக்கன் பஃப்ஸ்', 'hi': 'चिकन पफ्स' },
+    'Sandwich': { 'ta': 'சாண்ட்விச்', 'hi': 'सैंडविच' },
+    'Momos': { 'ta': 'மோமோஸ்', 'hi': 'मोमोज' },
+    'Burger': { 'ta': 'பர்கர்', 'hi': 'बर्गर' },
+    'Pizza': { 'ta': 'பிட்சா', 'hi': 'पिज्जा' },
+    'Pasta': { 'ta': 'பாஸ்தா', 'hi': 'पास्ता' },
+    'Milkshake': { 'ta': 'மில்க் ஷேக்', 'hi': 'मिल्कशेक' },
+    'Brownie': { 'ta': 'பிரவுனி', 'hi': 'ब्राउनी' },
+    'Roll': { 'ta': 'ரோல்', 'hi': 'रोल' },
+    'Spring Roll': { 'ta': 'ஸ்பிரிங் ரோல்', 'hi': 'स्प्रिंग रोल' },
+    'Cutlet': { 'ta': 'கட்லெட்', 'hi': 'कटलेट' },
+    'Maggi': { 'ta': 'மேகி', 'hi': 'मैगी' },
+    'Mojito': { 'ta': 'மொகித்தோ', 'hi': 'मोजितो' },
+    'Shake': { 'ta': 'ஷேக்', 'hi': 'शेक' },
+    'Sweets': { 'ta': 'ஸ்வீட்ஸ்', 'hi': 'स्वीट्स' },
+    'Cool Bar': { 'ta': 'கூல் பார்', 'hi': 'कूल बार' },
+    'Corner': { 'ta': 'கார்னர்', 'hi': 'कॉर्नर' },
+    'Point': { 'ta': 'பாயிண்ட்', 'hi': 'पॉइंट' },
+    'Cafe': { 'ta': 'கபே', 'hi': 'कैफे' },
+    'Restaurant': { 'ta': 'ரெஸ்டாரண்ட்', 'hi': 'रेस्टोरेंट' },
+    'Fast Food': { 'ta': 'ஃபாஸ்ட் ஃபுட்', 'hi': 'फास्ट फूड' },
+    'Bakery': { 'ta': 'பேக்கரி', 'hi': 'बेकरी' },
+    'Drinks': { 'ta': 'டிரிங்க்ஸ்', 'hi': 'ड्रिंक्स' },
+    'Cool': { 'ta': 'கூல்', 'hi': 'कूल' },
+    'Fresh': { 'ta': 'ப்ரெஷ்', 'hi': 'फ्रेश' },
+    'Special': { 'ta': 'ஸ்பெஷல்', 'hi': 'स्पेशल' },
+    'Grand': { 'ta': 'கிராண்ட்', 'hi': 'ग्रैंड' },
+    'New': { 'ta': 'நியூ', 'hi': 'न्यू' },
+    'Classic': { 'ta': 'கிளாசிக்', 'hi': 'क्लासिक' },
+    'Street': { 'ta': 'ஸ்ட்ரீட்', 'hi': 'स्ट्रीट' },
+    'Bite': { 'ta': 'பைட்', 'hi': 'बाइट' },
+    'StreetBite': { 'ta': 'ஸ்ட்ரீட்பைட்', 'hi': 'स्ट्रीटबाइट' },
+    'Taste': { 'ta': 'டேஸ்ட்', 'hi': 'टेस्ट' },
+    'Tasty': { 'ta': 'டேஸ்டி', 'hi': 'टेस्टी' },
+    'Yummy': { 'ta': 'யம்மி', 'hi': 'यम्मी' },
+    'Sweet': { 'ta': 'ஸ்வீட்', 'hi': 'स्वीட்' },
+    'Spicy': { 'ta': 'ஸ்பைசி', 'hi': 'स्पाइसी' },
+    'Hot': { 'ta': 'ஹாட்', 'hi': 'हॉट' },
+    'King': { 'ta': 'கிங்', 'hi': 'किंग' },
+    'Queen': { 'ta': 'குவீன்', 'hi': 'क्वीन' },
+    'Master': { 'ta': 'மாஸ்டர்', 'hi': 'मास्टर' },
+    'Kitchen': { 'ta': 'கிச்சன்', 'hi': 'किचन' },
+    'House': { 'ta': 'ஹவுஸ்', 'hi': 'हाउस' },
+    'World': { 'ta': 'வேர்ல்ட்', 'hi': 'वर्ल्ड' },
+    'Zone': { 'ta': 'ஜோன்', 'hi': 'जोन' },
+    'Land': { 'ta': 'லேண்ட்', 'hi': 'लैंड' },
+    'Hub': { 'ta': 'ஹப்', 'hi': 'हब' },
+    'Spot': { 'ta': 'ஸ்பாட்', 'hi': 'स्पॉट' }
 };
 
 // Helper: translate dynamic content (shop names, menu items)
@@ -1466,74 +1536,101 @@ async function getTransliteration(text, targetLang) {
     const cacheKey = `translit:${targetLang}:${text}`;
     if (stallTranslationCache[cacheKey]) return stallTranslationCache[cacheKey];
 
-    // 0. Check Manual Map first (dynamicTranslations)
+    // 0. Check Manual Map first — exact match (case-insensitive)
     if (dynamicTranslations[text] && dynamicTranslations[text][targetLang]) {
+        stallTranslationCache[cacheKey] = dynamicTranslations[text][targetLang];
         return dynamicTranslations[text][targetLang];
     }
-    // Also check case-insensitive for single words
     const lowerText = text.toLowerCase();
     for (let key in dynamicTranslations) {
         if (key.toLowerCase() === lowerText && dynamicTranslations[key][targetLang]) {
+            stallTranslationCache[cacheKey] = dynamicTranslations[key][targetLang];
             return dynamicTranslations[key][targetLang];
         }
     }
 
     const itcMap = { 'ta': 'ta-t-i0-und', 'hi': 'hi-t-i0-und' };
     const itc = itcMap[targetLang];
-    
+
     if (itc) {
         try {
-            // 1. Try transliterating the full string first for better contextual flow
-            // But first, check if it contains any manually mapped words
+            // 1. Use PLACEHOLDER system: replace known words with __PH_N__ markers
+            //    so we NEVER send mixed-script text to the API
             let processedText = text;
-            for (let [key, trans] of Object.entries(dynamicTranslations)) {
-                if (trans[targetLang]) {
-                    const regex = new RegExp(`\\b${key}\\b`, 'gi');
-                    processedText = processedText.replace(regex, trans[targetLang]);
+            const placeholders = {};
+            let phIndex = 0;
+
+            // Sort keys longest-first to match multi-word phrases before single words
+            const sortedKeys = Object.keys(dynamicTranslations).sort((a, b) => b.length - a.length);
+
+            for (const key of sortedKeys) {
+                const trans = dynamicTranslations[key];
+                if (trans && trans[targetLang]) {
+                    const regex = new RegExp(`\\b${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
+                    if (regex.test(processedText)) {
+                        const ph = `__PH_${phIndex}__`;
+                        placeholders[ph] = trans[targetLang];
+                        processedText = processedText.replace(regex, ph);
+                        phIndex++;
+                    }
                 }
-            }
-            
-            // If the whole thing was already manual or partially replaced, only transliterate the remaining English parts
-            if (processedText !== text && !/[a-zA-Z]/.test(processedText)) {
-                stallTranslationCache[cacheKey] = processedText;
-                return processedText;
             }
 
-            const url = `https://inputtools.google.com/request?text=${encodeURIComponent(processedText)}&itc=${itc}&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=test`;
-            const res = await fetch(url);
-            const data = await res.json();
-            
-            if (data && data[0] === 'SUCCESS' && data[1] && data[1][0]) {
-                // The API can return a single string or multiple parts
-                let result = '';
-                for (let part of data[1]) {
-                    if (part[1] && part[1][0]) result += part[1][0] + ' ';
+            // 2. If everything was replaced (no English letters remain), just restore placeholders
+            if (!/[a-zA-Z]/.test(processedText.replace(/__PH_\d+__/g, ''))) {
+                let result = processedText;
+                for (const [ph, val] of Object.entries(placeholders)) {
+                    result = result.replace(new RegExp(ph.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), val);
                 }
-                result = result.trim();
-                
-                if (result && result !== text) {
-                    stallTranslationCache[cacheKey] = result;
-                    return result;
+                result = result.replace(/\s+/g, ' ').trim();
+                stallTranslationCache[cacheKey] = result;
+                return result;
+            }
+
+            // 3. Split by placeholders, transliterate only the English segments
+            const segments = processedText.split(/(__PH_\d+__)/);
+            const resultParts = [];
+
+            for (const seg of segments) {
+                const trimmed = seg.trim();
+                if (!trimmed) {
+                    resultParts.push(seg); // preserve whitespace
+                    continue;
+                }
+                if (placeholders[trimmed]) {
+                    // Known word — use our manual translation
+                    resultParts.push(placeholders[trimmed]);
+                } else if (/[a-zA-Z]/.test(seg)) {
+                    // English text — transliterate word-by-word via API
+                    const words = seg.trim().split(/\s+/);
+                    const translitWords = await Promise.all(words.map(async (word) => {
+                        if (!word || !/[a-zA-Z]/.test(word)) return word;
+                        // Check dictionary one more time for individual words
+                        for (let dk in dynamicTranslations) {
+                            if (dk.toLowerCase() === word.toLowerCase() && dynamicTranslations[dk][targetLang]) {
+                                return dynamicTranslations[dk][targetLang];
+                            }
+                        }
+                        try {
+                            const wUrl = `https://inputtools.google.com/request?text=${encodeURIComponent(word)}&itc=${itc}&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=test`;
+                            const wRes = await fetch(wUrl);
+                            const wData = await wRes.json();
+                            if (wData && wData[0] === 'SUCCESS' && wData[1] && wData[1][0] && wData[1][0][1] && wData[1][0][1][0]) {
+                                return wData[1][0][1][0];
+                            }
+                        } catch (e) { /* fallback to original */ }
+                        return word;
+                    }));
+                    resultParts.push(translitWords.join(' '));
+                } else {
+                    resultParts.push(seg);
                 }
             }
-            
-            // 2. Fallback: Transliterate word by word if the full string didn't work well
-            const words = text.split(/\s+/);
-            if (words.length > 1) {
-                const transliterated = await Promise.all(words.map(async (word) => {
-                    const wUrl = `https://inputtools.google.com/request?text=${encodeURIComponent(word)}&itc=${itc}&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=test`;
-                    const wRes = await fetch(wUrl);
-                    const wData = await wRes.json();
-                    if (wData && wData[0] === 'SUCCESS' && wData[1] && wData[1][0] && wData[1][0][1] && wData[1][0][1][0]) {
-                        return wData[1][0][1][0];
-                    }
-                    return word;
-                }));
-                const wordResult = transliterated.join(' ');
-                if (wordResult !== text) {
-                    stallTranslationCache[cacheKey] = wordResult;
-                    return wordResult;
-                }
+
+            const finalResult = resultParts.join(' ').replace(/\s+/g, ' ').trim();
+            if (finalResult && finalResult !== text) {
+                stallTranslationCache[cacheKey] = finalResult;
+                return finalResult;
             }
         } catch (e) {
             console.warn("Transliteration failed:", e);
@@ -1967,7 +2064,7 @@ function renderShopGrid() {
                 <span class="shop-category-icon">${categorySVGs[stall.category] || ''}</span>
             </div>
             <span class="shop-category">${getCategoryName(stall.category)}</span>
-            <div class="shop-area"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${getAreaName(stall.area)}</div>
+            <div class="shop-area"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${td(stall.area, stall)}</div>
             <div>
                 <span class="shop-status ${getShopStatusInfo(stall).class}">${getShopStatusInfo(stall).icon}${getShopStatusInfo(stall).label}</span>
                 <span class="shop-rating"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#fbbf24;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> ${(stall.rating || 0).toFixed(1)} (${stall.totalReviews || 0})</span>
@@ -2066,7 +2163,7 @@ function renderShopDetailPage(stall) {
                 <div class="detail-info">
                     <div class="info-row">
                         <span class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
-                        <span>${stall.address ? td(stall.address, stall) : getAreaName(stall.area)}</span>
+                        <span>${td(stall.address || stall.area, stall)}</span>
                     </div>
                     ${stall.contact ? `
                     <div class="info-row">
@@ -2599,7 +2696,7 @@ function renderProfilePage() {
 
                 <div class="vendor-dashboard">
                     <h3 class="dashboard-shop-name">${categorySVGs[vendorShop.category] || ''} ${td(vendorShop.name, vendorShop)}</h3>
-                    <p style="color: #666; margin-bottom: 20px;">${getAreaName(vendorShop.area)}</p>
+                    <p style="color: #666; margin-bottom: 20px;">${td(vendorShop.area, vendorShop)}</p>
                     <p style="font-size: 0.85rem; color: #888; margin-bottom: 15px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${openTime12} - ${closeTime12}</p>
 
                     <div class="status-control-card">
@@ -3200,6 +3297,7 @@ function renderProfilePage() {
         app.querySelector('#vendor-password').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') app.querySelector('#vendor-login-btn').click();
         });
+        initPasswordToggles(app);
     }
 }
 
