@@ -302,6 +302,18 @@ def health_check():
         'env_keys': [k for k in os.environ.keys() if 'DATABASE' in k or 'URL' in k or 'DB' in k]
     })
 
+@app.route('/api/db-status', methods=['GET'])
+@limiter.exempt
+def db_status():
+    """Unthrottled endpoint to check database connection status."""
+    from database import PSYCOPG2_AVAILABLE, PSYCOPG3_AVAILABLE
+    return jsonify({
+        'database': 'postgresql' if db.is_postgresql else 'sqlite',
+        'psycopg2': PSYCOPG2_AVAILABLE,
+        'psycopg3': PSYCOPG3_AVAILABLE,
+        'has_db_url_env': 'DATABASE_URL' in os.environ
+    })
+
 if __name__ == '__main__':
     # For local development
     print(f"Database type: {'PostgreSQL' if db.is_postgresql else 'SQLite'}")
