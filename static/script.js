@@ -3079,109 +3079,6 @@ function renderProfilePage() {
             }
         });
 
-        // Custom translation-friendly Confirm
-        const showCustomConfirm = (msg, onOk) => {
-            const overlay = document.createElement('div');
-            overlay.className = 'location-overlay active';
-            overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:2000; opacity:1; pointer-events:auto;';
-            overlay.innerHTML = `
-                <div style="background:white; width:90%; max-width:380px; padding:30px; border-radius:28px; box-shadow:0 20px 50px rgba(0,0,0,0.3); transform:translateY(0); animation:modalSlideUp 0.3s ease-out;">
-                    <h3 class="section-title" style="margin-top:0; color:#dc2626; justify-content:center;">${t('dangerZone')}</h3>
-                    <p style="margin-bottom:24px; line-height:1.6; color:#444; text-align:center;">${msg.replace(/\n/g, '<br>')}</p>
-                    <div style="display:flex; gap:12px;">
-                        <button class="submit-btn" style="background:#eee; color:#333; margin:0; flex:1;" id="modal-cancel">${t('cancel')}</button>
-                        <button class="submit-btn" style="background:#dc2626; margin:0; flex:1;" id="modal-ok">${t('ok')}</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(overlay);
-            overlay.querySelector('#modal-cancel').onclick = () => overlay.remove();
-            overlay.querySelector('#modal-ok').onclick = () => { overlay.remove(); onOk(); };
-        };
-
-        // Custom translation-friendly Prompt
-        const showCustomPrompt = (msg, onOk) => {
-            const overlay = document.createElement('div');
-            overlay.className = 'location-overlay active';
-            overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:2000; opacity:1; pointer-events:auto;';
-            overlay.innerHTML = `
-                <div style="background:white; width:90%; max-width:380px; padding:30px; border-radius:28px; box-shadow:0 20px 50px rgba(0,0,0,0.3); transform:translateY(0); animation:modalSlideUp 0.3s ease-out;">
-                    <h3 class="section-title" style="margin-top:0; color:#dc2626; justify-content:center;">${t('confirmPassword')}</h3>
-                    <p style="margin-bottom:16px; line-height:1.6; color:#444; text-align:center;">${msg}</p>
-                    <div class="password-wrapper" style="margin-bottom:20px;">
-                        <input type="password" id="modal-pwd" class="search-input" style="text-align:center;" placeholder="${t('passwordPlaceholder')}">
-                        <button class="eye-toggle-btn" type="button" tabindex="-1">
-                            <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-                        </button>
-                    </div>
-                    <div style="display:flex; gap:12px;">
-                        <button class="submit-btn" style="background:#eee; color:#333; margin:0; flex:1;" id="modal-cancel">${t('cancel')}</button>
-                        <button class="submit-btn" style="background:#dc2626; margin:0; flex:1;" id="modal-ok">${t('ok')}</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(overlay);
-            const input = overlay.querySelector('#modal-pwd');
-            input.focus();
-            overlay.querySelector('#modal-cancel').onclick = () => overlay.remove();
-            overlay.querySelector('#modal-ok').onclick = () => { if(input.value) { overlay.remove(); onOk(input.value); } };
-        };
-
-        // Custom Delete Authentication Modal
-        const showDeleteAuthModal = (onOk) => {
-            const overlay = document.createElement('div');
-            overlay.className = 'location-overlay active';
-            overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:2000; opacity:1; pointer-events:auto;';
-            overlay.innerHTML = `
-                <div style="background:white; width:95%; max-width:400px; padding:30px; border-radius:28px; box-shadow:0 20px 50px rgba(0,0,0,0.3); transform:translateY(0); animation:modalSlideUp 0.3s ease-out;">
-                    <h3 class="section-title" style="margin-top:0; color:#dc2626; justify-content:center;">${t('authRequiredTitle')}</h3>
-                    <p style="margin-bottom:20px; line-height:1.6; color:#666; text-align:center; font-size:0.9rem;">${t('authRequiredDesc')}</p>
-                    
-                    <div class="form-group" style="margin-bottom:15px;">
-                        <label style="font-size:0.85rem; color:#444; font-weight:600;">${t('confirmMobileNumber')}</label>
-                        <input type="tel" id="modal-contact" class="search-input" placeholder="${t('mobileNumberPlaceholder')}" maxlength="10" inputmode="numeric">
-                    </div>
-
-                    <div class="form-group" style="margin-bottom:25px;">
-                        <label style="font-size:0.85rem; color:#444; font-weight:600;">${t('confirmPassword')}</label>
-                        <div class="password-wrapper">
-                            <input type="password" id="modal-pwd" class="search-input" placeholder="${t('passwordPlaceholder')}">
-                            <button class="eye-toggle-btn" type="button" tabindex="-1">
-                                <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div style="display:flex; gap:12px;">
-                        <button class="submit-btn" style="background:#eee; color:#333; margin:0; flex:1;" id="modal-cancel">${t('cancel')}</button>
-                        <button class="submit-btn" style="background:#dc2626; margin:0; flex:1;" id="modal-ok">${t('deleteShop')}</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(overlay);
-            
-            const contactInput = overlay.querySelector('#modal-contact');
-            const pwdInput = overlay.querySelector('#modal-pwd');
-            
-            // Password eye toggle logic
-            const eyeBtn = overlay.querySelector('.eye-toggle-btn');
-            eyeBtn.onclick = () => {
-                const type = pwdInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                pwdInput.setAttribute('type', type);
-                eyeBtn.classList.toggle('active');
-            };
-
-            overlay.querySelector('#modal-cancel').onclick = () => overlay.remove();
-            overlay.querySelector('#modal-ok').onclick = () => {
-                if (contactInput.value.length === 10 && pwdInput.value) {
-                    overlay.remove();
-                    onOk(contactInput.value, pwdInput.value);
-                } else {
-                    showToast(t('pleaseEnterDetails'), 'error');
-                }
-            };
-        };
-
         // Delete My Shop
         app.querySelector('#delete-shop-btn').addEventListener('click', async (e) => {
             const btn = e.target;
@@ -3432,6 +3329,109 @@ document.addEventListener('input', (e) => {
         e.target.value = e.target.value.replace(/[^0-9]/g, '');
     }
 });
+
+// Custom translation-friendly Confirm
+function showCustomConfirm(msg, onOk) {
+    const overlay = document.createElement('div');
+    overlay.className = 'location-overlay active';
+    overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:2000; opacity:1; pointer-events:auto;';
+    overlay.innerHTML = `
+        <div style="background:white; width:90%; max-width:380px; padding:30px; border-radius:28px; box-shadow:0 20px 50px rgba(0,0,0,0.3); transform:translateY(0); animation:modalSlideUp 0.3s ease-out;">
+            <h3 class="section-title" style="margin-top:0; color:#dc2626; justify-content:center;">${t('dangerZone')}</h3>
+            <p style="margin-bottom:24px; line-height:1.6; color:#444; text-align:center;">${msg.replace(/\n/g, '<br>')}</p>
+            <div style="display:flex; gap:12px;">
+                <button class="submit-btn" style="background:#eee; color:#333; margin:0; flex:1;" id="modal-cancel">${t('cancel')}</button>
+                <button class="submit-btn" style="background:#dc2626; margin:0; flex:1;" id="modal-ok">${t('ok')}</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    overlay.querySelector('#modal-cancel').onclick = () => overlay.remove();
+    overlay.querySelector('#modal-ok').onclick = () => { overlay.remove(); onOk(); };
+}
+
+// Custom translation-friendly Prompt
+function showCustomPrompt(msg, onOk) {
+    const overlay = document.createElement('div');
+    overlay.className = 'location-overlay active';
+    overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:2000; opacity:1; pointer-events:auto;';
+    overlay.innerHTML = `
+        <div style="background:white; width:90%; max-width:380px; padding:30px; border-radius:28px; box-shadow:0 20px 50px rgba(0,0,0,0.3); transform:translateY(0); animation:modalSlideUp 0.3s ease-out;">
+            <h3 class="section-title" style="margin-top:0; color:#dc2626; justify-content:center;">${t('confirmPassword')}</h3>
+            <p style="margin-bottom:16px; line-height:1.6; color:#444; text-align:center;">${msg}</p>
+            <div class="password-wrapper" style="margin-bottom:20px;">
+                <input type="password" id="modal-pwd" class="search-input" style="text-align:center;" placeholder="${t('passwordPlaceholder')}">
+                <button class="eye-toggle-btn" type="button" tabindex="-1">
+                    <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+            </div>
+            <div style="display:flex; gap:12px;">
+                <button class="submit-btn" style="background:#eee; color:#333; margin:0; flex:1;" id="modal-cancel">${t('cancel')}</button>
+                <button class="submit-btn" style="background:#dc2626; margin:0; flex:1;" id="modal-ok">${t('ok')}</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    const input = overlay.querySelector('#modal-pwd');
+    input.focus();
+    overlay.querySelector('#modal-cancel').onclick = () => overlay.remove();
+    overlay.querySelector('#modal-ok').onclick = () => { if(input.value) { overlay.remove(); onOk(input.value); } };
+}
+
+// Custom Delete Authentication Modal
+function showDeleteAuthModal(onOk) {
+    const overlay = document.createElement('div');
+    overlay.className = 'location-overlay active';
+    overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:2000; opacity:1; pointer-events:auto;';
+    overlay.innerHTML = `
+        <div style="background:white; width:95%; max-width:400px; padding:30px; border-radius:28px; box-shadow:0 20px 50px rgba(0,0,0,0.3); transform:translateY(0); animation:modalSlideUp 0.3s ease-out;">
+            <h3 class="section-title" style="margin-top:0; color:#dc2626; justify-content:center;">${t('authRequiredTitle')}</h3>
+            <p style="margin-bottom:20px; line-height:1.6; color:#666; text-align:center; font-size:0.9rem;">${t('authRequiredDesc')}</p>
+            
+            <div class="form-group" style="margin-bottom:15px;">
+                <label style="font-size:0.85rem; color:#444; font-weight:600;">${t('confirmMobileNumber')}</label>
+                <input type="tel" id="modal-contact" class="search-input" placeholder="${t('mobileNumberPlaceholder')}" maxlength="10" inputmode="numeric">
+            </div>
+
+            <div class="form-group" style="margin-bottom:25px;">
+                <label style="font-size:0.85rem; color:#444; font-weight:600;">${t('confirmPassword')}</label>
+                <div class="password-wrapper">
+                    <input type="password" id="modal-pwd" class="search-input" placeholder="${t('passwordPlaceholder')}">
+                    <button class="eye-toggle-btn" type="button" tabindex="-1">
+                        <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:12px;">
+                <button class="submit-btn" style="background:#eee; color:#333; margin:0; flex:1;" id="modal-cancel">${t('cancel')}</button>
+                <button class="submit-btn" style="background:#dc2626; margin:0; flex:1;" id="modal-ok">${t('deleteShop')}</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    
+    const contactInput = overlay.querySelector('#modal-contact');
+    const pwdInput = overlay.querySelector('#modal-pwd');
+    
+    // Password eye toggle logic
+    const eyeBtn = overlay.querySelector('.eye-toggle-btn');
+    eyeBtn.onclick = () => {
+        const type = pwdInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        pwdInput.setAttribute('type', type);
+        eyeBtn.classList.toggle('active');
+    };
+
+    overlay.querySelector('#modal-cancel').onclick = () => overlay.remove();
+    overlay.querySelector('#modal-ok').onclick = () => {
+        if (contactInput.value.length === 10 && pwdInput.value) {
+            overlay.remove();
+            onOk(contactInput.value, pwdInput.value);
+        } else {
+            showToast(t('pleaseEnterDetails'), 'error');
+        }
+    };
+}
 // Password show/hide toggle — works on mobile (iOS + Android)
 function initPasswordToggles(container) {
     (container || document).querySelectorAll('.eye-toggle-btn').forEach(btn => {
