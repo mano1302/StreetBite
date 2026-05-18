@@ -2907,14 +2907,20 @@ function renderProfilePage() {
                 const newStatus = btn.dataset.mode;
                 if (vendorShop.status === newStatus) return;
 
+                const contact = localStorage.getItem('vendorContact') || vendorShop.contact || '';
+                const password = vendorShop._sessionPwd || sessionStorage.getItem('vendorSessionPassword') || '';
                 try {
                     const res = await fetch(`/api/stalls/${vendorShop.id}/status`, {
                         method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'X-Vendor-Contact': contact,
+                            'X-Vendor-Password': password
+                        },
                         body: JSON.stringify({ 
                             status: newStatus,
-                            contact: localStorage.getItem('vendorContact'),
-                            password: vendorShop._sessionPwd || ''
+                            contact: contact,
+                            password: password
                         })
                     });
                     const data = await res.json();
@@ -2939,14 +2945,20 @@ function renderProfilePage() {
 
         const updateDiscount = async () => {
             const discount = app.querySelector('#vendor-discount').value.trim();
+            const contact = localStorage.getItem('vendorContact') || vendorShop.contact || '';
+            const password = vendorShop._sessionPwd || sessionStorage.getItem('vendorSessionPassword') || '';
             try {
                 await fetch(`/api/stalls/${vendorShop.id}/discount`, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-Vendor-Contact': contact,
+                        'X-Vendor-Password': password
+                    },
                     body: JSON.stringify({ 
                         discount: discount || null,
-                        contact: localStorage.getItem('vendorContact'),
-                        password: vendorShop._sessionPwd || ''
+                        contact: contact,
+                        password: password
                     })
                 });
                 vendorShop.todayDiscount = discount || null;
@@ -2984,15 +2996,21 @@ function renderProfilePage() {
                     const item = vendorShop.menu.find(m => m.id === itemId);
                     if (!item) return;
                     const newAvailable = !item.available;
+                    const contact = vendorShop.contact || localStorage.getItem('vendorContact') || '';
+                    const password = vendorShop._sessionPwd || sessionStorage.getItem('vendorSessionPassword') || '';
                     try {
                         const res = await fetch(`/api/stalls/${vendorShop.id}/menu-item`, {
                             method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'X-Vendor-Contact': contact,
+                                'X-Vendor-Password': password
+                            },
                             body: JSON.stringify({ 
                                 item_id: itemId, 
                                 available: newAvailable,
-                                contact: vendorShop.contact || localStorage.getItem('vendorContact') || '',
-                                password: vendorShop._sessionPwd || ''
+                                contact: contact,
+                                password: password
                             })
                         });
                         const updated = await res.json();
@@ -3007,14 +3025,20 @@ function renderProfilePage() {
             listContainer.querySelectorAll('.remove-item-btn').forEach(btn => {
                 btn.addEventListener('click', async () => {
                     const itemId = parseInt(btn.dataset.id);
+                    const contact = vendorShop.contact || localStorage.getItem('vendorContact') || '';
+                    const password = vendorShop._sessionPwd || sessionStorage.getItem('vendorSessionPassword') || '';
                     try {
-                        const res = await fetch(`/api/stalls/${vendorShop.id}/menu-item`, {
+                        const res = await fetch(`/api/stalls/${vendorShop.id}/menu-item?item_id=${itemId}`, {
                             method: 'DELETE',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'X-Vendor-Contact': contact,
+                                'X-Vendor-Password': password
+                            },
                             body: JSON.stringify({ 
                                 item_id: itemId,
-                                contact: vendorShop.contact || localStorage.getItem('vendorContact') || '',
-                                password: vendorShop._sessionPwd || ''
+                                contact: contact,
+                                password: password
                             })
                         });
                         const data = await res.json();
@@ -3073,15 +3097,21 @@ function renderProfilePage() {
             addNewItemBtn.disabled = true;
             addNewItemBtn.textContent = t('adding');
 
+            const contact = vendorShop.contact || localStorage.getItem('vendorContact') || '';
+            const password = vendorShop._sessionPwd || sessionStorage.getItem('vendorSessionPassword') || '';
             try {
                 // Step 3: Send POST request to backend
                 const res = await fetch(`/api/stalls/${vendorShop.id}/menu-item`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-Vendor-Contact': contact,
+                        'X-Vendor-Password': password
+                    },
                     body: JSON.stringify({ 
                         itemName, price, available: true,
-                        contact: vendorShop.contact || localStorage.getItem('vendorContact') || '',
-                        password: vendorShop._sessionPwd || ''
+                        contact: contact,
+                        password: password
                     })
                 });
                 

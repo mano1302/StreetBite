@@ -140,39 +140,49 @@ def add_review(stall_id):
 @app.route('/api/stalls/<int:stall_id>/status', methods=['PUT'])
 def update_status(stall_id):
     """Update stall open/closed status."""
-    status_data = request.json
-    contact = status_data.get('contact')
-    password = status_data.get('password')
+    status_data = request.get_json(silent=True) or {}
+    contact = status_data.get('contact') or request.headers.get('X-Vendor-Contact') or request.args.get('contact')
+    password = status_data.get('password') or request.headers.get('X-Vendor-Password') or request.args.get('password')
+
+    if contact:
+        contact = contact.strip()
 
     if not db.vendor_login(stall_id, contact, password):
         return jsonify({'error': 'Authentication failed'}), 401
 
-    if 'status' not in status_data:
+    status = status_data.get('status') or request.args.get('status')
+    if not status:
         return jsonify({'error': 'Status is required'}), 400
 
-    stall = db.update_stall_status(stall_id, status_data['status'], public=False)
+    stall = db.update_stall_status(stall_id, status, public=False)
     return jsonify(stall)
 
 @app.route('/api/stalls/<int:stall_id>/discount', methods=['PUT'])
 def update_discount(stall_id):
     """Update stall's today discount."""
-    discount_data = request.json
-    contact = discount_data.get('contact')
-    password = discount_data.get('password')
+    discount_data = request.get_json(silent=True) or {}
+    contact = discount_data.get('contact') or request.headers.get('X-Vendor-Contact') or request.args.get('contact')
+    password = discount_data.get('password') or request.headers.get('X-Vendor-Password') or request.args.get('password')
+
+    if contact:
+        contact = contact.strip()
 
     if not db.vendor_login(stall_id, contact, password):
         return jsonify({'error': 'Authentication failed'}), 401
 
-    discount = discount_data.get('discount')
+    discount = discount_data.get('discount') if 'discount' in discount_data else request.args.get('discount')
     stall = db.update_stall_discount(stall_id, discount, public=False)
     return jsonify(stall)
 
 @app.route('/api/stalls/<int:stall_id>/menu', methods=['PUT'])
 def update_menu(stall_id):
     """Update entire menu for a stall."""
-    menu_data = request.json
-    contact = menu_data.get('contact')
-    password = menu_data.get('password')
+    menu_data = request.get_json(silent=True) or {}
+    contact = menu_data.get('contact') or request.headers.get('X-Vendor-Contact') or request.args.get('contact')
+    password = menu_data.get('password') or request.headers.get('X-Vendor-Password') or request.args.get('password')
+
+    if contact:
+        contact = contact.strip()
 
     if not db.vendor_login(stall_id, contact, password):
         return jsonify({'error': 'Authentication failed'}), 401
@@ -204,9 +214,12 @@ def add_menu_item_post(stall_id):
 @app.route('/api/stalls/<int:stall_id>/menu-item', methods=['POST', 'PUT', 'DELETE'])
 def menu_item_handler(stall_id):
     """POST: add menu item. PUT: toggle availability. DELETE: remove item by item_index."""
-    item_data = request.json
-    contact = item_data.get('contact')
-    password = item_data.get('password')
+    item_data = request.get_json(silent=True) or {}
+    contact = item_data.get('contact') or request.headers.get('X-Vendor-Contact') or request.args.get('contact')
+    password = item_data.get('password') or request.headers.get('X-Vendor-Password') or request.args.get('password')
+
+    if contact:
+        contact = contact.strip()
 
     if not db.vendor_login(stall_id, contact, password):
         print(f"[AUTH FAIL] stall_id={stall_id}, contact={contact}, pwd_len={len(password) if password else 0}")
@@ -216,15 +229,35 @@ def menu_item_handler(stall_id):
 
     if request.method == 'PUT':
         # Toggle availability: body = {item_id, available}
-        item_id = item_data.get('item_id')
+        item_id = item_data.get('item_id') or request.args.get('item_id')
+        if item_id is not None:
+            try:
+                item_id = int(item_id)
+            except ValueError:
+                pass
+
         available = item_data.get('available')
+        if available is None:
+            avail_str = request.args.get('available')
+            if avail_str is not None:
+                available = avail_str.lower() in ('true', '1', 'yes')
+
         if item_id is None or available is None:
             return jsonify({'error': 'item_id and available are required'}), 400
         stall = db.update_menu_item_availability(stall_id, item_id, available, public=False)
         return jsonify(stall)
     elif request.method == 'DELETE':
         # Remove item: body = {item_id}
-        item_id = item_data.get('item_id')
+        item_id = item_data.get('item_id') or request.args.get('item_id')
+        if item_id is not None:
+            try:
+                item_id = int(item_id)
+            except ValueError:
+                pass
+        
+        if item_id is None:
+            return jsonify({'error': 'item_id is required'}), 400
+            
         stall = db.delete_menu_item(stall_id, item_id, public=False)
         return jsonify(stall)
     else:
@@ -259,9 +292,13 @@ def vendor_login(stall_id):
 @app.route('/api/stalls/<int:stall_id>', methods=['DELETE'])
 def delete_stall(stall_id):
     """Delete a stall — requires contact + password verification."""
-    data = request.json or {}
-    contact = data.get('contact', '').strip()
-    password = data.get('password', '')
+    data = request.get_json(silent=True) or {}
+    contact = data.get('contact') or request.headers.get('X-Vendor-Contact') or request.args.get('contact')
+    password = data.get('password') or request.headers.get('X-Vendor-Password') or request.args.get('password')
+    
+    if contact:
+        contact = contact.strip()
+        
     if not contact or not password:
         return jsonify({'error': 'Contact and password are required'}), 400
     success, message = db.delete_stall(stall_id, contact, password)
