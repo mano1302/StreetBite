@@ -5,6 +5,10 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from itsdangerous import URLSafeTimedSerializer
 from functools import wraps
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 from database import db
 from transliteration_service import transliterate
