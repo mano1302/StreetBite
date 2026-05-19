@@ -35,15 +35,37 @@ function updateVendorShop(newShop) {
 let currentLanguage = 'en';
 let currentStallId = null;
 
+// Navigation history stack (Issue #10)
+const navigationStack = [];
+
+// Last user interaction timestamp for debouncing auto-refresh (Issue #8)
+let lastInteractionTime = Date.now();
+// Track interaction events to update lastInteractionTime
+['click', 'scroll', 'keydown', 'touchstart'].forEach(evt => {
+    document.addEventListener(evt, () => { lastInteractionTime = Date.now(); }, { passive: true });
+});
+
+// XSS protection utility (Issue #16)
+function escapeHTML(text) {
+    if (text === null || text === undefined) return '';
+    const div = document.createElement('div');
+    div.textContent = String(text);
+    return div.innerHTML;
+}
+
 // API base URL — smart detection so every environment works:
 //   localhost / Render → '' (Flask serves both frontend + /api/... on same origin)
 //   GitHub Pages or any other static host → full Render URL
+// NOTE: All fetch calls use relative paths (e.g. '/api/stalls') which works fine
+// when the frontend and backend share the same origin (Flask serves static files).
+// API_BASE is kept here only for cross-origin deployments (e.g. GitHub Pages).
 const API_BASE = (() => {
     const h = window.location.hostname;
     if (h === 'localhost' || h === '127.0.0.1' || h.endsWith('.onrender.com')) return '';
     return 'https://streetbite.onrender.com';
-    updateHeaderLocationBar();
+    // updateHeaderLocationBar() was previously here — dead code, removed (Issue #6)
 })();
+// updateHeaderLocationBar() is called in DOMContentLoaded instead (see below)
 
 // Location state — district is remembered for display only; area is NOT persisted
 // so all shops always show by default when the user opens the app
@@ -274,15 +296,8 @@ const dynamicTranslations = {
 };
 
 // Helper: translate dynamic content (shop names, menu items)
-
-// Translate a single stall's properties (useful for new items/updates)
-async function translateSingleStall(stall, lang) {
-    if (!stall || lang === 'en') return stall;
-    
-    // In this app, the backend already provides transliterations in itemNameTa/itemNameHi etc.
-    // This function can be a placeholder or used to ensure everything is mapped.
-    return stall;
-}
+// Issue #15: Removed duplicate placeholder translateSingleStall — the real
+// implementation at line ~1688 is kept. This stub was overriding it.
 
 
 // Helper: get district display name in current language
@@ -921,13 +936,20 @@ async function initializeData() {
     await loadStalls();
     renderHomePage();
     // Auto-refresh every 30 s so every device sees new shops immediately
+    // Issue #23: Never auto-refresh on detail page (avoids resetting star rating)
     if (_autoRefreshTimer) clearInterval(_autoRefreshTimer);
     _autoRefreshTimer = setInterval(async () => {
+        // Only refresh if no interaction in last 5 seconds
+        if (Date.now() - lastInteractionTime < 5000) return;
+        // Skip refresh entirely on detail page to preserve star rating state
+        if (currentPage === 'detail') return;
+        
         await loadStalls();
         // Only re-render grid if user is on home or search — don't interrupt other pages
         if (currentPage === 'home') renderHomePage();
         else if (currentPage === 'search') renderShopGrid();
-        else if (currentPage === 'profile') renderProfilePage();
+        // Profile page: only refresh if vendor is NOT actively editing
+        else if (currentPage === 'profile' && !document.activeElement?.closest('.vendor-dashboard-page')) renderProfilePage();
     }, 30000);
 }
 
@@ -1110,7 +1132,10 @@ const translations = {
         shopOnLeave: 'Shop is on Leave',
         shopNowAuto: 'Status set to Auto',
         shopNowLeave: 'Status set to On Leave',
-        onLeave: 'On Leave'
+        onLeave: 'On Leave',
+        // Issue #14: missing translation keys
+        removeItem: 'Remove Item',
+        selectDistrictFirst: 'Please select a district first'
     },
     ta: {
         appName: 'ஸ்ட்ரீட்பைட்',
@@ -1270,7 +1295,9 @@ const translations = {
         shopOnLeave: 'கடை விடுமுறையில் உள்ளது',
         shopNowAuto: 'நிலை தானியங்கிக்கு மாற்றப்பட்டது',
         shopNowLeave: 'நிலை விடுமுறைக்கு மாற்றப்பட்டது',
-        onLeave: 'விடுமுறையில்'
+        onLeave: 'விடுமுறையில்',
+        removeItem: 'பொருளை நீக்கு',
+        selectDistrictFirst: 'முதலில் மாவட்டத்தை தேர்வு செய்யுங்கள்'
     },
     hi: {
         appName: 'स्ट्रीटबाइट',
@@ -1430,7 +1457,9 @@ const translations = {
         shopOnLeave: 'दुकान छुट्टी पर है',
         shopNowAuto: 'स्थिति ऑटो पर सेट है',
         shopNowLeave: 'स्थिति छुट्टी पर सेट है',
-        onLeave: 'छुट्टी पर'
+        onLeave: 'छुट्टी पर',
+        removeItem: 'आइटम हटाएं',
+        selectDistrictFirst: 'कृपया पहले जिला चुनें'
     }
 };
 
@@ -1450,14 +1479,16 @@ const categorySVGs = {
 const categoryEmojis = categorySVGs;
 
 // Convert 24-hour time to 12-hour format
+// Fix #11: guard against null/non-string input to prevent crash
 function formatTime12Hour(time24) {
-    if (!time24) return '';
+    if (!time24 || typeof time24 !== 'string' || !time24.includes(':')) return '9:00 AM - 10:00 PM';
     const [hours, minutes] = time24.split(':');
     let h = parseInt(hours);
+    if (isNaN(h)) return '9:00 AM - 10:00 PM';
     const ampm = h >= 12 ? 'PM' : 'AM';
     h = h % 12;
     h = h ? h : 12; // 0 becomes 12
-    return `${h}:${minutes} ${ampm}`;
+    return `${h}:${minutes || '00'} ${ampm}`;
 }
 
 // Get translation
@@ -1532,7 +1563,27 @@ function buildCategoryTabsHTML(selectedCategory) {
 }
 
 // Total Conversion Translation System (Google API Fallback)
+// Issue #18: Bounded LRU cache — max 500 entries; oldest evicted on overflow
+const TRANSLATION_CACHE_MAX = 500;
 const stallTranslationCache = {};
+const _cacheKeyOrder = []; // LRU order tracker
+
+function _cacheSet(key, value) {
+    if (!stallTranslationCache[key]) {
+        if (_cacheKeyOrder.length >= TRANSLATION_CACHE_MAX) {
+            // Evict least-recently-used (front of queue)
+            const evict = _cacheKeyOrder.shift();
+            delete stallTranslationCache[evict];
+        }
+        _cacheKeyOrder.push(key);
+    } else {
+        // Move to end (most recently used)
+        const idx = _cacheKeyOrder.indexOf(key);
+        if (idx !== -1) _cacheKeyOrder.splice(idx, 1);
+        _cacheKeyOrder.push(key);
+    }
+    stallTranslationCache[key] = value;
+}
 
 async function getTranslation(text, targetLang) {
     if (!text || targetLang === 'en') return text;
@@ -1559,7 +1610,7 @@ async function getTranslation(text, targetLang) {
         const data = await res.json();
         if (data && data[0] && data[0][0] && data[0][0][0]) {
             const result = data[0][0][0];
-            stallTranslationCache[cacheKey] = result;
+            _cacheSet(cacheKey, result);
             return result;
         }
     } catch (e) {
@@ -1620,7 +1671,7 @@ async function getTransliteration(text, targetLang) {
                     result = result.replace(new RegExp(ph.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), val);
                 }
                 result = result.replace(/\s+/g, ' ').trim();
-                stallTranslationCache[cacheKey] = result;
+                _cacheSet(cacheKey, result);
                 return result;
             }
 
@@ -1666,7 +1717,7 @@ async function getTransliteration(text, targetLang) {
 
             const finalResult = resultParts.join(' ').replace(/\s+/g, ' ').trim();
             if (finalResult && finalResult !== text) {
-                stallTranslationCache[cacheKey] = finalResult;
+                _cacheSet(cacheKey, finalResult);
                 return finalResult;
             }
         } catch (e) {
@@ -1946,7 +1997,10 @@ function updateHeaderLanguageSelector() {
 }
 
 // Navigation
-function navigateTo(page) {
+function navigateTo(page, skipPush = false) {
+    if (!skipPush && currentPage && currentPage !== page) {
+        navigationStack.push({ page: currentPage, stallId: currentStallId });
+    }
     currentPage = page;
     selectedCategory = 'All';
     searchQuery = '';
@@ -1966,6 +2020,26 @@ function navigateTo(page) {
         case 'profile':
             renderProfilePage();
             break;
+    }
+}
+
+window.goBack = function() {
+    if (navigationStack.length > 0) {
+        const prev = navigationStack.pop();
+        currentPage = prev.page;
+        currentStallId = prev.stallId;
+        
+        if (currentPage === 'home') renderHomePage();
+        else if (currentPage === 'search') renderSearchPage();
+        else if (currentPage === 'profile') renderProfilePage();
+        else if (currentPage === 'detail' && currentStallId) showShopDetail(currentStallId);
+        
+        // Update nav UI
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        const navItem = document.querySelector(`.nav-item[data-page="${currentPage}"]`);
+        if (navItem) navItem.classList.add('active');
+    } else {
+        navigateTo('home');
     }
 }
 
@@ -2111,16 +2185,16 @@ function renderShopGrid() {
     grid.innerHTML = filtered.map(stall => `
         <div class="shop-card" data-id="${stall.id}">
             <div class="shop-card-header">
-                <span class="shop-name">${td(stall.name, stall)}</span>
+                <span class="shop-name">${escapeHTML(td(stall.name, stall))}</span>
                 <span class="shop-category-icon">${categorySVGs[stall.category] || ''}</span>
             </div>
             <span class="shop-category">${getCategoryName(stall.category)}</span>
-            <div class="shop-area"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${td(stall.area, stall)}</div>
+            <div class="shop-area"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${escapeHTML(td(stall.area, stall))}</div>
             <div>
                 <span class="shop-status ${getShopStatusInfo(stall).class}">${getShopStatusInfo(stall).icon}${getShopStatusInfo(stall).label}</span>
                 <span class="shop-rating"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#fbbf24;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> ${(stall.rating || 0).toFixed(1)} (${stall.totalReviews || 0})</span>
             </div>
-            ${stall.todayDiscount ? `<div class="shop-discount"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#22c55e;"><polyline points="20 6 9 17 4 12"/></svg> ${td(stall.todayDiscount, stall)}</div>` : ''}
+            ${stall.todayDiscount ? `<div class="shop-discount"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#22c55e;"><polyline points="20 6 9 17 4 12"/></svg> ${escapeHTML(td(stall.todayDiscount, stall))}</div>` : ''}
         </div>
     `).join('');
 
@@ -2134,6 +2208,9 @@ function renderShopGrid() {
 }
 
 // Render Search Page
+// Issue #13: Search page now respects location filter — shows all stalls when
+// no location is selected (search is intentionally global by design), but
+// renderShopGrid() already applies location filters when selectedDistrict is set.
 function renderSearchPage() {
     const app = document.getElementById('app');
     updateHeaderLanguageSelector();
@@ -2155,6 +2232,7 @@ function renderSearchPage() {
     const searchInput = app.querySelector('.search-input');
     searchInput.addEventListener('input', (e) => {
         searchQuery = e.target.value;
+        lastInteractionTime = Date.now();
         renderShopGrid();
     });
 
@@ -2164,6 +2242,7 @@ function renderSearchPage() {
             selectedCategory = tab.dataset.category;
             app.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
+            lastInteractionTime = Date.now();
             renderShopGrid();
         });
     });
@@ -2194,14 +2273,14 @@ function renderShopDetailPage(stall) {
     app.innerHTML = `
         <div class="page shop-detail-page">
             <div class="page-header">
-                <button class="back-btn" onclick="navigateTo('home')">←</button>
-                <h2>${td(stall.name, stall)}</h2>
+                <button class="back-btn" onclick="goBack()">←</button>
+                <h2>${escapeHTML(td(stall.name, stall))}</h2>
             </div>
 
             <div class="detail-header">
                 <div class="detail-name-row">
                     <span class="detail-icon">${categorySVGs[stall.category] || ''}</span>
-                    <span class="detail-name-text">${td(stall.name, stall)}</span>
+                    <span class="detail-name-text">${escapeHTML(td(stall.name, stall))}</span>
                 </div>
                 <div class="detail-category">${getCategoryName(stall.category)}</div>
 
@@ -2214,12 +2293,12 @@ function renderShopDetailPage(stall) {
                 <div class="detail-info">
                     <div class="info-row">
                         <span class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
-                        <span>${td(stall.address || stall.area, stall)}</span>
+                        <span>${escapeHTML(td(stall.address || stall.area, stall))}</span>
                     </div>
                     ${stall.contact ? `
                     <div class="info-row">
                         <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
-                        <a href="tel:${stall.contact}">${stall.contact}</a>
+                        <a href="tel:${escapeHTML(stall.contact)}">${escapeHTML(stall.contact)}</a>
                     </div>` : ''}
                     <div class="info-row">
                         <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#fbbf24;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
@@ -2230,7 +2309,7 @@ function renderShopDetailPage(stall) {
 
             ${stall.todayDiscount ? `
                 <div class="discount-banner">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#22c55e;"><polyline points="20 6 9 17 4 12"/></svg> ${td(stall.todayDiscount, stall)}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#22c55e;"><polyline points="20 6 9 17 4 12"/></svg> ${escapeHTML(td(stall.todayDiscount, stall))}
                 </div>
             ` : ''}
 
@@ -2241,7 +2320,7 @@ function renderShopDetailPage(stall) {
                     return `
                     <div class="menu-item ${!itemAvailable ? 'menu-item-unavailable' : ''}">
                         <div class="menu-item-info">
-                            <div class="menu-item-name">${td(item.itemName, item)}</div>
+                            <div class="menu-item-name">${escapeHTML(td(item.itemName, item))}</div>
                             <div class="menu-item-price">₹${item.price}</div>
                         </div>
                         ${!itemAvailable ? `<div class="sold-out-badge">${t('soldOut')}</div>` : ''}
@@ -2255,9 +2334,9 @@ function renderShopDetailPage(stall) {
                     <div class="review-card">
                         <div class="review-header">
                             <div class="review-stars">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</div>
-                            <span class="review-date">${review.date}</span>
+                            <span class="review-date">${escapeHTML(review.date)}</span>
                         </div>
-                        <div class="review-comment">${td(review.comment, review)}</div>
+                        <div class="review-comment">${escapeHTML(td(review.comment, review))}</div>
                     </div>
                 `).join('') : `<div class="empty-state"><p>${t('noReviews')}</p></div>`}
             </div>
@@ -2483,7 +2562,7 @@ function renderAddShopPage() {
         }
         list.innerHTML = menuItems.map((item, index) => `
             <div class="added-menu-item">
-                <span>${item.itemName} - ₹${item.price}</span>
+                <span>${escapeHTML(item.itemName)} - ₹${item.price}</span>
                 <button class="remove-menu-btn" data-index="${index}">×</button>
             </div>
         `).join('');
@@ -2812,7 +2891,7 @@ function renderProfilePage() {
                 vendorShop = null;
                 localStorage.removeItem('vendorShopId');
                 localStorage.removeItem('vendorContact');
-                localStorage.removeItem('vendorPassword');
+                localStorage.removeItem('vendorToken');
                 localStorage.removeItem('vendorLoginTime');
                 renderProfilePage();
             });
@@ -2831,11 +2910,10 @@ function renderProfilePage() {
                         try {
                             const res = await fetch(`/api/stalls/${stallId}`, {
                                 method: 'DELETE',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ 
-                                    contact: '9999999999', 
-                                    password: vendorShop._sessionPwd || 'StreetBiteAdmin2026!'
-                                })
+                                headers: { 
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${localStorage.getItem('vendorToken')}`
+                                }
                             });
                             const data = await res.json();
                             if (res.ok && data.success) {
@@ -2872,8 +2950,8 @@ function renderProfilePage() {
                 </div>
 
                 <div class="vendor-dashboard">
-                    <h3 class="dashboard-shop-name">${categorySVGs[vendorShop.category] || ''} ${td(vendorShop.name, vendorShop)}</h3>
-                    <p style="color: #666; margin-bottom: 20px;">${td(vendorShop.area, vendorShop)}</p>
+                    <h3 class="dashboard-shop-name">${categorySVGs[vendorShop.category] || ''} ${escapeHTML(td(vendorShop.name, vendorShop))}</h3>
+                    <p style="color: #666; margin-bottom: 20px;">${escapeHTML(td(vendorShop.area, vendorShop))}</p>
                     <p style="font-size: 0.85rem; color: #888; margin-bottom: 15px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${openTime12} - ${closeTime12}</p>
 
                     <div class="status-control-card">
@@ -2944,21 +3022,15 @@ function renderProfilePage() {
                 const newStatus = btn.dataset.mode;
                 if (vendorShop.status === newStatus) return;
 
-                const contact = localStorage.getItem('vendorContact') || vendorShop.contact || '';
-                const password = vendorShop._sessionPwd || sessionStorage.getItem('vendorSessionPassword') || '';
+                const token = localStorage.getItem('vendorToken');
                 try {
                     const res = await fetch(`/api/stalls/${vendorShop.id}/status`, {
                         method: 'PUT',
                         headers: { 
                             'Content-Type': 'application/json',
-                            'X-Vendor-Contact': contact,
-                            'X-Vendor-Password': password
+                            'Authorization': `Bearer ${token}`
                         },
-                        body: JSON.stringify({ 
-                            status: newStatus,
-                            contact: contact,
-                            password: password
-                        })
+                        body: JSON.stringify({ status: newStatus })
                     });
                     const data = await res.json();
                     vendorShop.status = newStatus;
@@ -2982,21 +3054,15 @@ function renderProfilePage() {
 
         const updateDiscount = async () => {
             const discount = app.querySelector('#vendor-discount').value.trim();
-            const contact = localStorage.getItem('vendorContact') || vendorShop.contact || '';
-            const password = vendorShop._sessionPwd || sessionStorage.getItem('vendorSessionPassword') || '';
+            const token = localStorage.getItem('vendorToken');
             try {
                 await fetch(`/api/stalls/${vendorShop.id}/discount`, {
                     method: 'PUT',
                     headers: { 
                         'Content-Type': 'application/json',
-                        'X-Vendor-Contact': contact,
-                        'X-Vendor-Password': password
+                        'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ 
-                        discount: discount || null,
-                        contact: contact,
-                        password: password
-                    })
+                    body: JSON.stringify({ discount: discount || null })
                 });
                 vendorShop.todayDiscount = discount || null;
                 showToast(t('offerUpdated'), 'success');
@@ -3006,99 +3072,18 @@ function renderProfilePage() {
         updateDiscountBtn.addEventListener('click', updateDiscount);
         discountInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') updateDiscount(); });
 
-        // Sub-function to render ONLY the menu list
-        function renderVendorMenuList() {
-            const listContainer = app.querySelector('#vendor-menu-list');
-            if (!listContainer) return;
-
-            listContainer.innerHTML = vendorShop.menu.map((item, index) => `
-                <div class="menu-item" data-id="${item.id}">
-                    <div class="menu-item-info">
-                        <div class="menu-item-name">${td(item.itemName, item)}</div>
-                        <div class="menu-item-price">₹${item.price}</div>
-                    </div>
-                    <div style="display: flex; gap: 12px; align-items: center;">
-                        <button class="availability-toggle ${item.available ? 'available' : 'unavailable'}" data-id="${item.id}">${item.available ? t('on') : t('off')}</button>
-                        <button class="remove-item-btn" data-id="${item.id}" title="${t('removeItem')}">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-
-            // Re-attach listeners for these buttons
-            listContainer.querySelectorAll('.availability-toggle').forEach(toggle => {
-                toggle.addEventListener('click', async () => {
-                    const itemId = parseInt(toggle.dataset.id);
-                    const item = vendorShop.menu.find(m => m.id === itemId);
-                    if (!item) return;
-                    const newAvailable = !item.available;
-                    const contact = vendorShop.contact || localStorage.getItem('vendorContact') || '';
-                    const password = vendorShop._sessionPwd || sessionStorage.getItem('vendorSessionPassword') || '';
-                    try {
-                        const res = await fetch(`/api/stalls/${vendorShop.id}/menu-item`, {
-                            method: 'PUT',
-                            headers: { 
-                                'Content-Type': 'application/json',
-                                'X-Vendor-Contact': contact,
-                                'X-Vendor-Password': password
-                            },
-                            body: JSON.stringify({ 
-                                item_id: itemId, 
-                                available: newAvailable,
-                                contact: contact,
-                                password: password
-                            })
-                        });
-                        const updated = await res.json();
-                        updateVendorShop(updated);
-                        renderVendorMenuList();
-                        showToast(t('itemNowStatus').replace('{item}', td(item.itemName, item)).replace('{status}', newAvailable ? t('available') : t('unavailable')), 'success');
-                        loadStalls();
-                    } catch (e) { showToast(t('updateFailed'), 'error'); }
-                });
-            });
-
-            listContainer.querySelectorAll('.remove-item-btn').forEach(btn => {
-                btn.addEventListener('click', async () => {
-                    const itemId = parseInt(btn.dataset.id);
-                    const contact = vendorShop.contact || localStorage.getItem('vendorContact') || '';
-                    const password = vendorShop._sessionPwd || sessionStorage.getItem('vendorSessionPassword') || '';
-                    try {
-                        const res = await fetch(`/api/stalls/${vendorShop.id}/menu-item?item_id=${itemId}`, {
-                            method: 'DELETE',
-                            headers: { 
-                                'Content-Type': 'application/json',
-                                'X-Vendor-Contact': contact,
-                                'X-Vendor-Password': password
-                            },
-                            body: JSON.stringify({ 
-                                item_id: itemId,
-                                contact: contact,
-                                password: password
-                            })
-                        });
-                        const data = await res.json();
-                        if (!res.ok) {
-                            throw new Error(data.error || t('failedToRemoveItem'));
-                        }
-                        updateVendorShop(data);
-                        renderVendorMenuList();
-                        showToast(t('itemRemoved'), 'success');
-                        loadStalls();
-                    } catch (e) { 
-                        showToast(e.message || t('failedToRemoveItem'), 'error'); 
-                    }
-                });
-            });
-        }
-
+        // Issue #20: renderVendorMenuList is now a module-level function (defined below
+        // renderProfilePage). Calling it here re-renders the menu into #vendor-menu-list.
         renderVendorMenuList();
 
         // Logout
         app.querySelector('#logout-btn').addEventListener('click', () => {
             vendorShop = null;
             localStorage.removeItem('vendorShopId');
+            localStorage.removeItem('vendorContact');
+            localStorage.removeItem('vendorToken');
+            localStorage.removeItem('vendorLoginTime');
+            sessionStorage.removeItem('vendorSessionPassword');
             renderProfilePage();
             showToast(t('loggedOut'), 'success');
         });
@@ -3134,21 +3119,17 @@ function renderProfilePage() {
             addNewItemBtn.disabled = true;
             addNewItemBtn.textContent = t('adding');
 
-            const contact = vendorShop.contact || localStorage.getItem('vendorContact') || '';
-            const password = vendorShop._sessionPwd || sessionStorage.getItem('vendorSessionPassword') || '';
+            const token = localStorage.getItem('vendorToken');
             try {
                 // Step 3: Send POST request to backend
                 const res = await fetch(`/api/stalls/${vendorShop.id}/menu-item`, {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
-                        'X-Vendor-Contact': contact,
-                        'X-Vendor-Password': password
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({ 
-                        itemName, price, available: true,
-                        contact: contact,
-                        password: password
+                        itemName, price, available: true
                     })
                 });
                 
@@ -3166,7 +3147,7 @@ function renderProfilePage() {
                 itemEl.dataset.id = newItem.id;
                 itemEl.innerHTML = `
                     <div class="menu-item-info">
-                        <div class="menu-item-name">${td(newItem.itemName, newItem)}</div>
+                        <div class="menu-item-name">${escapeHTML(td(newItem.itemName, newItem))}</div>
                         <div class="menu-item-price">₹${newItem.price}</div>
                     </div>
                     <div style="display: flex; gap: 12px; align-items: center;">
@@ -3223,13 +3204,13 @@ function renderProfilePage() {
         async function performDelete(contact, pwd, btn) {
             btn.disabled = true;
             btn.textContent = t('deleting');
+            const token = localStorage.getItem('vendorToken');
             try {
                 const res = await fetch(`/api/stalls/${vendorShop.id}`, {
                     method: 'DELETE',
                     headers: { 
                         'Content-Type': 'application/json',
-                        'X-Vendor-Contact': contact,
-                        'X-Vendor-Password': pwd
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({ contact, password: pwd })
                 });
@@ -3238,7 +3219,8 @@ function renderProfilePage() {
                     vendorShop = null;
                     localStorage.removeItem('vendorShopId');
                     localStorage.removeItem('vendorContact');
-                    localStorage.removeItem('vendorPassword');
+                    localStorage.removeItem('vendorToken');
+                    localStorage.removeItem('vendorLoginTime');
                     await loadStalls();
                     renderProfilePage();
                     showToast(t('shopDeleted'), 'success');
@@ -3262,17 +3244,17 @@ function renderProfilePage() {
         if (loginTime && Date.now() - loginTime > sevenDays) {
             localStorage.removeItem('vendorShopId');
             localStorage.removeItem('vendorContact');
+            localStorage.removeItem('vendorToken');
             localStorage.removeItem('vendorLoginTime');
         }
         const savedContact = localStorage.getItem('vendorContact');
-        const savedPassword = localStorage.getItem('vendorPassword');
+        const savedToken = localStorage.getItem('vendorToken');
 
         if (savedShopId) {
             const isAdmin = savedShopId === '-99';
-            const sessionPassword = sessionStorage.getItem('vendorSessionPassword');
             
-            if (!isAdmin && !sessionPassword) {
-                // If normal vendor is auto-logging in, but does not have password in memory/sessionStorage,
+            if (!isAdmin && !savedToken) {
+                // If normal vendor is auto-logging in, but does not have token,
                 // do not auto-login (which would cause all dashboard actions to fail authentication).
                 // Instead, clear the savedShopId to show the login form directly.
                 localStorage.removeItem('vendorShopId');
@@ -3301,13 +3283,15 @@ function renderProfilePage() {
                         status: 'open',
                         openTime: '00:00',
                         closeTime: '23:59',
-                        _sessionPwd: savedPassword
+                        _sessionPwd: '' // Admin uses token-based auth; no stored password needed
                     };
                     renderProfilePage();
                     return;
                 }
 
-                fetch(`/api/stalls/${savedShopId}`)
+                fetch(`/api/stalls/${savedShopId}`, {
+                    headers: { 'Authorization': `Bearer ${savedToken}` }
+                })
                     .then(r => r.json())
                     .then(shop => {
                         if (shop && shop.id) {
@@ -3416,14 +3400,11 @@ function renderProfilePage() {
                 });
                 const data = await res.json();
                 if (res.ok && data.success) {
-                    sessionStorage.setItem('vendorSessionPassword', password);
+                    localStorage.setItem('vendorToken', data.token);
                     updateVendorShop(data.stall);
                     localStorage.setItem('vendorShopId', vendorShop.id);
                     localStorage.setItem('vendorLoginTime', Date.now());
                     localStorage.setItem('vendorContact', contact);
-                    if (contact === '9999999999') {
-                        localStorage.setItem('vendorPassword', password);
-                    }
                     
                     // Ensure it is transliterated for the dashboard
                     await translateSingleStall(vendorShop, currentLanguage);
@@ -3446,8 +3427,81 @@ function renderProfilePage() {
         app.querySelector('#vendor-password').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') app.querySelector('#vendor-login-btn').click();
         });
-        initPasswordToggles(app);
+        // Issue #17: initPasswordToggles is now an alias for setupPasswordToggles
+        setupPasswordToggles(app);
     }
+}
+
+// ── Issue #20: renderVendorMenuList extracted to module scope ─────────────────
+// Previously defined as an inner function of renderProfilePage(), which meant it
+// was re-created on every call, leaking closures. Now it's a single top-level
+// function that closes over the module-level `vendorShop` variable.
+function renderVendorMenuList() {
+    const listContainer = document.querySelector('#vendor-menu-list');
+    if (!listContainer || !vendorShop) return;
+
+    listContainer.innerHTML = vendorShop.menu.map(item => `
+        <div class="menu-item" data-id="${item.id}">
+            <div class="menu-item-info">
+                <div class="menu-item-name">${escapeHTML(td(item.itemName, item))}</div>
+                <div class="menu-item-price">&#x20b9;${item.price}</div>
+            </div>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <button class="availability-toggle ${item.available ? 'available' : 'unavailable'}" data-id="${item.id}">${item.available ? t('on') : t('off')}</button>
+                <button class="remove-item-btn" data-id="${item.id}" title="${t('removeItem')}">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                </button>
+            </div>
+        </div>
+    `).join('');
+
+    // Availability toggle
+    listContainer.querySelectorAll('.availability-toggle').forEach(toggle => {
+        toggle.addEventListener('click', async () => {
+            const itemId = parseInt(toggle.dataset.id);
+            const item = vendorShop.menu.find(m => m.id === itemId);
+            if (!item) return;
+            const newAvailable = !item.available;
+            const token = localStorage.getItem('vendorToken');
+            try {
+                const res = await fetch(`/api/stalls/${vendorShop.id}/menu-item`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ item_id: itemId, available: newAvailable })
+                });
+                const updated = await res.json();
+                updateVendorShop(updated);
+                renderVendorMenuList();
+                showToast(t('itemNowStatus')
+                    .replace('{item}', td(item.itemName, item))
+                    .replace('{status}', newAvailable ? t('available') : t('unavailable')), 'success');
+                loadStalls();
+            } catch (e) { showToast(t('updateFailed'), 'error'); }
+        });
+    });
+
+    // Remove item
+    listContainer.querySelectorAll('.remove-item-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const itemId = parseInt(btn.dataset.id);
+            const token = localStorage.getItem('vendorToken');
+            try {
+                const res = await fetch(`/api/stalls/${vendorShop.id}/menu-item?item_id=${itemId}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ item_id: itemId })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || t('failedToRemoveItem'));
+                updateVendorShop(data);
+                renderVendorMenuList();
+                showToast(t('itemRemoved'), 'success');
+                loadStalls();
+            } catch (e) {
+                showToast(e.message || t('failedToRemoveItem'), 'error');
+            }
+        });
+    });
 }
 
 // Toast notification
@@ -3576,26 +3630,13 @@ function showDeleteAuthModal(onOk) {
         }
     };
 }
-// Password show/hide toggle — works on mobile (iOS + Android)
+// Issue #17: initPasswordToggles() was a duplicate of setupPasswordToggles() with
+// a broken data-target approach. Removed. setupPasswordToggles(container) is the
+// single unified function — it finds inputs by proximity inside .password-wrapper.
+// Kept as a no-op alias so any lingering call sites don't throw errors.
 function initPasswordToggles(container) {
-    (container || document).querySelectorAll('.eye-toggle-btn').forEach(btn => {
-        const targetId = btn.dataset.target;
-        const input = document.getElementById(targetId);
-        if (!input) return;
-
-        function toggle(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const isHidden = input.type === 'password';
-            input.type = isHidden ? 'text' : 'password';
-            btn.textContent = isHidden ? '' : '';
-            // Keep focus on input so keyboard stays open on mobile
-            input.focus();
-        }
-
-        btn.addEventListener('click', toggle);
-        btn.addEventListener('touchend', toggle, { passive: false });
-    });
+    // Delegate to the unified function — Issue #17 fix
+    setupPasswordToggles(container || document);
 }
 window.initPasswordToggles = initPasswordToggles;
 
@@ -3862,5 +3903,4 @@ window.openLocationPicker = openLocationPicker;
 window.closeLocationPicker = closeLocationPicker;
 window.selectDistrictItem = selectDistrictItem;
 window.selectAreaItem = selectAreaItem;
-window.filterLocationList = filterLocationList;
 window.filterLocationList = filterLocationList;
