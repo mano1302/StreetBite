@@ -27,10 +27,12 @@ if not _secret:
 app.config['SECRET_KEY'] = _secret
 serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
+is_prod = os.environ.get('FLASK_ENV') == 'production' or os.environ.get('RENDER') is not None
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["200 per day", "50 per hour"]
+    default_limits=["200 per day", "50 per hour"],
+    enabled=is_prod
 )
 
 @app.errorhandler(RateLimitExceeded)
@@ -413,6 +415,19 @@ def vendor_login_by_contact():
     admin_contact = os.environ.get('ADMIN_CONTACT')
     admin_password = os.environ.get('ADMIN_PASSWORD')
     
+    # Strip whitespace/carriage returns to make it robust against environment parsing quirks
+    if admin_contact:
+        admin_contact = admin_contact.strip()
+    if admin_password:
+        admin_password = admin_password.strip()
+        
+    # Development fallback if credentials are not configured in environment
+    if not admin_contact or not admin_password:
+        is_prod_env = os.environ.get('FLASK_ENV') == 'production' or os.environ.get('RENDER') is not None
+        if not is_prod_env:
+            admin_contact = '9999999999'
+            admin_password = 'StreetBiteAdmin2026!'
+            
     if admin_contact and admin_password and contact == admin_contact and password == admin_password:
         token = generate_token(-99, contact)
         return jsonify({
@@ -431,7 +446,7 @@ def vendor_login_by_contact():
                 'closeTime': '23:59'
             }
         })
-    elif contact == admin_contact:
+    elif admin_contact and contact == admin_contact:
         return jsonify({'success': False, 'error': 'Invalid mobile number or password'}), 401
 
     stall = db.login_by_contact(contact, password)
