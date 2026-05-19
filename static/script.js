@@ -1943,8 +1943,10 @@ window.handleLocationSelection = function(val) {
 
 // Close dropdown when clicking outside
 document.addEventListener('click', () => {
-    const optionsContainer = document.getElementById('location-options');
-    if (optionsContainer) optionsContainer.classList.remove('active');
+    const locOptions = document.getElementById('location-options');
+    if (locOptions) locOptions.classList.remove('active');
+    const langOptions = document.getElementById('language-options');
+    if (langOptions) langOptions.classList.remove('active');
 });
 window.changeLanguage = changeLanguage;
 
@@ -1993,9 +1995,36 @@ function updateNavigationLabels() {
 
 // Update header language selector
 function updateHeaderLanguageSelector() {
-    const selector = document.getElementById('header-language-select');
-    if (selector) {
-        selector.value = currentLanguage;
+    const triggerText = document.getElementById('language-trigger-text');
+    const optionsContainer = document.getElementById('language-options');
+    const trigger = document.getElementById('language-trigger');
+    
+    if (triggerText) {
+        const langMap = { 'en': 'EN', 'ta': 'தமிழ்', 'hi': 'हिंदी' };
+        triggerText.textContent = langMap[currentLanguage] || currentLanguage.toUpperCase();
+    }
+    
+    if (trigger && optionsContainer) {
+        // Toggle Dropdown
+        trigger.onclick = (e) => {
+            e.stopPropagation();
+            optionsContainer.classList.toggle('active');
+            
+            // Close location options if open
+            const locOptions = document.getElementById('location-options');
+            if (locOptions) locOptions.classList.remove('active');
+        };
+        
+        // Mark the selected one
+        const options = optionsContainer.querySelectorAll('.custom-option');
+        options.forEach(opt => {
+            const onclickStr = opt.getAttribute('onclick') || '';
+            if (onclickStr.includes(`'${currentLanguage}'`) || onclickStr.includes(`"${currentLanguage}"`)) {
+                opt.classList.add('selected');
+            } else {
+                opt.classList.remove('selected');
+            }
+        });
     }
 }
 

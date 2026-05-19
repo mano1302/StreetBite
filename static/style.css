@@ -94,7 +94,7 @@ body {
     background: rgba(255, 255, 255, 0.15);
     border: 1.5px solid rgba(255, 255, 255, 0.3);
     color: white;
-    padding: 0 30px 0 12px; /* Changed to use height/line-height for centering */
+    padding: 0 14px;
     border-radius: 12px;
     font-size: 0.88rem;
     font-weight: 600;
@@ -108,6 +108,8 @@ body {
     height: 42px; /* Standardized height */
     outline: none;
     line-height: 42px;
+    text-align: center;
+    text-align-last: center;
 }
 
 .header h1 {
@@ -156,6 +158,7 @@ body {
     color: #333;
     font-weight: 500;
     padding: 10px;
+    text-align: center;
 }
 
 /* Header Location Bar */
@@ -196,7 +199,7 @@ body {
     cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     gap: 8px;
     height: 100%;
     backdrop-filter: blur(10px);
@@ -285,23 +288,13 @@ body {
     background: #fef2f2;
 }
 
-.language-selector {
-    /* Kept as native for now but styled to match trigger */
+#header-language-custom {
     min-width: 100px;
     width: auto;
-    background: rgba(255, 255, 255, 0.15);
-    border: 1.5px solid rgba(255, 255, 255, 0.3);
-    color: white;
-    padding: 0 14px;
-    border-radius: 12px;
-    font-size: 0.88rem;
-    font-weight: 600;
-    cursor: pointer;
-    appearance: none;
-    height: 42px;
-    backdrop-filter: blur(10px);
-    outline: none;
-    line-height: normal;
+}
+
+#language-options .custom-option {
+    text-align: center;
 }
 
 
