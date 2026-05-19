@@ -904,11 +904,16 @@ const areaNamesLocalized = {
     }
 };
 
+// Helper: get area display name in specific language
+function getAreaNameForLang(area, lang) {
+    if (lang === 'ta' && areaNamesLocalized.ta[area]) return areaNamesLocalized.ta[area];
+    if (lang === 'hi' && areaNamesLocalized.hi[area]) return areaNamesLocalized.hi[area];
+    return area;
+}
+
 // Helper: get area display name in current language
 function getAreaName(area) {
-    if (currentLanguage === 'ta' && areaNamesLocalized.ta[area]) return areaNamesLocalized.ta[area];
-    if (currentLanguage === 'hi' && areaNamesLocalized.hi[area]) return areaNamesLocalized.hi[area];
-    return area;
+    return getAreaNameForLang(area, currentLanguage);
 }
 
 // Helper: get category display name
@@ -1742,7 +1747,12 @@ async function translateSingleStall(stall, lang) {
         }
         
         // Translate area and address (meaning-based) — usually from fixed list or Google Translate
-        stall.area_localized = await getTranslation(stall.area, lang);
+        const dictArea = getAreaNameForLang(stall.area, lang);
+        if (dictArea !== stall.area) {
+            stall.area_localized = dictArea;
+        } else {
+            stall.area_localized = await getTranslation(stall.area, lang);
+        }
         stall.address_localized = await getTranslation(stall.address, lang);
         if (stall.todayDiscount) {
             stall.todayDiscount_localized = await getTranslation(stall.todayDiscount, lang);
@@ -1795,7 +1805,17 @@ function td(text, obj = null) {
         if (dbName && text === obj.name) return dbName;
         
         if (obj.name_localized && text === obj.name) return obj.name_localized;
-        if (obj.area_localized && text === obj.area) return obj.area_localized;
+        
+        if (text === obj.area) {
+            const translit = getAreaName(obj.area);
+            if (translit !== obj.area) return translit;
+            if (obj.area_localized) return obj.area_localized;
+        }
+        if (obj.district && text === obj.district) {
+            const translit = getDistrictName(obj.district);
+            if (translit !== obj.district) return translit;
+        }
+        
         if (obj.address_localized && text === obj.address) return obj.address_localized;
         if (obj.comment_localized && text === obj.comment) return obj.comment_localized;
         if (obj.todayDiscount_localized && text === obj.todayDiscount) return obj.todayDiscount_localized;
