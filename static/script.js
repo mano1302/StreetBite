@@ -3898,29 +3898,41 @@ function setupPasswordToggles(container) {
         `;
         btn.innerHTML = eyeIconHTML;
 
-        // Only show button if input is not empty
-        input.addEventListener('input', () => {
+        // Show/hide eye button based on input value
+        const updateBtnVisibility = () => {
             if (input.value.length > 0) {
                 btn.style.display = 'block';
             } else {
                 btn.style.display = 'none';
             }
-        });
+        };
+
+        // Listen to multiple input/change/focus events to capture all typing and autofill actions
+        input.addEventListener('input', updateBtnVisibility);
+        input.addEventListener('change', updateBtnVisibility);
+        input.addEventListener('focus', updateBtnVisibility);
 
         // Initial check for pre-filled values
-        if (input.value.length > 0) {
-            btn.style.display = 'block';
-        }
+        updateBtnVisibility();
 
-        btn.addEventListener('click', (e) => {
+        // Prevent toggler from stealing input focus (prevents mobile keyboard from closing)
+        const preventFocusLoss = (e) => {
+            e.preventDefault();
+        };
+        btn.addEventListener('mousedown', preventFocusLoss);
+        btn.addEventListener('touchstart', preventFocusLoss);
+
+        // Core visibility toggle function
+        const toggleVisibility = (e) => {
             e.preventDefault();
             e.stopPropagation();
-            
             const isPassword = input.type === 'password';
             input.type = isPassword ? 'text' : 'password';
-            
-            // Note: Keeping the same icon for both states as per previous "one icon" request.
-        });
+        };
+
+        // Attach both click and touchstart events to respond instantly on all devices
+        btn.addEventListener('click', toggleVisibility);
+        btn.addEventListener('touchstart', toggleVisibility);
     });
 }
 

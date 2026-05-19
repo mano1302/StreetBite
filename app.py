@@ -1,7 +1,7 @@
 from flask import Flask, send_from_directory, jsonify, request
 from flask_cors import CORS
 import os
-from flask_limiter import Limiter
+from flask_limiter import Limiter, RateLimitExceeded
 from flask_limiter.util import get_remote_address
 from itsdangerous import URLSafeTimedSerializer
 from functools import wraps
@@ -32,14 +32,12 @@ limiter = Limiter(
     app=app,
     default_limits=["200 per day", "50 per hour"]
 )
+
+@app.errorhandler(RateLimitExceeded)
+def ratelimit_handler(e):
+    return jsonify({"error": f"Rate limit exceeded: {e.description or 'Too many requests. Please try again later.'}"}), 429
 CORS(app, resources={r"/api/*": {
-    "origins": [
-        "https://streetbite-1.onrender.com",
-        "https://streetbite.onrender.com",
-        "http://localhost:5000",
-        "http://127.0.0.1:5000",
-        "http://localhost:3000"   # local frontend on separate dev port
-    ],
+    "origins": "*",
     "allow_headers": ["Content-Type", "Authorization"],
     "expose_headers": ["Content-Type"],
     "supports_credentials": True,
@@ -142,6 +140,7 @@ def static_files(path):
     return send_from_directory('static', path)
 
 @app.route('/api/stalls', methods=['GET'])
+@limiter.exempt
 def get_stalls():
     """Get all stalls — public data only (contact already stripped by db layer)."""
     stalls = db.get_all_stalls()
@@ -153,6 +152,7 @@ def get_stalls():
     return jsonify(stalls)
 
 @app.route('/api/stalls/<int:stall_id>', methods=['GET'])
+@limiter.exempt
 def get_stall(stall_id):
     """Get a single stall by ID (public data only, unless authorized)."""
     stall = db.get_stall_by_id(stall_id, public=True)
