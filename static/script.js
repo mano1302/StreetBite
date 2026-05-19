@@ -3852,6 +3852,10 @@ function setupPasswordToggles(container) {
         const input = wrapper.querySelector('input');
         const btn = wrapper.querySelector('.eye-toggle-btn');
         if (!input || !btn) return;
+        
+        // Prevent double binding
+        if (btn.dataset.initialized) return;
+        btn.dataset.initialized = 'true';
 
         // Use the standard 'eye' icon as the toggler
         const eyeIconHTML = `
