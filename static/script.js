@@ -1481,10 +1481,10 @@ const categoryEmojis = categorySVGs;
 // Convert 24-hour time to 12-hour format
 // Fix #11: guard against null/non-string input to prevent crash
 function formatTime12Hour(time24) {
-    if (!time24 || typeof time24 !== 'string' || !time24.includes(':')) return '9:00 AM - 10:00 PM';
+    if (!time24 || typeof time24 !== 'string' || !time24.includes(':')) return 'N/A';
     const [hours, minutes] = time24.split(':');
     let h = parseInt(hours);
-    if (isNaN(h)) return '9:00 AM - 10:00 PM';
+    if (isNaN(h)) return 'N/A';
     const ampm = h >= 12 ? 'PM' : 'AM';
     h = h % 12;
     h = h ? h : 12; // 0 becomes 12
@@ -2247,12 +2247,14 @@ function renderSearchPage() {
         });
     });
 
+    selectedCategory = 'All'; // Reset for search
     renderShopGrid();
 }
 
 // Show Shop Detail (static version for GitHub Pages)
 function showShopDetail(id) {
     currentStallId = id;
+    currentPage = 'detail';
     showLoading(true);
     const stall = stalls.find(s => s.id === id);
     if (stall) {
@@ -2296,10 +2298,9 @@ function renderShopDetailPage(stall) {
                         <span>${escapeHTML(td(stall.address || stall.area, stall))}</span>
                     </div>
                     ${stall.contact ? `
-                    <div class="info-row">
-                        <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
-                        <a href="tel:${escapeHTML(stall.contact)}">${escapeHTML(stall.contact)}</a>
-                    </div>` : ''}
+                    <button class="submit-btn" style="background:#4CAF50; margin-top:10px;" onclick="window.location.href='tel:${escapeHTML(stall.contact)}'">
+                        📞 Call Shop
+                    </button>` : '<p style="color:#999;">Contact not available</p>'}
                     <div class="info-row">
                         <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; color:#fbbf24;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
                         <span>${(stall.rating || 0).toFixed(1)} ${t('rating')} (${stall.totalReviews || 0})</span>
@@ -2873,7 +2874,7 @@ function renderProfilePage() {
                                     </div>
                                     <div style="color: #666; font-size: 0.85rem; display: flex; flex-direction: column; gap: 4px;">
                                         <span>📍 ${tDistrict(stall.district)} - ${td(stall.area, stall)}</span>
-                                        <span>📞 ${stall.contact}</span>
+                                        <span>📞 ${stall.contact || 'Contact admin'}</span>
                                     </div>
                                 </div>
                                 <button class="submit-btn admin-delete-btn" data-id="${stall.id}" data-name="${stall.name}" style="background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; margin: 0; padding: 10px 18px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; white-space: nowrap; height: fit-content;">
@@ -3201,40 +3202,7 @@ function renderProfilePage() {
             });
         });
 
-        async function performDelete(contact, pwd, btn) {
-            btn.disabled = true;
-            btn.textContent = t('deleting');
-            const token = localStorage.getItem('vendorToken');
-            try {
-                const res = await fetch(`/api/stalls/${vendorShop.id}`, {
-                    method: 'DELETE',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ contact, password: pwd })
-                });
-                const data = await res.json();
-                if (res.ok && data.success) {
-                    vendorShop = null;
-                    localStorage.removeItem('vendorShopId');
-                    localStorage.removeItem('vendorContact');
-                    localStorage.removeItem('vendorToken');
-                    localStorage.removeItem('vendorLoginTime');
-                    await loadStalls();
-                    renderProfilePage();
-                    showToast(t('shopDeleted'), 'success');
-                } else {
-                    showToast(data.error || t('deletionFailed'), 'error');
-                    btn.disabled = false;
-                    btn.textContent = t('deleteShop');
-                }
-            } catch (e) {
-                showToast(t('networkError'), 'error');
-                btn.disabled = false;
-                btn.textContent = t('deleteShop');
-            }
-        }
+
 
     } else {
         // Login form — check for persistent login via API
@@ -3536,7 +3504,7 @@ function showCustomConfirm(msg, onOk) {
     overlay.innerHTML = `
         <div style="background:white; width:90%; max-width:380px; padding:30px; border-radius:28px; box-shadow:0 20px 50px rgba(0,0,0,0.3); transform:translateY(0); animation:modalSlideUp 0.3s ease-out;">
             <h3 class="section-title" style="margin-top:0; color:#dc2626; justify-content:center;">${t('dangerZone')}</h3>
-            <p style="margin-bottom:24px; line-height:1.6; color:#444; text-align:center;">${msg.replace(/\n/g, '<br>')}</p>
+            <p style="margin-bottom:24px; line-height:1.6; color:#444; text-align:center;">${escapeHTML(msg).replace(/\n/g, '<br>')}</p>
             <div style="display:flex; gap:12px;">
                 <button class="submit-btn" style="background:#eee; color:#333; margin:0; flex:1;" id="modal-cancel">${t('cancel')}</button>
                 <button class="submit-btn" style="background:#dc2626; margin:0; flex:1;" id="modal-ok">${t('ok')}</button>
@@ -3574,6 +3542,41 @@ function showCustomPrompt(msg, onOk) {
     input.focus();
     overlay.querySelector('#modal-cancel').onclick = () => overlay.remove();
     overlay.querySelector('#modal-ok').onclick = () => { if(input.value) { overlay.remove(); onOk(input.value); } };
+}
+
+async function performDelete(contact, pwd, btn) {
+    btn.disabled = true;
+    btn.textContent = t('deleting');
+    const token = localStorage.getItem('vendorToken');
+    try {
+        const res = await fetch(`/api/stalls/${vendorShop.id}`, {
+            method: 'DELETE',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ contact, password: pwd })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            vendorShop = null;
+            localStorage.removeItem('vendorShopId');
+            localStorage.removeItem('vendorContact');
+            localStorage.removeItem('vendorToken');
+            localStorage.removeItem('vendorLoginTime');
+            await loadStalls();
+            renderProfilePage();
+            showToast(t('shopDeleted'), 'success');
+        } else {
+            showToast(data.error || t('deletionFailed'), 'error');
+            btn.disabled = false;
+            btn.textContent = t('deleteShop');
+        }
+    } catch (e) {
+        showToast(t('networkError'), 'error');
+        btn.disabled = false;
+        btn.textContent = t('deleteShop');
+    }
 }
 
 // Custom Delete Authentication Modal
@@ -3647,7 +3650,7 @@ window.navigateTo = navigateTo;
 // ===== Location Picker Functions =====
 
 function updateLocationButtonText() {
-    const btnText = document.getElementById('location-btn-text');
+    const btnText = document.getElementById('location-trigger-text');
     if (!btnText) return;
     if (selectedArea && selectedArea !== 'All Areas') {
         btnText.textContent = getAreaName(selectedArea);
@@ -3665,7 +3668,7 @@ function openLocationPicker() {
 
     overlay.classList.add('active');
     sheet.classList.add('active');
-    document.getElementById('location-btn').classList.add('active');
+    document.getElementById('location-trigger').classList.add('active');
 
     // If a district is already selected, show areas step
     if (selectedDistrict && tamilNaduDistricts[selectedDistrict]) {
@@ -3686,7 +3689,7 @@ function closeLocationPicker() {
 
     overlay.classList.remove('active');
     sheet.classList.remove('active');
-    document.getElementById('location-btn').classList.remove('active');
+    document.getElementById('location-trigger').classList.remove('active');
 }
 
 function renderDistrictList() {
