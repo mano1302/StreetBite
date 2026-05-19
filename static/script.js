@@ -1689,27 +1689,30 @@ async function getTransliteration(text, targetLang) {
                     // Known word — use our manual translation
                     resultParts.push(placeholders[trimmed]);
                 } else if (/[a-zA-Z]/.test(seg)) {
-                    // English text — transliterate word-by-word via API
-                    const words = seg.trim().split(/\s+/);
-                    const translitWords = await Promise.all(words.map(async (word) => {
-                        if (!word || !/[a-zA-Z]/.test(word)) return word;
-                        // Check dictionary one more time for individual words
-                        for (let dk in dynamicTranslations) {
-                            if (dk.toLowerCase() === word.toLowerCase() && dynamicTranslations[dk][targetLang]) {
-                                return dynamicTranslations[dk][targetLang];
+                    // English text — transliterate full segment via API
+                    const segmentText = seg.trim();
+                    let transText = segmentText;
+                    try {
+                        const wUrl = `https://inputtools.google.com/request?text=${encodeURIComponent(segmentText)}&itc=${itc}&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=test`;
+                        const wRes = await fetch(wUrl);
+                        const wData = await wRes.json();
+                        if (wData && wData[0] === 'SUCCESS' && wData[1]) {
+                            transText = '';
+                            for (const part of wData[1]) {
+                                if (part[1] && part[1].length > 0) {
+                                    transText += part[1][0];
+                                } else if (part[0]) {
+                                    transText += part[0];
+                                }
                             }
                         }
-                        try {
-                            const wUrl = `https://inputtools.google.com/request?text=${encodeURIComponent(word)}&itc=${itc}&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=test`;
-                            const wRes = await fetch(wUrl);
-                            const wData = await wRes.json();
-                            if (wData && wData[0] === 'SUCCESS' && wData[1] && wData[1][0] && wData[1][0][1] && wData[1][0][1][0]) {
-                                return wData[1][0][1][0];
-                            }
-                        } catch (e) { /* fallback to original */ }
-                        return word;
-                    }));
-                    resultParts.push(translitWords.join(' '));
+                    } catch (e) { /* fallback to original */ }
+                    // Restore leading and trailing spaces from the original segment
+                    const prefixMatch = seg.match(/^\s*/);
+                    const suffixMatch = seg.match(/\s*$/);
+                    const prefix = prefixMatch ? prefixMatch[0] : '';
+                    const suffix = suffixMatch ? suffixMatch[0] : '';
+                    resultParts.push(prefix + transText + suffix);
                 } else {
                     resultParts.push(seg);
                 }
@@ -2126,7 +2129,10 @@ function renderShopGrid() {
     let filtered = stalls;
 
     // Strict location filtering — user must select an area/district to see shops
-    if (selectedArea && selectedArea !== 'All Areas') {
+    if (!selectedArea || selectedArea === 'All Areas') {
+        // User requested: do NOT show any shop if only district is selected. Area must be selected.
+        filtered = [];
+    } else {
         // Specific area selected — show only shops in that area
         // Match against both 'area' and 'address' fields for maximum coverage
         const areaLower = selectedArea.toLowerCase();
@@ -2135,25 +2141,6 @@ function renderShopGrid() {
             const shopAddr = (s.address || '').toLowerCase();
             return shopArea.includes(areaLower) || shopAddr.includes(areaLower) ||
                    areaLower.includes(shopArea);
-        });
-    } else if (selectedDistrict) {
-        // Show all shops in the selected district
-        filtered = filtered.filter(s => {
-            // Priority 1: Match by explicit district field (for newer/updated shops)
-            if (s.district === selectedDistrict) return true;
-
-            // Priority 2: Match by area mapping (fallback for older/legacy shops)
-            const districtAreas = tamilNaduDistricts[selectedDistrict] || [];
-            if (districtAreas.length > 0) {
-                const shopArea = (s.area || '').toLowerCase();
-                const shopAddr = (s.address || '').toLowerCase();
-                return districtAreas.some(area => {
-                    const areaLower = area.toLowerCase();
-                    return shopArea.includes(areaLower) || shopAddr.includes(areaLower) ||
-                           areaLower.includes(shopArea);
-                });
-            }
-            return false;
         });
     }
 
