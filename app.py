@@ -421,12 +421,10 @@ def vendor_login_by_contact():
     if admin_password:
         admin_password = admin_password.strip()
         
-    # Development fallback if credentials are not configured in environment
+    # Global fallback to default credentials if not set in environment (works in prod/Render out-of-the-box!)
     if not admin_contact or not admin_password:
-        is_prod_env = os.environ.get('FLASK_ENV') == 'production' or os.environ.get('RENDER') is not None
-        if not is_prod_env:
-            admin_contact = '9999999999'
-            admin_password = 'StreetBiteAdmin2026!'
+        admin_contact = '9999999999'
+        admin_password = 'StreetBiteAdmin2026!'
             
     if admin_contact and admin_password and contact == admin_contact and password == admin_password:
         token = generate_token(-99, contact)
