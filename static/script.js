@@ -1971,7 +1971,7 @@ function setupNavigation() {
             // the page BEHIND it — the modal stays on top (data preserved).
             const modal = document.getElementById('add-shop-modal');
             const modalOpen = modal && modal.classList.contains('active');
-            navigateTo(page);
+            navigateTo(page, true);
             // Re-show modal on top if it was open
             if (modalOpen) modal.classList.add('active');
         });
@@ -2071,7 +2071,7 @@ window.goBack = function() {
         const navItem = document.querySelector(`.nav-item[data-page="${currentPage}"]`);
         if (navItem) navItem.classList.add('active');
     } else {
-        navigateTo('home');
+        navigateTo('home', true);
     }
 }
 
@@ -2269,6 +2269,9 @@ function renderSearchPage() {
 
 // Show Shop Detail (static version for GitHub Pages)
 function showShopDetail(id) {
+    if (currentPage && currentPage !== 'detail') {
+        navigationStack.push({ page: currentPage, stallId: currentStallId });
+    }
     currentStallId = id;
     currentPage = 'detail';
     showLoading(true);
